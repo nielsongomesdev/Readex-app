@@ -3,6 +3,8 @@ import Fastify from "fastify";
 import { userRoutes } from "./routes/user.routes.js";
 import { bookRoutes } from "./routes/book.routes.js";
 import { shelfRoutes } from "./routes/shelf.routes.js";
+import { reviewRoutes } from "./routes/review.routes.js";
+
 
 const app = Fastify({
 
@@ -16,6 +18,8 @@ app.register(fastifyJwt, {
 app.register(userRoutes);
 app.register(bookRoutes);
 app.register(shelfRoutes);
+app.register(reviewRoutes);
+
 
 app.get("/healthcheck", async (request, reply) => {
 
