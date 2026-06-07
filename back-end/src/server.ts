@@ -2,11 +2,11 @@ import fastifyJwt from "@fastify/jwt";
 import Fastify from "fastify";
 import { userRoutes } from "./routes/user.routes.js";
 import { bookRoutes } from "./routes/book.routes.js";
+import { shelfRoutes } from "./routes/shelf.routes.js"; // 👈 LIGANDO AQUI!
 
 const app = Fastify({
   logger: true,
 });
-
 
 app.register(fastifyJwt, {
   secret: process.env.JWT_SECRET || 'chave-super-secreta-readex-2026'
@@ -14,11 +14,11 @@ app.register(fastifyJwt, {
 
 app.register(userRoutes);
 app.register(bookRoutes);
+app.register(shelfRoutes); // 👈 REGISTRANDO AQUI!
 
 app.get("/healthcheck", async (request, reply) => {
   return { status: "ok", message: "Readex API está rodando perfeitamente!" };
 });
-
 
 const start = async () => {
   try {
