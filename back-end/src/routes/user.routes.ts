@@ -7,4 +7,17 @@ export async function userRoutes(app: FastifyInstance) {
   app.post("/users", userController.create);
   app.get("/users", userController.list);
   app.post("/login", userController.login);
+  app.get(
+    "/users/dashboard",
+    {
+      onRequest: async (request, reply) => {
+        try {
+          await request.jwtVerify();
+        } catch {
+          return reply.status(401).send({ error: "Não autorizado. Token inválido ou ausente." });
+        }
+      },
+    },
+    userController.getDashboard
+  );
 }

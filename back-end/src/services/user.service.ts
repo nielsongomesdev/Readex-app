@@ -61,4 +61,55 @@ export class UserService {
 
     return user;
   }
+
+  async getDashboard(userId: string) {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    const totalBooksReadInMonth = await this.userRepository.countReviewsInPeriod(
+      userId,
+      startOfMonth,
+      startOfNextMonth
+    );
+
+    const reviews = await this.userRepository.findReviewsInPeriod(userId, startOfMonth, startOfNextMonth);
+
+    // Monta série diária de leituras (counts por dia do mês)
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const monthlyRead = Array.from({ length: daysInMonth }, (_, i) => ({ day: i + 1, count: 0 }));
+    for (const r of reviews) {
+      const d = new Date(r.createdAt).getDate();
+      monthlyRead[d - 1].count += 1;
+    }
+
+    // Recupera livros do usuário e calcula porcentagem de progresso (mockando total de páginas = 200)
+    const userBooks = await this.userRepository.findUserBooksWithBook(userId);
+    const assumedTotalPages = 200;
+    const progressList = userBooks.map((ub) => {
+      const percent = Math.min(100, Math.round((ub.pagesRead / assumedTotalPages) * 100));
+      return {
+        bookId: ub.book.id,
+        title: ub.book.title,
+        author: ub.book.author,
+        pagesRead: ub.pagesRead,
+        percent,
+      };
+    });
+
+    const topBook = progressList.sort((a, b) => b.percent - a.percent)[0] || null;
+
+    // Dias de sequência: campo opcional, aqui retornamos um mock
+    const streakDays = 5;
+
+    return {
+      totalBooksReadInMonth,
+      topBook,
+      streakDays,
+      charts: {
+        monthlyRead,
+        progress: progressList,
+      },
+    };
+  }
 }

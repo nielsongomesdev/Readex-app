@@ -1,3 +1,69 @@
 import { PrismaClient } from "@prisma/client";
 
-export const prisma = new PrismaClient();
+type Any = any;
+
+let prismaInstance: Any;
+
+if (process.env.DATABASE_URL) {
+	prismaInstance = new PrismaClient();
+} else {
+	// Mock simples em memória para desenvolvimento sem banco configurado
+	const users: Any[] = [];
+	const books: Any[] = [];
+	const userBooks: Any[] = [];
+	const reviews: Any[] = [];
+
+	prismaInstance = {
+		user: {
+			create: async ({ data }: Any) => {
+				const id = `mock-${Date.now()}`;
+				const item = { id, ...data, createdAt: new Date(), updatedAt: new Date() };
+				users.push(item);
+				return item;
+			},
+			findUnique: async ({ where }: Any) => {
+				return users.find((u) => u.email === where.email) ?? null;
+			},
+			findMany: async () => users,
+		},
+		book: {
+			create: async ({ data }: Any) => {
+				const id = `mock-book-${Date.now()}`;
+				const item = { id, ...data, createdAt: new Date(), updatedAt: new Date() };
+				books.push(item);
+				return item;
+			},
+			findMany: async () => books,
+		},
+		userBook: {
+			findMany: async ({ where, include }: Any) => {
+				const items = userBooks.filter((ub) => ub.userId === where.userId);
+				if (include?.book) {
+					return items.map((it) => ({ ...it, book: books.find((b) => b.id === it.bookId) }));
+				}
+				return items;
+			},
+			upsert: async ({ where, update, create }: Any) => {
+				const existing = userBooks.find((ub) => ub.userId === where.userId_bookId.userId && ub.bookId === where.userId_bookId.bookId);
+				if (existing) {
+					Object.assign(existing, update);
+					existing.updatedAt = new Date();
+					return existing;
+				}
+				const item = { id: `ub-${Date.now()}`, ...create, createdAt: new Date(), updatedAt: new Date() };
+				userBooks.push(item);
+				return item;
+			},
+		},
+		review: {
+			count: async ({ where }: Any) => {
+				return reviews.filter((r) => r.userId === where.userId && new Date(r.createdAt) >= where.createdAt.gte && new Date(r.createdAt) < where.createdAt.lt).length;
+			},
+			findMany: async ({ where, select }: Any) => {
+				return reviews.filter((r) => r.userId === where.userId && new Date(r.createdAt) >= where.createdAt.gte && new Date(r.createdAt) < where.createdAt.lt).map((r) => ({ id: r.id, createdAt: r.createdAt }));
+			},
+		},
+	} as Any;
+}
+
+export const prisma = prismaInstance as unknown as PrismaClient;
