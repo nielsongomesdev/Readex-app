@@ -9,42 +9,46 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
   reviews   Review[]
   userBooks UserBook[]
+
+  followers Follow[] @relation("UserFollowing")
   
+  following Follow[] @relation("UserFollowers")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Book {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   title       String
   author      String
   description String?
   coverUrl    String?
-  
-  reviews     Review[]
-  userBooks   UserBook[] 
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  reviews   Review[]
+  userBooks UserBook[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Review {
-  id        String   @id @default(uuid())
-  rating    Int
-  comment   String?
-  
-  userId    String
-  bookId    String
-  user      User     @relation(fields: [userId], references: [id])
-  book      Book     @relation(fields: [bookId], references: [id])
-  
+  id      String  @id @default(uuid())
+  rating  Int
+  comment String?
+
+  userId String
+  bookId String
+  user   User   @relation(fields: [userId], references: [id])
+  book   Book   @relation(fields: [bookId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -53,7 +57,7 @@ model UserBook {
   id        String   @id @default(uuid())
   userId    String
   bookId    String
-  status    String   
+  status    String
   pagesRead Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -61,6 +65,16 @@ model UserBook {
   user User @relation(fields: [userId], references: [id])
   book Book @relation(fields: [bookId], references: [id])
 
-  
   @@unique([userId, bookId])
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("UserFollowers", fields: [followerId], references: [id])
+  following User @relation("UserFollowing", fields: [followingId], references: [id])
+
+  @@id([followerId, followingId])
 }
