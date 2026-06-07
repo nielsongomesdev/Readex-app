@@ -1,5 +1,8 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2a71ccc71f0ce3aea3fad8a9ca221dc70591d59f
 import { addBookToShelf } from "../services/shelf.service.js";
 
 export async function addToShelfController(request: FastifyRequest, reply: FastifyReply) {
@@ -12,6 +15,10 @@ export async function addToShelfController(request: FastifyRequest, reply: Fasti
     }
 
     const shelfItem = await addBookToShelf(userId, bookId, status);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a71ccc71f0ce3aea3fad8a9ca221dc70591d59f
     return reply.status(201).send(shelfItem);
   } catch (error: any) {
     return reply.status(409).send({ error: error?.message ?? "Erro ao adicionar na estante" });
