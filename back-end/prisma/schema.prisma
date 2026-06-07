@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -13,7 +13,9 @@ model User {
   name      String
   email     String   @unique
   password  String
+  
   reviews   Review[]
+  userBooks UserBook[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,7 +27,9 @@ model Book {
   author      String
   description String?
   coverUrl    String?
+  
   reviews     Review[]
+  userBooks   UserBook[] 
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -43,4 +47,20 @@ model Review {
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model UserBook {
+  id        String   @id @default(uuid())
+  userId    String
+  bookId    String
+  status    String   
+  pagesRead Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
+
+  
+  @@unique([userId, bookId])
 }
