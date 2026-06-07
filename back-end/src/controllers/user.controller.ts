@@ -55,4 +55,14 @@ export class UserController {
       return reply.status(401).send({ error: error.message });
     }
   };
+
+  getDashboard = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { sub: userId } = request.user as { sub: string };
+      const data = await this.userService.getDashboard(userId);
+      return reply.status(200).send(data);
+    } catch (error: any) {
+      return reply.status(500).send({ error: error?.message ?? "Erro ao gerar dashboard" });
+    }
+  };
 }
