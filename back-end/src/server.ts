@@ -4,9 +4,11 @@ import { userRoutes } from "./routes/user.routes.js";
 import { bookRoutes } from "./routes/book.routes.js";
 import { shelfRoutes } from "./routes/shelf.routes.js";
 import { reviewRoutes } from "./routes/review.routes.js";
+import { followRoutes } from "./routes/follow.routes.js";
 
 
 const app = Fastify({
+
 
   logger: true,
 });
@@ -19,6 +21,7 @@ app.register(userRoutes);
 app.register(bookRoutes);
 app.register(shelfRoutes);
 app.register(reviewRoutes);
+app.register(followRoutes);
 
 
 app.get("/healthcheck", async (request, reply) => {
