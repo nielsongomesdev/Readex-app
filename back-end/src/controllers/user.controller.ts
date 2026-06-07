@@ -12,9 +12,7 @@ export class UserController {
   create = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const data = request.body as Prisma.UserCreateInput;
-
       const user = await this.userService.createUser(data);
-
       return reply.status(201).send(user);
     } catch (error: any) {
       return reply.status(400).send({ error: error.message });
@@ -27,6 +25,34 @@ export class UserController {
       return reply.status(200).send(users);
     } catch (error) {
       return reply.status(500).send({ error: "Erro interno do servidor" });
+    }
+  };
+
+
+  login = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { email, password } = request.body as any;
+      const user = await this.userService.login(email, password);
+      const token = await reply.jwtSign(
+        {
+          name: user.name,
+          email: user.email,
+        },
+        {
+          sign: { sub: user.id, expiresIn: "7d" },
+        }
+      );
+
+      return reply.status(200).send({
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+        token,
+      });
+    } catch (error: any) {
+      return reply.status(401).send({ error: error.message });
     }
   };
 }

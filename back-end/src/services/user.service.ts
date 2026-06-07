@@ -45,4 +45,20 @@ export class UserService {
     const users = await this.userRepository.findAll();
     return users;
   }
+
+  async login(email: string, passwordString: string) {
+    const user = await this.userRepository.findByEmail(email);
+
+    if (!user) {
+      throw new Error("E-mail ou senha incorretos.");
+    }
+
+    const isValidPassword = await bcrypt.compare(passwordString, user.password);
+
+    if (!isValidPassword) {
+      throw new Error("E-mail ou senha incorretos.");
+    }
+
+    return user;
+  }
 }
