@@ -16,6 +16,7 @@ model User {
   
   reviews   Review[]
   userBooks UserBook[]
+  likes     Like[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -44,7 +45,7 @@ model Review {
   bookId    String
   user      User     @relation(fields: [userId], references: [id])
   book      Book     @relation(fields: [bookId], references: [id])
-  
+  likes     Like[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -63,4 +64,17 @@ model UserBook {
 
   
   @@unique([userId, bookId])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String
+  reviewId  String
+
+  user      User     @relation(fields: [userId], references: [id])
+  review    Review   @relation(fields: [reviewId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, reviewId])
 }

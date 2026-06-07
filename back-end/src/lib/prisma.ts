@@ -7,7 +7,6 @@ let prismaInstance: Any;
 if (process.env.DATABASE_URL) {
 	prismaInstance = new PrismaClient();
 } else {
-	// Mock simples em memória para desenvolvimento sem banco configurado
 	const users: Any[] = [];
 	const books: Any[] = [];
 	const userBooks: Any[] = [];

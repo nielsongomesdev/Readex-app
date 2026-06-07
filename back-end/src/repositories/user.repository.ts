@@ -2,7 +2,6 @@ import { prisma } from '../lib/prisma.js'
 import { Prisma } from '@prisma/client'
 
 export class UserRepository {
-  // Fallback em memória caso chamadas ao Prisma falhem
   private static _users: any[] = [];
   private static _userBooks: any[] = [];
   private static _reviews: any[] = [];
