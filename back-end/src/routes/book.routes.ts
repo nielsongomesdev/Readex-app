@@ -6,4 +6,5 @@ export async function bookRoutes(app: FastifyInstance) {
 
   app.post('/books', bookController.create)
   app.get('/books', bookController.list)
+  app.get('/books/search', bookController.search)
 }

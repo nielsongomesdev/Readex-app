@@ -22,4 +22,40 @@ export class BookRepository {
       return (BookRepository as any)._books || [];
     }
   }
+
+  async search(q?: string, limit = 20, offset = 0) {
+    const where = q
+      ? {
+          OR: [
+            { title: { contains: q, mode: 'insensitive' } },
+            { author: { contains: q, mode: 'insensitive' } },
+            { description: { contains: q, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+
+    try {
+      const [total, items] = await Promise.all([
+        prisma.book.count({ where }),
+        prisma.book.findMany({ where, take: limit, skip: offset, orderBy: { createdAt: 'desc' } }),
+      ]);
+
+      return { items, total };
+    } catch (err) {
+      const items = (BookRepository as any)._books || [];
+      const filtered = q
+        ? items.filter((b: any) => {
+            const lower = q.toLowerCase();
+            return (
+              (b.title || '').toLowerCase().includes(lower) ||
+              (b.author || '').toLowerCase().includes(lower) ||
+              (b.description || '').toLowerCase().includes(lower)
+            );
+          })
+        : items;
+
+      const paged = filtered.slice(offset, offset + limit);
+      return { items: paged, total: filtered.length };
+    }
+  }
 }
