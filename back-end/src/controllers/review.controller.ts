@@ -1,12 +1,11 @@
 import { type FastifyReply, type FastifyRequest } from "fastify";
-import { createReview, getAllReviews } from "../services/review.service.js";
+import { createReview, getAllReviews, toggleLike } from "../services/review.service.js";
 
 export async function addReviewController(request: FastifyRequest, reply: FastifyReply) {
-  // Tipamos o body explicitamente
   const body = request.body as { bookId: string; rating: number; comment?: string };
   const user = request.user as { sub: string };
   
-  // Tratamos o comment aqui para garantir que seja string ou null
+  
   const commentValue = body.comment ?? null;
 
   const review = await createReview({
@@ -22,4 +21,12 @@ export async function addReviewController(request: FastifyRequest, reply: Fastif
 export async function listReviewsController(request: FastifyRequest, reply: FastifyReply) {
   const reviews = await getAllReviews();
   return reply.status(200).send(reviews);
+}
+
+export async function toggleLikeController(request: FastifyRequest, reply: FastifyReply) {
+  const params = request.params as { id: string };
+  const user = request.user as { sub: string };
+
+  const result = await toggleLike(params.id, user.sub);
+  return reply.status(200).send(result);
 }

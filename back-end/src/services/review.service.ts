@@ -1,6 +1,4 @@
 import { prisma } from "../lib/prisma.js";
-
-// Definimos exatamente o que a função espera
 interface CreateReviewDTO {
   userId: string;
   bookId: string;
@@ -27,4 +25,16 @@ export async function getAllReviews() {
     },
     orderBy: { createdAt: "desc" },
   });
+}
+
+export async function toggleLike(reviewId: string, userId: string) {
+  const existing = await prisma.like.findFirst({ where: { reviewId, userId } });
+
+  if (existing) {
+    await prisma.like.delete({ where: { id: existing.id } });
+    return { liked: false };
+  }
+
+  await prisma.like.create({ data: { reviewId, userId } });
+  return { liked: true };
 }

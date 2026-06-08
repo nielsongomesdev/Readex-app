@@ -7,7 +7,6 @@ let prismaInstance: Any;
 if (process.env.DATABASE_URL) {
 	prismaInstance = new PrismaClient();
 } else {
-	
 	const users: Any[] = [];
 	const books: Any[] = [];
 	const userBooks: Any[] = [];
@@ -104,4 +103,3 @@ if (process.env.DATABASE_URL) {
 }
 
 export const prisma = prismaInstance as unknown as PrismaClient;
-
