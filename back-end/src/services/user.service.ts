@@ -49,7 +49,8 @@ export class UserService {
   async login(email: string, passwordString: string) {
     const user = await this.userRepository.findByEmail(email);
 
-    if (!user) {
+    // Proteção contra TS2532: garante que user existe e tem a propriedade password
+    if (!user || !user.password) {
       throw new Error("E-mail ou senha incorretos.");
     }
 
@@ -78,21 +79,33 @@ export class UserService {
     
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     const monthlyRead = Array.from({ length: daysInMonth }, (_, i) => ({ day: i + 1, count: 0 }));
+    
     for (const r of reviews) {
       const d = new Date(r.createdAt).getDate();
-      monthlyRead[d - 1].count += 1;
+      
+      // Criamos uma variável para o TS saber que estamos falando da mesma referência
+      const targetDay = monthlyRead[d - 1]; 
+      
+      if (targetDay) {
+        targetDay.count += 1;
+      }
     }
     
     
     const userBooks = await this.userRepository.findUserBooksWithBook(userId);
     const assumedTotalPages = 200;
+    
     const progressList = userBooks.map((ub) => {
-      const percent = Math.min(100, Math.round((ub.pagesRead / assumedTotalPages) * 100));
+      // Proteção: caso pagesRead venha undefined do banco, assume 0
+      const pagesRead = ub.pagesRead || 0; 
+      const percent = Math.min(100, Math.round((pagesRead / assumedTotalPages) * 100));
+      
       return {
-        bookId: ub.book.id,
-        title: ub.book.title,
-        author: ub.book.author,
-        pagesRead: ub.pagesRead,
+        // Optional Chaining (?.) protege contra nulos se a relação com 'book' falhar
+        bookId: ub.book?.id || "id-desconhecido",
+        title: ub.book?.title || "Título Indisponível",
+        author: ub.book?.author || "Autor Desconhecido",
+        pagesRead,
         percent,
       };
     });
