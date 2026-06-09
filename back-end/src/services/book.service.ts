@@ -17,7 +17,10 @@ export class BookService {
     return await this.bookRepository.findAll()
   }
 
-  async searchBooks(q?: string, limit = 20, offset = 0) {
-    return await this.bookRepository.search(q, limit, offset)
+  async searchBooks(query: string) {
+    if (!query) {
+      return []
+    }
+    return await this.bookRepository.search(query)
   }
 }

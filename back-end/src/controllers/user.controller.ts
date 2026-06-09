@@ -13,7 +13,8 @@ export class UserController {
     try {
       const data = request.body as Prisma.UserCreateInput;
       const user = await this.userService.createUser(data);
-      return reply.status(201).send(user);
+      const { password, ...userWithoutPassword } = user as any;
+      return reply.status(201).send(userWithoutPassword);
     } catch (error: any) {
       return reply.status(400).send({ error: error.message });
     }
@@ -22,7 +23,11 @@ export class UserController {
   list = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const users = await this.userService.getAllUsers();
-      return reply.status(200).send(users);
+      const usersWithoutPassword = users.map((user: any) => {
+        const { password, ...u } = user;
+        return u;
+      });
+      return reply.status(200).send(usersWithoutPassword);
     } catch (error) {
       return reply.status(500).send({ error: "Erro interno do servidor" });
     }

@@ -23,39 +23,24 @@ export class BookRepository {
     }
   }
 
-  async search(q?: string, limit = 20, offset = 0) {
-    const where = q
-      ? {
-          OR: [
-            { title: { contains: q, mode: 'insensitive' } },
-            { author: { contains: q, mode: 'insensitive' } },
-            { description: { contains: q, mode: 'insensitive' } },
-          ],
-        }
-      : {};
-
+  async search(query: string) {
     try {
-      const [total, items] = await Promise.all([
-        prisma.book.count({ where }),
-        prisma.book.findMany({ where, take: limit, skip: offset, orderBy: { createdAt: 'desc' } }),
-      ]);
-
-      return { items, total };
+      const books = await prisma.book.findMany({
+        where: {
+          OR: [
+            { title: { contains: query, mode: 'insensitive' } },
+            { author: { contains: query, mode: 'insensitive' } },
+          ],
+        },
+      });
+      return books;
     } catch (err) {
       const items = (BookRepository as any)._books || [];
-      const filtered = q
-        ? items.filter((b: any) => {
-            const lower = q.toLowerCase();
-            return (
-              (b.title || '').toLowerCase().includes(lower) ||
-              (b.author || '').toLowerCase().includes(lower) ||
-              (b.description || '').toLowerCase().includes(lower)
-            );
-          })
-        : items;
-
-      const paged = filtered.slice(offset, offset + limit);
-      return { items: paged, total: filtered.length };
+      const lower = query.toLowerCase();
+      return items.filter((b: any) =>
+        (b.title || '').toLowerCase().includes(lower) ||
+        (b.author || '').toLowerCase().includes(lower)
+      );
     }
   }
 }

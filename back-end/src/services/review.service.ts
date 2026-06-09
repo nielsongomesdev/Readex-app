@@ -22,6 +22,7 @@ export async function getAllReviews() {
     include: {
       user: { select: { name: true } },
       book: { select: { title: true } },
+      likes: true,
     },
     orderBy: { createdAt: "desc" },
   });

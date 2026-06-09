@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import { BookService } from '../services/boock.service.js'
+import { BookService } from '../services/book.service.js'
 import { Prisma } from '@prisma/client'
 
 export class BookController {
@@ -30,18 +30,9 @@ export class BookController {
 
   search = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const query = request.query as { q?: string; limit?: string; offset?: string }
-
-      const q = query.q
-      let limit = parseInt(query.limit ?? '20', 10)
-      let offset = parseInt(query.offset ?? '0', 10)
-
-      if (Number.isNaN(limit) || limit <= 0) limit = 20
-      if (limit > 100) limit = 100
-      if (Number.isNaN(offset) || offset < 0) offset = 0
-
-      const result = await this.bookService.searchBooks(q, limit, offset)
-      return reply.status(200).send({ items: result.items, total: result.total, limit, offset })
+      const { q } = request.query as { q?: string }
+      const books = await this.bookService.searchBooks(q || '')
+      return reply.status(200).send(books)
     } catch (error) {
       return reply.status(500).send({ error: 'Erro interno do servidor' })
     }
