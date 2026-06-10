@@ -9,13 +9,13 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 
 const navLinks = [
-  { name: 'Início', path: '/app/home', icon: 'home' },
-  { name: 'Minha Estante', path: '/app/bookshelf', icon: 'bookshelf' },
-  { name: 'Explorar', path: '/app/explore', icon: 'explore' },
-  { name: 'Comunidade', path: '/app/community', icon: 'community' },
-  { name: 'Progresso', path: '/app/progress', icon: 'progress' },
-  { name: 'Perfil', path: '/app/profile', icon: 'profile' },
-  { name: 'Configurações', path: '/app/settings', icon: 'settings' }
+  { name: 'Início', path: '/dashboard', icon: 'home' },
+  { name: 'Minha Estante', path: '/estante', icon: 'bookshelf' },
+  { name: 'Explorar', path: '/explorar', icon: 'explore' },
+  { name: 'Comunidade', path: '/comunidade', icon: 'community' },
+  { name: 'Progresso', path: '/progresso', icon: 'progress' },
+  { name: 'Perfil', path: '/perfil', icon: 'profile' },
+  { name: 'Configurações', path: '/configuracoes', icon: 'settings' }
 ]
 
 const handleLinkClick = () => {

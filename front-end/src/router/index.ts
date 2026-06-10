@@ -8,12 +8,12 @@ import ResetPasswordView from '../views/ResetPasswordView.vue'
 
 // Logged-in components & layouts
 import AppLayout from '../layouts/AppLayout.vue'
-import HomeView from '../views/HomeView.vue'
-import BookshelfView from '../views/BookshelfView.vue'
+import DashboardView from '../views/DashboardView.vue'
+import EstanteView from '../views/EstanteView.vue'
 import ExploreView from '../views/ExploreView.vue'
 import CommunityView from '../views/CommunityView.vue'
-import ProgressView from '../views/ProgressView.vue'
-import ProfileView from '../views/ProfileView.vue'
+import ProgressoView from '../views/ProgressoView.vue'
+import PerfilView from '../views/PerfilView.vue'
 import SettingsView from '../views/SettingsView.vue'
 
 const router = createRouter({
@@ -49,47 +49,43 @@ const router = createRouter({
       name: 'reset-password',
       component: ResetPasswordView,
     },
-    // Logged-in pages routes (nested under AppLayout)
+    // Logged-in pages routes (nested under AppLayout at root level)
     {
-      path: '/app',
+      path: '/',
       component: AppLayout,
       children: [
         {
-          path: '',
-          redirect: '/app/home',
+          path: 'dashboard',
+          name: 'dashboard',
+          component: DashboardView,
         },
         {
-          path: 'home',
-          name: 'home',
-          component: HomeView,
+          path: 'estante',
+          name: 'estante',
+          component: EstanteView,
         },
         {
-          path: 'bookshelf',
-          name: 'bookshelf',
-          component: BookshelfView,
-        },
-        {
-          path: 'explore',
+          path: 'explorar',
           name: 'explore',
           component: ExploreView,
         },
         {
-          path: 'community',
+          path: 'comunidade',
           name: 'community',
           component: CommunityView,
         },
         {
-          path: 'progress',
+          path: 'progresso',
           name: 'progress',
-          component: ProgressView,
+          component: ProgressoView,
         },
         {
-          path: 'profile',
+          path: 'perfil',
           name: 'profile',
-          component: ProfileView,
+          component: PerfilView,
         },
         {
-          path: 'settings',
+          path: 'configuracoes',
           name: 'settings',
           component: SettingsView,
         },

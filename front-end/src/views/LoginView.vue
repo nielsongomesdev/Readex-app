@@ -14,8 +14,8 @@ const handleLogin = () => {
     password: password.value,
     rememberMe: rememberMe.value
   })
-  // Mock login success, redirect to dashboard /app
-  router.push('/app')
+  // Mock login success, redirect to dashboard /dashboard
+  router.push('/dashboard')
 }
 
 const togglePasswordVisibility = () => {
