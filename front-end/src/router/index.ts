@@ -11,7 +11,7 @@ import AppLayout from '../layouts/AppLayout.vue'
 import DashboardView from '../views/DashboardView.vue'
 import EstanteView from '../views/EstanteView.vue'
 import ExploreView from '../views/ExploreView.vue'
-import CommunityView from '../views/CommunityView.vue'
+import ComunidadeView from '../views/ComunidadeView.vue'
 import ProgressoView from '../views/ProgressoView.vue'
 import PerfilView from '../views/PerfilView.vue'
 import SettingsView from '../views/SettingsView.vue'
@@ -72,7 +72,7 @@ const router = createRouter({
         {
           path: 'comunidade',
           name: 'community',
-          component: CommunityView,
+          component: ComunidadeView,
         },
         {
           path: 'progresso',
