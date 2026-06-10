@@ -6,6 +6,16 @@ import VerifyEmailView from '../views/VerifyEmailView.vue'
 import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
 
+// Logged-in components & layouts
+import AppLayout from '../layouts/AppLayout.vue'
+import HomeView from '../views/HomeView.vue'
+import BookshelfView from '../views/BookshelfView.vue'
+import ExploreView from '../views/ExploreView.vue'
+import CommunityView from '../views/CommunityView.vue'
+import ProgressView from '../views/ProgressView.vue'
+import ProfileView from '../views/ProfileView.vue'
+import SettingsView from '../views/SettingsView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -38,6 +48,52 @@ const router = createRouter({
       path: '/reset-password',
       name: 'reset-password',
       component: ResetPasswordView,
+    },
+    // Logged-in pages routes (nested under AppLayout)
+    {
+      path: '/app',
+      component: AppLayout,
+      children: [
+        {
+          path: '',
+          redirect: '/app/home',
+        },
+        {
+          path: 'home',
+          name: 'home',
+          component: HomeView,
+        },
+        {
+          path: 'bookshelf',
+          name: 'bookshelf',
+          component: BookshelfView,
+        },
+        {
+          path: 'explore',
+          name: 'explore',
+          component: ExploreView,
+        },
+        {
+          path: 'community',
+          name: 'community',
+          component: CommunityView,
+        },
+        {
+          path: 'progress',
+          name: 'progress',
+          component: ProgressView,
+        },
+        {
+          path: 'profile',
+          name: 'profile',
+          component: ProfileView,
+        },
+        {
+          path: 'settings',
+          name: 'settings',
+          component: SettingsView,
+        },
+      ],
     },
   ],
 })
