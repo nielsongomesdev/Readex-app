@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { name } from '../../store/userStore'
+
 const props = defineProps({
   isMobile: {
     type: Boolean,
@@ -8,15 +10,16 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-const navLinks = [
+const mainLinks = [
   { name: 'Início', path: '/dashboard', icon: 'home' },
   { name: 'Minha Estante', path: '/estante', icon: 'bookshelf' },
   { name: 'Explorar', path: '/explorar', icon: 'explore' },
   { name: 'Comunidade', path: '/comunidade', icon: 'community' },
   { name: 'Progresso', path: '/progresso', icon: 'progress' },
-  { name: 'Perfil', path: '/perfil', icon: 'profile' },
-  { name: 'Configurações', path: '/configuracoes', icon: 'settings' }
+  { name: 'Perfil', path: '/perfil', icon: 'profile' }
 ]
+
+const settingsLink = { name: 'Configurações', path: '/configuracoes', icon: 'settings' }
 
 const handleLinkClick = () => {
   if (props.isMobile) {
@@ -27,22 +30,22 @@ const handleLinkClick = () => {
 
 <template>
   <aside 
-    class="h-screen bg-[#13213C] text-white flex flex-col justify-between select-none"
-    :class="[isMobile ? 'w-64 shadow-2xl' : 'w-64 fixed left-0 top-0 border-r border-[#B06E02]/10']"
+    class="h-screen bg-[#FFFDF3] text-[#13213C] flex flex-col justify-between select-none"
+    :class="[isMobile ? 'w-64 shadow-2xl z-50' : 'w-64 fixed left-0 top-0 border-r border-[#B06E02]/10']"
   >
     <!-- Top Brand & Close Action (Mobile) -->
     <div>
-      <div class="h-16 px-6 flex items-center justify-between border-b border-white/5">
+      <div class="h-16 px-6 flex items-center justify-between border-b border-[#B06E02]/10">
         <!-- Brand Logo Badge -->
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center p-1.5 shadow-sm">
+          <div class="w-8 h-8 bg-white border border-[#B06E02]/10 rounded-lg flex items-center justify-center p-1.5 shadow-sm">
             <img 
               src="../../assets/images/mascote-3.png" 
               alt="Mascote Readex lendo" 
               class="w-full h-full object-contain"
             />
           </div>
-          <span class="text-lg font-bold text-[#FFF5CD] tracking-wide">Readex</span>
+          <span class="text-lg font-bold text-[#B06E02] tracking-wide">Readex</span>
         </div>
 
         <!-- Close Button (Mobile Only) -->
@@ -50,7 +53,7 @@ const handleLinkClick = () => {
           v-if="isMobile" 
           @click="emit('close')" 
           type="button" 
-          class="text-gray-400 hover:text-white focus:outline-none p-1.5 hover:bg-white/5 rounded-lg transition"
+          class="text-gray-400 hover:text-[#B06E02] focus:outline-none p-1.5 hover:bg-gray-100 rounded-lg transition"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -60,16 +63,17 @@ const handleLinkClick = () => {
 
       <!-- Navigation Links -->
       <nav class="mt-6 px-4 space-y-1">
+        <!-- Main Links Group -->
         <router-link 
-          v-for="link in navLinks" 
+          v-for="link in mainLinks" 
           :key="link.name" 
           :to="link.path"
           @click="handleLinkClick"
-          class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 transition duration-150 group"
-          active-class="bg-[#B06E02] text-white font-semibold hover:bg-[#B06E02] shadow-sm"
+          class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-[#806602]/80 hover:text-[#B06E02] hover:bg-[#FFF5CD]/50 transition duration-150 group"
+          active-class="bg-[#13213C] text-[#FFF5CD] font-semibold hover:bg-[#13213C] shadow-sm"
         >
           <!-- Custom Navigation SVG Icons -->
-          <span class="text-white/60 group-hover:text-white group-[.router-link-active]:text-white">
+          <span class="text-[#806602]/60 group-hover:text-[#B06E02] group-[.router-link-active]:text-[#FFF5CD]">
             <!-- Início (Home) Icon -->
             <svg v-if="link.icon === 'home'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -100,28 +104,45 @@ const handleLinkClick = () => {
             <svg v-else-if="link.icon === 'profile'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
+          </span>
+          {{ link.name }}
+        </router-link>
 
-            <!-- Configurações (Settings) Icon -->
-            <svg v-else-if="link.icon === 'settings'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Separator Divider Line -->
+        <div class="h-px bg-[#B06E02]/10 my-4"></div>
+
+        <!-- Settings Link -->
+        <router-link 
+          :to="settingsLink.path"
+          @click="handleLinkClick"
+          class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-[#806602]/80 hover:text-[#B06E02] hover:bg-[#FFF5CD]/50 transition duration-150 group"
+          active-class="bg-[#13213C] text-[#FFF5CD] font-semibold hover:bg-[#13213C] shadow-sm"
+        >
+          <span class="text-[#806602]/60 group-hover:text-[#B06E02] group-[.router-link-active]:text-[#FFF5CD]">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </span>
-          {{ link.name }}
+          {{ settingsLink.name }}
         </router-link>
       </nav>
     </div>
 
-    <!-- Footer Profile Badge -->
-    <div class="p-4 border-t border-white/5 bg-white/[0.02] flex items-center gap-3">
-      <!-- Profile Initials / Avatar Circle -->
-      <div class="w-10 h-10 rounded-full bg-[#B06E02] flex items-center justify-center font-bold text-white shadow-sm flex-shrink-0 text-sm tracking-wider uppercase select-none">
-        AR
-      </div>
-      <!-- User Info -->
-      <div class="min-w-0 flex-1">
-        <h4 class="text-sm font-semibold text-white truncate leading-tight">Anderson Ramalho</h4>
-        <span class="text-xs text-white/50 truncate block mt-0.5 leading-none">teste@teste.com.br</span>
+    <!-- Footer Profile Badge (White Card style matching Figma) -->
+    <div class="p-4">
+      <div class="bg-white border border-[#B06E02]/10 rounded-2xl p-3 flex items-center gap-3.5 shadow-[0_4px_16px_rgba(176,110,2,0.03)]">
+        <!-- Profile Image -->
+        <img 
+          src="../../assets/images/anderson_avatar.png" 
+          alt="Anderson"
+          class="w-10 h-10 rounded-full object-cover border border-[#B06E02]/10 shadow-xs"
+        />
+        <!-- User Info -->
+        <div class="min-w-0 flex-1">
+          <h4 class="text-sm font-bold text-[#13213C] truncate leading-tight">{{ name }}</h4>
+          <span class="text-[11px] text-gray-400 font-semibold block mt-0.5 leading-none">Leitor</span>
+        </div>
       </div>
     </div>
   </aside>

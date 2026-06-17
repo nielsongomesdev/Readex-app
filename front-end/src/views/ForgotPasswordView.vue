@@ -13,13 +13,13 @@ const handleForgotPassword = () => {
 </script>
 
 <template>
-  <div class="min-h-screen w-full flex flex-col md:flex-row font-poppins bg-white relative">
+  <div class="min-h-screen w-full flex flex-col md:flex-row font-poppins bg-[#FEF6D0] md:bg-white relative">
     
-    <!-- Left/Top Section: Brand Info & Mascot (Beige-Yellow Background) -->
-    <div class="w-full md:w-1/2 bg-[#FEF6D0] flex flex-col items-center justify-center p-8 md:p-16 text-center select-none py-12 md:py-0 min-h-[40vh] md:min-h-screen">
+    <!-- ===== Left Section: Brand (Desktop only) ===== -->
+    <div class="hidden md:flex w-1/2 bg-[#FEF6D0] flex-col items-center justify-center p-16 text-center select-none min-h-screen relative">
       
-      <!-- Readex Logo in Top-Left -->
-      <div class="md:absolute top-6 left-6 md:top-8 md:left-12 flex items-center gap-3 mb-8 md:mb-0">
+      <!-- Readex Logo (Top-Left) -->
+      <div class="absolute top-8 left-12 flex items-center gap-3">
         <div class="w-10 h-10 bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-center p-2">
           <img 
             src="../assets/images/mascote-3.png" 
@@ -30,8 +30,8 @@ const handleForgotPassword = () => {
         <span class="text-xl font-bold text-[#806602] tracking-wide">Readex</span>
       </div>
 
-      <!-- Mascot Wrapper -->
-      <div class="w-full max-w-[160px] sm:max-w-[200px] md:max-w-[280px] flex justify-center">
+      <!-- Mascot -->
+      <div class="w-full max-w-[280px] flex justify-center">
         <img 
           src="../assets/images/mascote-4.png" 
           alt="Mascote Readex correndo" 
@@ -40,7 +40,7 @@ const handleForgotPassword = () => {
       </div>
       
       <!-- Welcome Texts -->
-      <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-[#806602] mt-6 mb-2 leading-tight">
+      <h2 class="text-3xl md:text-4xl font-bold text-[#806602] mt-6 mb-2 leading-tight">
         Recuperar acesso
       </h2>
       <p class="text-sm md:text-base text-[#806602]/80 max-w-xs leading-relaxed">
@@ -48,12 +48,23 @@ const handleForgotPassword = () => {
       </p>
     </div>
 
-    <!-- Right/Bottom Section: Forgot Password Form (White Background) -->
-    <div class="w-full md:w-1/2 bg-white flex items-center justify-center p-6 sm:p-12 md:p-16 py-12 md:py-0">
+    <!-- ===== Mobile Header: Mascot (Mobile only) ===== -->
+    <div class="flex md:hidden flex-col items-center pt-10 pb-2 px-6">
+      <div class="w-20 h-20 flex items-center justify-center">
+        <img 
+          src="../assets/images/mascote-4.png" 
+          alt="Mascote Readex correndo" 
+          class="w-full h-full object-contain mix-blend-multiply"
+        />
+      </div>
+    </div>
+
+    <!-- ===== Right/Bottom Section: Forgot Password Form ===== -->
+    <div class="w-full md:w-1/2 md:bg-white flex items-start md:items-center justify-center px-6 pb-8 md:p-16">
       <div class="w-full max-w-md flex flex-col">
         
-        <!-- Small Mascot Top Icon -->
-        <div class="flex justify-center mb-6">
+        <!-- Small Mascot Top Icon (Desktop only) -->
+        <div class="hidden md:flex justify-center mb-6">
           <img 
             src="../assets/images/mascote-4.png" 
             alt="Mascote miniatura" 
@@ -61,7 +72,7 @@ const handleForgotPassword = () => {
           />
         </div>
 
-        <!-- Form Header (Centered) -->
+        <!-- Form Header -->
         <div class="mb-8 text-center">
           <h1 class="text-2xl sm:text-3xl font-bold text-[#806602] mb-2">
             Esqueceu a senha?
@@ -91,7 +102,7 @@ const handleForgotPassword = () => {
                 v-model="email"
                 placeholder="teste@teste.com.br" 
                 required
-                class="w-full border border-[#B06E02]/40 rounded-xl pl-12 pr-4 py-3.5 focus:border-[#806602] focus:ring-1 focus:ring-[#806602] focus:outline-none transition duration-200 text-sm font-medium text-[#13213C] placeholder-gray-400/80" 
+                class="w-full border border-[#B06E02]/40 bg-white rounded-xl pl-12 pr-4 py-3.5 focus:border-[#806602] focus:ring-1 focus:ring-[#806602] focus:outline-none transition duration-200 text-sm font-medium text-[#13213C] placeholder-gray-400/80" 
               />
             </div>
           </div>
@@ -105,12 +116,9 @@ const handleForgotPassword = () => {
           </button>
         </form>
 
-        <!-- Footer Text / Back to Login -->
+        <!-- Footer / Back to Login -->
         <div class="mt-8 text-center">
-          <router-link to="/login" class="inline-flex items-center gap-2 text-sm font-bold text-[#806602] hover:underline transition duration-150">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
+          <router-link to="/login" class="text-sm font-bold text-[#806602] hover:underline transition duration-150">
             Voltar ao Login
           </router-link>
         </div>

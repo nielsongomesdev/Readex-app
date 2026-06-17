@@ -1,155 +1,266 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const nowReading = ref({
-  title: 'O Hobbit',
-  author: 'J.R.R. Tolkien',
-  pagesRead: 195,
-  totalPages: 300,
-  progress: 65,
-  coverBg: 'bg-gradient-to-tr from-[#B06E02] to-[#FFF0CC]'
+  title: 'Atelier of Witch Hat',
+  author: 'Kamome Shirahama',
+  pagesRead: 456,
+  totalPages: 672,
+  progress: 68
 })
 
 const shortcuts = [
-  { name: 'Adicionar Livro', icon: 'plus' },
-  { name: 'Nova Resenha', icon: 'pencil' },
-  { name: 'Metas de Leitura', icon: 'trophy' },
-  { name: 'Minhas Anotações', icon: 'notebook' }
+  { name: '+ Livro', icon: 'plus' },
+  { name: 'Estante', icon: 'bookshelf' },
+  { name: 'Feed Social', icon: 'community' },
+  { name: 'Progresso', icon: 'progress' }
 ]
 
-const suggestions = [
-  { id: 1, title: 'Cem Anos de Solidão', author: 'Gabriel García Márquez', pages: 448, genre: 'Realismo Mágico' },
-  { id: 2, title: '1984', author: 'George Orwell', pages: 328, genre: 'Distopia' },
-  { id: 3, title: 'O Pequeno Príncipe', author: 'Antoine de Saint-Exupéry', pages: 96, genre: 'Fábula' }
+const suggestion = ref({
+  title: 'Duna',
+  author: 'Frank Herbert',
+  genre: 'Ficção Científica'
+})
+
+const communityReviews = [
+  { name: 'Carlos M.', action: 'Está lendo 1984', quote: 'O Grande Irmão me perturbou profundamente' },
+  { name: 'Ana L.', action: 'Terminou Duna', quote: 'Construção de mundo épica e envolvente!' }
 ]
+
+const navigateShortcut = (icon: string) => {
+  if (icon === 'bookshelf') {
+    router.push('/estante')
+  } else if (icon === 'community') {
+    router.push('/comunidade')
+  } else if (icon === 'progress') {
+    router.push('/progresso')
+  }
+}
 </script>
 
 <template>
   <div class="space-y-6 select-none font-poppins text-[#13213C]">
     
-    <!-- Greeting Header -->
-    <div class="flex flex-col gap-1.5">
-      <h1 class="text-2xl md:text-3xl font-bold text-[#806602]">Bom dia, Anderson! 👋</h1>
-      <p class="text-sm text-gray-500 font-medium">Pronto para a sua leitura diária hoje?</p>
+    <!-- ================= DESKTOP HEADER ROW (Desktop only) ================= -->
+    <div class="hidden lg:flex items-center justify-between">
+      <div class="flex flex-col gap-1">
+        <h1 class="text-3xl font-bold text-[#B06E02]">Bom dia, Anderson!</h1>
+        <p class="text-xs text-gray-400 font-semibold">Domingo, 3 de maio de 2026</p>
+      </div>
+      <!-- Right: Search and Notifications -->
+      <div class="flex items-center gap-3">
+        <!-- Notification -->
+        <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        </button>
+        <!-- Search -->
+        <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <!-- Main Content layout Grid -->
+    <!-- ================= MOBILE GREETING CARD (Mobile only) ================= -->
+    <div class="flex lg:hidden items-center gap-5 py-2 px-1">
+      <div class="w-24 h-24 flex-shrink-0">
+        <img 
+          src="../assets/images/mascote-1.png" 
+          alt="Mascote Readex feliz" 
+          class="w-full h-full object-contain mix-blend-multiply"
+        />
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-[#E09A1C]">Bom dia, Anderson!</h1>
+        <p class="text-sm text-gray-400 font-medium mt-1">Domingo, 3 de maio de 2026</p>
+      </div>
+    </div>
+
+    <!-- ================= MAIN LAYOUT GRID ================= -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- Left columns: Now Reading & Shortcuts -->
+      <!-- LEFT COLUMN: Now Reading, Shortcuts, Community (Desktop) / Stacked elements (Mobile) -->
       <div class="lg:col-span-2 space-y-6">
         
-        <!-- Now Reading (Lendo Agora) Card -->
-        <div class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-[0_4px_16px_rgba(176,110,2,0.03)] space-y-4">
-          <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Lendo agora</h2>
+        <!-- 1. Lendo agora -->
+        <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
+          <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Lendo agora</h2>
           
-          <div class="flex flex-col sm:flex-row items-center gap-6">
-            <!-- Mock Cover -->
-            <div 
-              class="w-24 h-36 rounded-xl flex-shrink-0 flex items-center justify-center font-bold text-white shadow-md text-center p-3 select-none text-xs"
-              :class="nowReading.coverBg"
-            >
-              {{ nowReading.title }}
-            </div>
+          <div class="flex gap-5">
+            <!-- Book Cover -->
+            <img 
+              src="../assets/images/atelier_cover.png" 
+              alt="Atelier of Witch Hat"
+              class="w-24 h-36 object-cover rounded-xl shadow-md border border-[#B06E02]/10 flex-shrink-0"
+            />
             
             <!-- Book Details & Progress -->
-            <div class="flex-1 w-full space-y-3">
+            <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-base font-bold text-[#806602] leading-snug">{{ nowReading.title }}</h3>
+                  <p class="text-xs text-gray-400 font-semibold mt-0.5">{{ nowReading.author }}</p>
+                </div>
+                <span class="text-sm font-bold text-[#806602] flex-shrink-0 ml-2">{{ nowReading.progress }}%</span>
+              </div>
+
               <div>
-                <h3 class="text-lg font-bold text-[#13213C]">{{ nowReading.title }}</h3>
-                <p class="text-sm text-gray-400 font-medium">{{ nowReading.author }}</p>
+                <span class="text-[11px] font-bold text-gray-400 block mb-1.5">{{ nowReading.pagesRead }} de {{ nowReading.totalPages }} páginas</span>
+                <!-- Progress bar -->
+                <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
+                  <div class="bg-[#FCAE1E] h-2 rounded-full" :style="{ width: nowReading.progress + '%' }"></div>
+                </div>
               </div>
 
-              <!-- Pages numbers and percent -->
-              <div class="flex items-center justify-between text-xs font-bold text-[#806602]">
-                <span>{{ nowReading.pagesRead }} de {{ nowReading.totalPages }} páginas</span>
-                <span>{{ nowReading.progress }}% concluído</span>
-              </div>
-
-              <!-- Progress bar -->
-              <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                <div 
-                  class="bg-[#B06E02] h-2 rounded-full transition-all duration-500"
-                  :style="{ width: nowReading.progress + '%' }"
-                ></div>
-              </div>
-
-              <!-- Action button inside Lendo Agora -->
-              <div class="pt-2">
-                <button class="bg-[#13213C] hover:bg-[#13213C]/95 text-white font-semibold text-xs px-4 py-2 rounded-xl transition cursor-pointer">
-                  Atualizar Progresso
-                </button>
-              </div>
+              <!-- Action button (Desktop only, hidden on mobile) -->
+              <router-link to="/livro/2" class="hidden lg:block w-full border border-[#B06E02]/40 text-[#B06E02] hover:bg-[#FFF5CD]/30 text-xs font-bold py-2.5 rounded-xl transition cursor-pointer text-center mt-3">
+                Acompanhar progresso
+              </router-link>
             </div>
           </div>
         </div>
 
-        <!-- Quick Shortcuts Grid -->
-        <div class="space-y-4">
-          <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Atalhos rápidos</h2>
+        <!-- 2. Meta do Mês (Mobile only, rendered stacked in this section) -->
+        <div class="block lg:hidden bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-3.5">
+          <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Meta do mês</h2>
+          <div class="flex justify-between items-center text-[#806602]">
+            <div>
+              <span class="text-base font-bold">5 de 8</span>
+              <span class="text-sm font-medium ml-1.5">livros lidos</span>
+            </div>
+            <span class="text-sm font-bold">63%</span>
+          </div>
+          <!-- Progress bar -->
+          <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
+            <div class="bg-[#FCAE1E] h-2 rounded-full" style="width: 63%"></div>
+          </div>
+        </div>
+
+        <!-- 3. Acompanhar Progresso Button (Mobile only) -->
+        <router-link to="/livro/2" class="block lg:hidden w-full bg-white border border-[#E09A1C]/60 text-[#E09A1C] hover:bg-[#FFF5CD]/20 text-xs font-bold py-3.5 rounded-xl transition cursor-pointer text-center">
+          Acompanhar progresso
+        </router-link>
+
+        <!-- 4. Atalhos rápidos -->
+        <div class="space-y-3">
+          <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Atalhos rápidos</h2>
           
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <!-- Desktop Version -->
+          <div class="hidden lg:grid grid-cols-4 gap-4">
             <button 
               v-for="item in shortcuts" 
               :key="item.name"
-              type="button"
-              class="bg-white border border-[#B06E02]/10 hover:border-[#B06E02]/30 p-4 rounded-2xl flex flex-col items-center justify-center text-center gap-3 hover:shadow-xs transition duration-200 cursor-pointer group"
+              @click="navigateShortcut(item.icon)"
+              class="bg-[#13213C] hover:bg-[#13213C]/95 text-white font-bold text-xs py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(19,33,60,0.1)] transition duration-150 cursor-pointer"
             >
-              <!-- Icon Container -->
-              <div class="w-10 h-10 rounded-xl bg-[#FFF8D6] text-[#B06E02] flex items-center justify-center transition duration-200 group-hover:scale-105">
-                <!-- Plus Icon -->
-                <svg v-if="item.icon === 'plus'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                <!-- Pencil Icon -->
-                <svg v-else-if="item.icon === 'pencil'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-                <!-- Trophy Icon -->
-                <svg v-else-if="item.icon === 'trophy'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 0H4m8 0h8m-8 0v13m-8 0h16" />
-                </svg>
-                <!-- Notebook Icon -->
-                <svg v-else-if="item.icon === 'notebook'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                </svg>
-              </div>
-              <!-- Text -->
-              <span class="text-xs font-bold text-[#13213C]">{{ item.name }}</span>
+              <svg v-if="item.icon === 'plus'" class="w-4 h-4 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+              </svg>
+              <svg v-else-if="item.icon === 'bookshelf'" class="w-4 h-4 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+              </svg>
+              <svg v-else-if="item.icon === 'community'" class="w-4 h-4 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <svg v-else-if="item.icon === 'progress'" class="w-4 h-4 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              {{ item.name }}
             </button>
+          </div>
+
+          <!-- Mobile version (Horizontal scroll list of pills, only plus icon for + Livro) -->
+          <div class="lg:hidden flex overflow-x-auto gap-3 pb-2 scrollbar-none select-none">
+            <button 
+              v-for="item in shortcuts" 
+              :key="item.name + '-mobile'"
+              @click="navigateShortcut(item.icon)"
+              class="bg-[#13213C] hover:bg-[#13213C]/95 text-white font-bold text-xs py-2.5 px-5 rounded-full flex items-center gap-2 flex-shrink-0 cursor-pointer"
+            >
+              <svg v-if="item.icon === 'plus'" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+              </svg>
+              {{ item.name }}
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. Da comunidade -->
+        <div class="space-y-3">
+          <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Da comunidade</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div 
+              v-for="review in communityReviews" 
+              :key="review.name"
+              class="bg-[#FFFBEA] border border-[#B06E02]/10 p-4 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex gap-3.5"
+            >
+              <div class="w-12 h-12 bg-[#13213C] rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white shadow-sm select-none">
+                {{ review.name.charAt(0) }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-bold text-[#13213C] truncate">{{ review.name }}</h4>
+                <p class="text-[11px] text-gray-400 font-semibold mt-0.5">{{ review.action }}</p>
+                <p class="text-[11px] italic text-gray-400 mt-2.5 font-medium leading-relaxed">
+                  "{{ review.quote }}"
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
       </div>
 
-      <!-- Right column: Suggestions -->
-      <div class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-[0_4px_16px_rgba(176,110,2,0.03)] space-y-4 flex flex-col justify-between">
-        <div>
-          <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Sugestões de leitura</h2>
-          
-          <div class="space-y-4">
-            <div 
-              v-for="book in suggestions" 
-              :key="book.id"
-              class="flex gap-4 p-2 hover:bg-gray-50 rounded-xl transition duration-150"
-            >
-              <!-- Mock Cover -->
-              <div class="w-12 h-18 bg-[#FFF8D6]/60 rounded-lg flex-shrink-0 flex items-center justify-center font-bold text-[#806602]/50 text-[10px] text-center p-1.5 shadow-xs border border-[#B06E02]/5">
-                Capa
-              </div>
-              <div class="flex-1 min-w-0 flex flex-col justify-center">
-                <h3 class="text-xs font-bold text-[#13213C] truncate">{{ book.title }}</h3>
-                <p class="text-[10px] text-gray-400 font-medium truncate mt-0.5">{{ book.author }}</p>
-                <span class="inline-block self-start text-[8px] font-bold text-[#806602] bg-[#FFF8D6] px-2 py-0.5 rounded-full mt-1.5">
-                  {{ book.genre }}
-                </span>
-              </div>
+      <!-- RIGHT COLUMN: Monthly Goal & Reading Suggestions (Desktop only, hidden/repositioned on mobile) -->
+      <div class="hidden lg:block space-y-6">
+        
+        <!-- 1. Meta do mês -->
+        <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest mb-2">Meta do mês</h2>
+              <span class="text-xl font-bold text-[#806602]">5 de 8</span>
+              <span class="text-xs text-gray-400 font-semibold block mt-0.5">livros lidos</span>
             </div>
+            <span class="text-sm font-bold text-[#806602] mt-6">63%</span>
+          </div>
+          <!-- Progress bar -->
+          <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
+            <div class="bg-[#FCAE1E] h-2 rounded-full" style="width: 63%"></div>
           </div>
         </div>
 
-        <button class="w-full bg-transparent hover:bg-[#FFF8D6]/40 text-[#B06E02] border border-[#B06E02]/30 font-bold text-xs py-3 rounded-xl transition cursor-pointer mt-4 text-center">
-          Ver mais sugestões
-        </button>
+        <!-- 2. Sugerido para você -->
+        <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
+          <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Sugerido para você</h2>
+          
+          <div class="flex gap-4 p-1">
+            <!-- Book Cover -->
+            <img 
+              src="../assets/images/duna_cover.png" 
+              alt="Duna"
+              class="w-14 h-20 object-cover rounded-lg shadow-sm border border-[#B06E02]/10 flex-shrink-0"
+            />
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+              <h3 class="text-xs font-bold text-[#806602] truncate">{{ suggestion.title }}</h3>
+              <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ suggestion.author }}</p>
+              <span class="inline-block self-start text-[8px] font-bold text-[#B06E02] bg-[#FFF5CD]/50 px-2 py-0.5 rounded-full mt-1.5">
+                {{ suggestion.genre }}
+              </span>
+            </div>
+          </div>
+
+          <button class="w-full bg-[#13213C] hover:bg-[#13213C]/95 text-white font-semibold text-xs py-2.5 rounded-xl transition cursor-pointer text-center">
+            Adicionar à estante
+          </button>
+        </div>
+
       </div>
 
     </div>
@@ -158,4 +269,13 @@ const suggestions = [
 </template>
 
 <style scoped>
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 </style>

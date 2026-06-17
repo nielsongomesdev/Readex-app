@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import OnboardingView from '../views/OnboardingView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
+import CadastroView from '../views/CadastroView.vue'
 import VerifyEmailView from '../views/VerifyEmailView.vue'
 import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
@@ -15,6 +16,8 @@ import ComunidadeView from '../views/ComunidadeView.vue'
 import ProgressoView from '../views/ProgressoView.vue'
 import PerfilView from '../views/PerfilView.vue'
 import SettingsView from '../views/SettingsView.vue'
+import BookDetailsView from '../views/BookDetailsView.vue'
+import WriteReviewView from '../views/WriteReviewView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +31,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+    },
+    {
+      path: '/cadastro',
+      name: 'cadastro',
+      component: CadastroView,
     },
     {
       path: '/register',
@@ -88,6 +96,16 @@ const router = createRouter({
           path: 'configuracoes',
           name: 'settings',
           component: SettingsView,
+        },
+        {
+          path: 'livro/:id',
+          name: 'book-details',
+          component: BookDetailsView,
+        },
+        {
+          path: 'livro/:id/resenha',
+          name: 'write-review',
+          component: WriteReviewView,
         },
       ],
     },

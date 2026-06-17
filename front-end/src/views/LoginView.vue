@@ -24,13 +24,13 @@ const togglePasswordVisibility = () => {
 </script>
 
 <template>
-  <div class="min-h-screen w-full flex flex-col md:flex-row font-poppins bg-white relative">
+  <div class="min-h-screen w-full flex flex-col md:flex-row font-poppins bg-[#FEF6D0] md:bg-white relative">
     
-    <!-- Left/Top Section: Brand Info & Mascot (Beige-Yellow Background) -->
-    <div class="w-full md:w-1/2 bg-[#FEF6D0] flex flex-col items-center justify-center p-8 md:p-16 text-center select-none py-12 md:py-0 min-h-[40vh] md:min-h-screen">
+    <!-- ===== Left Section: Brand (Desktop only) ===== -->
+    <div class="hidden md:flex w-1/2 bg-[#FEF6D0] flex-col items-center justify-center p-16 text-center select-none min-h-screen relative">
       
-      <!-- Readex Logo in Top-Left (Visible on desktop absolute, relative on mobile if needed) -->
-      <div class="md:absolute top-6 left-6 md:top-8 md:left-12 flex items-center gap-3 mb-8 md:mb-0">
+      <!-- Readex Logo (Top-Left) -->
+      <div class="absolute top-8 left-12 flex items-center gap-3">
         <div class="w-10 h-10 bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-center p-2">
           <img 
             src="../assets/images/mascote-3.png" 
@@ -41,8 +41,8 @@ const togglePasswordVisibility = () => {
         <span class="text-xl font-bold text-[#806602] tracking-wide">Readex</span>
       </div>
 
-      <!-- Mascot Wrapper -->
-      <div class="w-full max-w-[160px] sm:max-w-[200px] md:max-w-[280px] flex justify-center">
+      <!-- Mascot -->
+      <div class="w-full max-w-[280px] flex justify-center">
         <img 
           src="../assets/images/mascote-2.png" 
           alt="Mascote Readex dando as boas-vindas" 
@@ -51,7 +51,7 @@ const togglePasswordVisibility = () => {
       </div>
       
       <!-- Welcome Texts -->
-      <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-[#806602] mt-6 mb-2 leading-tight">
+      <h2 class="text-3xl md:text-4xl font-bold text-[#806602] mt-6 mb-2 leading-tight">
         Bem-vindo de volta!
       </h2>
       <p class="text-sm md:text-base text-[#806602]/80 max-w-xs leading-relaxed">
@@ -59,12 +59,28 @@ const togglePasswordVisibility = () => {
       </p>
     </div>
 
-    <!-- Right/Bottom Section: Login Form (White Background) -->
-    <div class="w-full md:w-1/2 bg-white flex items-center justify-center p-6 sm:p-12 md:p-16 py-12 md:py-0">
+    <!-- ===== Mobile Header: Mascot + Brand (Mobile only) ===== -->
+    <div class="flex md:hidden flex-col items-center pt-8 pb-4 px-6">
+      <!-- Mascot icon -->
+      <div class="w-24 h-24 flex items-center justify-center">
+        <img 
+          src="../assets/images/mascote-3.png" 
+          alt="Mascote Readex lendo" 
+          class="w-full h-full object-contain mix-blend-multiply"
+        />
+      </div>
+      <!-- App name -->
+      <span class="text-2xl font-bold text-[#806602] tracking-wide mt-1">Readex</span>
+      <!-- Welcome subtitle -->
+      <span class="text-sm text-[#806602]/80 mt-1">Bem-vindo de volta!</span>
+    </div>
+
+    <!-- ===== Right/Bottom Section: Login Form ===== -->
+    <div class="w-full md:w-1/2 md:bg-white flex items-start md:items-center justify-center px-6 pb-8 md:p-16">
       <div class="w-full max-w-md flex flex-col">
         
-        <!-- Form Header (Centered) -->
-        <div class="mb-8 text-center">
+        <!-- Form Header (Desktop only) -->
+        <div class="mb-8 text-center hidden md:block">
           <h1 class="text-2xl sm:text-3xl font-bold text-[#806602] mb-1">
             Entrar na sua conta
           </h1>
@@ -87,7 +103,7 @@ const togglePasswordVisibility = () => {
               v-model="email"
               placeholder="Insira seu email ou username" 
               required
-              class="w-full border border-[#B06E02]/40 rounded-xl px-4 py-3.5 focus:border-[#806602] focus:ring-1 focus:ring-[#806602] focus:outline-none transition duration-200 text-sm font-medium text-[#13213C] placeholder-gray-400/80" 
+              class="w-full border border-[#B06E02]/40 bg-white rounded-xl px-4 py-3.5 focus:border-[#806602] focus:ring-1 focus:ring-[#806602] focus:outline-none transition duration-200 text-sm font-medium text-[#13213C] placeholder-gray-400/80" 
             />
           </div>
 
@@ -103,7 +119,7 @@ const togglePasswordVisibility = () => {
                 v-model="password"
                 placeholder="............" 
                 required
-                class="w-full border border-[#B06E02]/40 rounded-xl pl-4 pr-12 py-3.5 focus:border-[#806602] focus:ring-1 focus:ring-[#806602] focus:outline-none transition duration-200 text-sm font-medium text-[#13213C] tracking-widest placeholder-gray-400/80" 
+                class="w-full border border-[#B06E02]/40 bg-white rounded-xl pl-4 pr-12 py-3.5 focus:border-[#806602] focus:ring-1 focus:ring-[#806602] focus:outline-none transition duration-200 text-sm font-medium text-[#13213C] tracking-widest placeholder-gray-400/80" 
               />
               <!-- Toggle Visibility Button -->
               <button 
@@ -134,7 +150,8 @@ const togglePasswordVisibility = () => {
               />
               Lembrar-se
             </label>
-            <router-link to="/forgot-password" class="text-[#B06E02] hover:underline font-bold transition duration-150">
+            <!-- Esqueci senha: desktop only (inline) -->
+            <router-link to="/forgot-password" class="text-[#B06E02] hover:underline font-bold transition duration-150 hidden md:inline">
               Esqueci senha
             </router-link>
           </div>
@@ -148,6 +165,11 @@ const togglePasswordVisibility = () => {
           </button>
         </form>
 
+        <!-- Esqueci senha: mobile only (centered link below button) -->
+        <router-link to="/forgot-password" class="text-[#B06E02] hover:underline font-bold transition duration-150 text-sm text-center mt-4 md:hidden">
+          Esqueci senha
+        </router-link>
+
         <!-- Divider Separator -->
         <div class="flex items-center gap-4 my-6">
           <div class="flex-1 h-px bg-gray-200"></div>
@@ -160,7 +182,7 @@ const togglePasswordVisibility = () => {
           <!-- Google Button -->
           <button 
             type="button" 
-            class="w-full flex items-center justify-center gap-3 border border-gray-200 bg-transparent text-[#13213C] font-semibold py-3 px-6 rounded-xl hover:bg-gray-50 hover:scale-[1.01] active:scale-[0.99] transition duration-200 cursor-pointer text-sm"
+            class="w-full flex items-center justify-center gap-3 border border-gray-200 bg-white text-[#13213C] font-semibold py-3 px-6 rounded-xl hover:bg-gray-50 hover:scale-[1.01] active:scale-[0.99] transition duration-200 cursor-pointer text-sm"
           >
             <!-- Google Icon SVG -->
             <svg class="w-5 h-5 select-none" viewBox="0 0 24 24" fill="currentColor">
@@ -175,7 +197,7 @@ const togglePasswordVisibility = () => {
           <!-- Apple Button -->
           <button 
             type="button" 
-            class="w-full flex items-center justify-center gap-3 border border-gray-200 bg-transparent text-[#13213C] font-semibold py-3 px-6 rounded-xl hover:bg-gray-50 hover:scale-[1.01] active:scale-[0.99] transition duration-200 cursor-pointer text-sm"
+            class="w-full flex items-center justify-center gap-3 border border-gray-200 bg-white text-[#13213C] font-semibold py-3 px-6 rounded-xl hover:bg-gray-50 hover:scale-[1.01] active:scale-[0.99] transition duration-200 cursor-pointer text-sm"
           >
             <!-- Apple Icon SVG -->
             <svg class="w-5 h-5 select-none" viewBox="0 0 24 24" fill="currentColor">
@@ -188,7 +210,7 @@ const togglePasswordVisibility = () => {
         <!-- Footer Text -->
         <p class="text-sm text-center text-gray-500 mt-8 select-none">
           Não tem uma conta?
-          <router-link to="/register" class="text-[#B06E02] hover:underline font-bold transition duration-150">
+          <router-link to="/cadastro" class="text-[#B06E02] hover:underline font-bold transition duration-150">
             Cadastre-se
           </router-link>
         </p>

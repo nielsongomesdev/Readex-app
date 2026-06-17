@@ -1,54 +1,56 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import FormularioResenha from '../components/FormularioResenha.vue'
 
-const showReviewModal = ref(false)
-const activeTab = ref('todos')
+const activeTab = ref('Todos')
+const tabs = ['Todos', 'Seguindo', 'Resenhas', 'Discussões']
 
 const posts = ref([
   {
     id: 1,
-    user: { name: 'Mariana Costa', initials: 'MC', avatarBg: 'bg-indigo-600' },
-    book: { title: '1984', author: 'George Orwell' },
-    text: 'A leitura de 1984 foi perturbadora, mas absolutamente necessária. A construção do mundo distópico pelo Orwell é assustadoramente realista. Recomendo muito para quem quer refletir sobre controle e sociedade.',
-    rating: 5,
-    tags: ['Distopia', 'Clássico', 'Recomendado'],
-    likes: 32,
-    comments: 7,
-    isLiked: false,
-    time: '2 horas atrás'
+    user: { name: 'Alexandre Cabral', time: 'Há 2h' },
+    text: 'Acabei de terminar Duna e não consigo parar de pensar nisso. A construção do mundo é simplesmente incrível!',
+    book: 'Duna — Frank Herbert',
+    likes: 132,
+    comments: 47,
+    isLiked: false
   },
   {
     id: 2,
-    user: { name: 'Rodrigo Lima', initials: 'RL', avatarBg: 'bg-emerald-600' },
-    book: { title: 'O Hobbit', author: 'J.R.R. Tolkien' },
-    text: 'Estou relendo O Hobbit com meu filho e a experiência está sendo mágica. A escrita do Tolkien é muito gostosa, leve e cheia de aventuras divertidas. Bilbo Bolseiro é um herói cativante demais.',
-    rating: 4,
-    tags: ['Fantasia', 'Aventura'],
-    likes: 18,
-    comments: 3,
-    isLiked: true,
-    time: '5 horas atrás'
+    user: { name: 'Jussandro Vítor', time: 'Há 5h' },
+    text: 'Alguém mais acha que 1984 é mais relevante hoje do que quando foi escrito? Relendo pela terceira vez...',
+    book: '1984 — George Orwell',
+    likes: 24,
+    comments: 7,
+    isLiked: false
+  },
+  {
+    id: 3,
+    user: { name: 'Ryan Guedes', time: 'Há 8h' },
+    text: '“Ler é voar sem sair do lugar.” - minha citação favorita de O Alquimista.',
+    book: 'O Alquimista – Paulo Coelho',
+    likes: 58,
+    comments: 12,
+    isLiked: false
   }
 ])
 
 const trending = ref([
-  { id: 1, tag: '#OHobbit', postsCount: '1.2k posts' },
-  { id: 2, tag: '#GeorgeOrwell', postsCount: '870 posts' },
-  { id: 3, tag: '#LeituraConjunta', postsCount: '540 posts' },
-  { id: 4, tag: '#LiteraturaNacional', postsCount: '310 posts' }
+  { tag: '#Duna', postsCount: '234' },
+  { tag: '#Distopia', postsCount: '127' },
+  { tag: '#PauloCoelho', postsCount: '89' },
+  { tag: '#FicçãoCientífica', postsCount: '67' }
 ])
 
 const usersToFollow = ref([
-  { id: 1, name: 'Gabriela Dias', initials: 'GD', avatarBg: 'bg-purple-600', following: false },
-  { id: 2, name: 'Mateus Souza', initials: 'MS', avatarBg: 'bg-rose-600', following: false },
-  { id: 3, name: 'Camila Alves', initials: 'CA', avatarBg: 'bg-amber-600', following: true }
+  { id: 1, name: 'Maria Silva', desc: 'Crítica literária', following: false },
+  { id: 2, name: 'João Pedro', desc: 'Apaixonado por fantasia', following: false },
+  { id: 3, name: 'Ana Costa', desc: 'Resenha 100 livros/ano', following: false }
 ])
 
 const toggleFollow = (userId: number) => {
-  const index = usersToFollow.value.findIndex(u => u.id === userId)
-  if (index !== -1) {
-    usersToFollow.value[index].following = !usersToFollow.value[index].following
+  const user = usersToFollow.value.find(u => u.id === userId)
+  if (user) {
+    user.following = !user.following
   }
 }
 
@@ -59,280 +61,260 @@ const toggleLike = (postId: number) => {
     post.likes = post.isLiked ? post.likes + 1 : post.likes - 1
   }
 }
-
-const openModal = () => {
-  showReviewModal.value = true
-}
-
-const closeModal = () => {
-  showReviewModal.value = false
-}
-
-const handleReviewSubmit = (data: { rating: number; text: string; tags: string[] }) => {
-  posts.value.unshift({
-    id: Date.now(),
-    user: { name: 'Anderson Ramalho', initials: 'AR', avatarBg: 'bg-[#B06E02]' },
-    book: { title: 'O Hobbit', author: 'J.R.R. Tolkien' }, // Mock book reference
-    text: data.text,
-    rating: data.rating,
-    tags: data.tags,
-    likes: 0,
-    comments: 0,
-    isLiked: false,
-    time: 'Agora mesmo'
-  })
-  closeModal()
-}
 </script>
 
 <template>
-  <div class="space-y-6 select-none font-poppins text-[#13213C] relative">
-    
-    <!-- Title -->
-    <div class="flex flex-col gap-1">
-      <h1 class="text-2xl md:text-3xl font-bold text-[#806602]">Comunidade</h1>
-      <p class="text-sm text-gray-400 font-medium">Compartilhe suas leituras, resenhas e debata com outros leitores.</p>
-    </div>
+  <div class="select-none font-poppins text-[#13213C] pb-6">
 
-    <!-- Layout Grid split: Main Feed and Right Sidebar (Desktop) -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- ===================================================================== -->
+    <!-- ========================= DESKTOP LAYOUT ============================ -->
+    <!-- ===================================================================== -->
+    <div class="hidden lg:block space-y-6">
       
-      <!-- Center: Social Feed -->
-      <div class="lg:col-span-2 space-y-6">
+      <!-- Desktop Header Row -->
+      <div class="flex items-center justify-between pb-3 border-b border-[#B06E02]/10 mb-6">
+        <div class="flex flex-col gap-1">
+          <h1 class="text-3xl font-bold text-[#13213C]">Comunidade</h1>
+          <p class="text-xs text-gray-400 font-semibold">Veja o que outros leitores estão compartilhando</p>
+        </div>
+        <!-- Right Icons -->
+        <div class="flex items-center gap-3 text-[#FCAE1E]">
+          <button class="p-2 hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </button>
+          <button class="p-2 hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters (Tab pills row) -->
+      <div class="flex flex-wrap gap-2.5 mb-6">
+        <button 
+          v-for="tab in tabs" 
+          :key="tab"
+          @click="activeTab = tab"
+          class="text-xs font-bold px-4 py-2.5 rounded-full transition cursor-pointer"
+          :class="activeTab === tab ? 'bg-[#13213C] text-white' : 'bg-[#E5ECF6] text-[#13213C] hover:bg-[#E5ECF6]/85'"
+        >
+          {{ tab }}
+        </button>
+      </div>
+
+      <!-- Main Columns Grid -->
+      <div class="grid grid-cols-3 gap-8">
         
-        <!-- Share Post Input Card Trigger -->
-        <div class="bg-white p-5 rounded-2xl border border-[#B06E02]/10 shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex items-center gap-4">
-          <!-- User Profile Avatar -->
-          <div class="w-10 h-10 rounded-full bg-[#B06E02] flex items-center justify-center font-bold text-white text-xs select-none flex-shrink-0 uppercase">
-            AR
-          </div>
-          <!-- Clickable text bar -->
-          <div 
-            @click="openModal"
-            class="flex-1 bg-gray-50 hover:bg-gray-100/80 border border-gray-100 rounded-xl px-4 py-3 text-xs md:text-sm text-gray-400 font-medium cursor-pointer transition select-none flex items-center"
-          >
-            O que você está lendo hoje? Compartilhe uma resenha...
-          </div>
-          <button 
-            type="button" 
-            @click="openModal"
-            class="bg-[#13213C] hover:bg-[#13213C]/95 text-white font-semibold text-xs px-4 py-3 rounded-xl transition cursor-pointer"
-          >
-            Escrever Resenha
-          </button>
-        </div>
-
-        <!-- Feed abas filters -->
-        <div class="flex border-b border-[#B06E02]/10 gap-6 text-sm">
-          <button 
-            @click="activeTab = 'todos'" 
-            class="pb-3 border-b-2 font-bold transition duration-150 cursor-pointer text-xs uppercase tracking-wider"
-            :class="[activeTab === 'todos' ? 'border-[#B06E02] text-[#B06E02]' : 'border-transparent text-gray-400']"
-          >
-            Todos
-          </button>
-          <button 
-            @click="activeTab = 'seguindo'" 
-            class="pb-3 border-b-2 font-bold transition duration-150 cursor-pointer text-xs uppercase tracking-wider"
-            :class="[activeTab === 'seguindo' ? 'border-[#B06E02] text-[#B06E02]' : 'border-transparent text-gray-400']"
-          >
-            Seguindo
-          </button>
-          <button 
-            @click="activeTab = 'resenhas'" 
-            class="pb-3 border-b-2 font-bold transition duration-150 cursor-pointer text-xs uppercase tracking-wider"
-            :class="[activeTab === 'resenhas' ? 'border-[#B06E02] text-[#B06E02]' : 'border-transparent text-gray-400']"
-          >
-            Resenhas
-          </button>
-        </div>
-
-        <!-- Feed List of Posts -->
-        <div class="space-y-4">
+        <!-- Left: Feed Column -->
+        <div class="col-span-2 space-y-6">
           <div 
             v-for="post in posts" 
             :key="post.id"
-            class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-[0_4px_16px_rgba(176,110,2,0.03)] space-y-4"
+            class="bg-white border border-[#B06E02]/10 p-6 rounded-2xl shadow-xs space-y-4 hover:shadow-[0_4px_16px_rgba(176,110,2,0.02)] transition"
           >
-            <!-- Post Header (Author info) -->
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-3">
-                <!-- Avatar -->
-                <div 
-                  class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-xs select-none uppercase"
-                  :class="post.user.avatarBg"
-                >
-                  {{ post.user.initials }}
-                </div>
-                <div>
-                  <h3 class="text-xs font-bold text-[#13213C]">{{ post.user.name }}</h3>
-                  <span class="text-[9px] text-gray-400 font-semibold block mt-0.5">escreveu uma resenha sobre <strong class="text-[#806602]">{{ post.book.title }}</strong> • {{ post.time }}</span>
-                </div>
-              </div>
-
-              <!-- rating stars display -->
-              <div class="flex items-center gap-0.5 text-amber-500">
-                <svg 
-                  v-for="star in 5" 
-                  :key="star"
-                  class="w-3.5 h-3.5"
-                  :class="[post.rating >= star ? 'fill-current' : 'text-gray-200 fill-current']"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                </svg>
+            <!-- Header (User Info) -->
+            <div class="flex items-center gap-3">
+              <!-- Avatar circle placeholder -->
+              <div class="w-10 h-10 rounded-full bg-[#13213C] flex-shrink-0"></div>
+              <div>
+                <h3 class="text-sm font-bold text-[#13213C]">{{ post.user.name }}</h3>
+                <span class="text-[10px] text-gray-400 font-semibold block mt-0.5">{{ post.user.time }}</span>
               </div>
             </div>
 
-            <!-- Post Content text -->
-            <p class="text-xs md:text-sm text-gray-500 leading-relaxed font-medium">
+            <!-- Body text -->
+            <p class="text-xs lg:text-sm text-gray-400/90 font-medium leading-relaxed">
               {{ post.text }}
             </p>
 
-            <!-- Tags List -->
-            <div class="flex flex-wrap gap-1.5 pt-1">
-              <span 
-                v-for="tag in post.tags" 
-                :key="tag"
-                class="bg-[#FFF8D6] text-[#806602] text-[9px] font-bold px-2.5 py-0.5 rounded-full border border-[#B06E02]/10"
-              >
-                {{ tag }}
-              </span>
-            </div>
+            <!-- Book reference link -->
+            <span class="block text-xs font-bold text-[#B06E02]">{{ post.book }}</span>
 
-            <!-- Divider line -->
-            <div class="h-px bg-gray-100"></div>
+            <!-- Divider -->
+            <div class="h-px bg-[#B06E02]/10 my-3"></div>
 
-            <!-- Post Action Buttons (Like & Comment) -->
-            <div class="flex items-center gap-6 text-xs select-none">
-              <!-- Like Action button -->
+            <!-- Actions footer -->
+            <div class="flex items-center gap-6 text-xs text-gray-400 font-bold select-none">
+              <!-- Like button -->
               <button 
-                type="button" 
                 @click="toggleLike(post.id)"
-                class="flex items-center gap-1.5 text-gray-400 hover:text-red-500 font-bold transition focus:outline-none cursor-pointer"
-                :class="[post.isLiked ? 'text-red-500' : '']"
+                class="flex items-center gap-1.5 transition cursor-pointer focus:outline-none"
+                :class="post.isLiked ? 'text-[#E04B6E]' : 'hover:text-[#E04B6E]'"
               >
-                <!-- Heart Icon -->
                 <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                 </svg>
                 <span>{{ post.likes }}</span>
               </button>
 
-              <!-- Comment Action button -->
+              <!-- Comment button -->
               <button 
-                type="button" 
-                class="flex items-center gap-1.5 text-gray-400 hover:text-[#13213C] font-bold transition focus:outline-none cursor-pointer"
+                class="flex items-center gap-1.5 transition cursor-pointer hover:text-[#FCAE1E]"
               >
-                <!-- Bubble Comment Icon -->
                 <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 <span>{{ post.comments }}</span>
               </button>
-            </div>
 
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Right column: Trending & Follow Suggestions (Desktop Only) -->
-      <div class="hidden lg:block space-y-6">
-        
-        <!-- Trending hashtags card -->
-        <div class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
-          <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Em alta</h2>
-          
-          <div class="space-y-4">
-            <div 
-              v-for="item in trending" 
-              :key="item.id"
-              class="flex flex-col gap-0.5"
-            >
-              <span class="text-xs font-bold text-[#13213C] hover:text-[#B06E02] transition cursor-pointer">
-                {{ item.tag }}
-              </span>
-              <span class="text-[9px] text-gray-400 font-semibold leading-none">{{ item.postsCount }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Follow Suggestions card -->
-        <div class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
-          <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Pessoas para seguir</h2>
-          
-          <div class="space-y-4.5">
-            <div 
-              v-for="userToFollow in usersToFollow" 
-              :key="userToFollow.id"
-              class="flex items-center justify-between gap-3"
-            >
-              <div class="flex items-center gap-2.5 min-w-0">
-                <div 
-                  class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-[10px] select-none uppercase flex-shrink-0"
-                  :class="userToFollow.avatarBg"
-                >
-                  {{ userToFollow.initials }}
-                </div>
-                <span class="text-xs font-bold text-[#13213C] truncate">{{ userToFollow.name }}</span>
-              </div>
-              
+              <!-- Share button -->
               <button 
-                type="button" 
-                @click="toggleFollow(userToFollow.id)"
-                class="border font-bold text-[9px] px-3 py-1.5 rounded-full transition cursor-pointer leading-none"
-                :class="[userToFollow.following 
-                  ? 'bg-gray-100 text-gray-400 border-transparent hover:bg-gray-200' 
-                  : 'bg-transparent text-[#B06E02] border-[#B06E02]/30 hover:bg-[#FFF8D6]/30 hover:border-[#B06E02]'
-                ]"
+                class="flex items-center gap-1.5 transition cursor-pointer hover:text-[#B06E02]"
               >
-                {{ userToFollow.following ? 'Seguindo' : 'Seguir' }}
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l1.99 1.99a3 3 0 004.243 0l1.99-1.99a3 3 0 000-4.243l-1.99-1.99a3 3 0 00-4.243 0l-1.99 1.99a3 3 0 000 4.243z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21V12" />
+                </svg>
+                <span>Compartilhar</span>
               </button>
             </div>
           </div>
         </div>
 
-      </div>
+        <!-- Right Sidebar widgets -->
+        <div class="col-span-1 space-y-6">
+          
+          <!-- Em alta -->
+          <div class="bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-4">
+            <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Em alta</h2>
+            
+            <div class="space-y-4">
+              <div 
+                v-for="item in trending" 
+                :key="item.tag"
+                class="flex flex-col gap-0.5"
+              >
+                <span class="text-xs font-bold text-[#13213C] hover:text-[#B06E02] transition cursor-pointer">
+                  {{ item.tag }}
+                </span>
+                <span class="text-[9px] text-gray-400 font-semibold leading-none">{{ item.postsCount }} posts</span>
+              </div>
+            </div>
+          </div>
 
+          <!-- Pessoas para seguir -->
+          <div class="bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-4">
+            <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Pessoas para seguir</h2>
+            
+            <div class="space-y-4.5">
+              <div 
+                v-for="user in usersToFollow" 
+                :key="user.id"
+                class="flex items-center justify-between gap-3"
+              >
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-full bg-[#13213C] flex-shrink-0"></div>
+                  <div class="min-w-0">
+                    <span class="block text-xs font-bold text-[#13213C] truncate leading-tight">{{ user.name }}</span>
+                    <span class="text-[9px] text-gray-400 font-semibold block truncate mt-0.5 leading-none">{{ user.desc }}</span>
+                  </div>
+                </div>
+                
+                <button 
+                  @click="toggleFollow(user.id)"
+                  class="bg-[#13213C] text-white hover:bg-[#13213C]/95 font-bold text-[9px] px-3.5 py-1.5 rounded-lg transition cursor-pointer select-none leading-none"
+                  :class="user.following ? 'bg-gray-100 text-gray-400 hover:bg-gray-200' : ''"
+                >
+                  {{ user.following ? 'Seguindo' : 'Seguir' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
 
-    <!-- Review Form Modal Wrap -->
-    <div 
-      v-if="showReviewModal" 
-      class="fixed inset-0 z-50 flex items-center justify-center px-4"
-    >
-      <!-- Translucent Backdrop -->
-      <div 
-        @click="closeModal" 
-        class="fixed inset-0 bg-black/45 backdrop-blur-xs transition-opacity duration-300"
-      ></div>
+    <!-- ===================================================================== -->
+    <!-- ========================== MOBILE LAYOUT ============================ -->
+    <!-- ===================================================================== -->
+    <div class="lg:hidden flex flex-col space-y-4">
       
-      <!-- Modal Form Box -->
-      <FormularioResenha 
-        class="relative z-10 w-full animate-zoom-in"
-        @close="closeModal"
-        @submit="handleReviewSubmit"
-      />
+      <!-- 1. Sticky Mobile Top Header Bar (Uses negative margins to go edge-to-edge inside main padding) -->
+      <div class="sticky top-0 z-40 bg-[#FFFDF3] px-6 py-4 border-b border-[#B06E02]/10 -mx-6 -mt-6 md:-mx-8 md:-mt-8 mb-4 flex items-center select-none shadow-xs">
+        <span class="text-xl font-bold text-[#13213C]">Comunidade</span>
+      </div>
+
+      <!-- 2. Filters horizontal scrolling bar -->
+      <div class="flex overflow-x-auto gap-2.5 pb-2 scrollbar-none select-none mb-1 max-w-full">
+        <button 
+          v-for="tab in tabs" 
+          :key="tab + '-mobile'"
+          @click="activeTab = tab"
+          class="text-xs font-bold px-4 py-2.5 rounded-full transition cursor-pointer flex-shrink-0"
+          :class="activeTab === tab ? 'bg-[#13213C] text-white' : 'bg-[#E5ECF6] text-[#13213C]'"
+        >
+          {{ tab }}
+        </button>
+      </div>
+
+      <!-- 3. Stacking feed posts -->
+      <div class="space-y-4 pb-6">
+        <div 
+          v-for="post in posts" 
+          :key="post.id + '-mobile'"
+          class="bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-3 relative"
+        >
+          <!-- Header (User avatar & details) -->
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#13213C] flex-shrink-0"></div>
+            <div>
+              <h3 class="text-xs font-bold text-[#13213C] leading-snug">{{ post.user.name }}</h3>
+              <span class="text-[9px] text-gray-400 font-semibold block mt-0.5">{{ post.user.time }}</span>
+            </div>
+          </div>
+
+          <!-- Body text -->
+          <p class="text-xs text-gray-400/90 font-medium leading-relaxed">
+            {{ post.text }}
+          </p>
+
+          <!-- Book reference -->
+          <span class="block text-[11px] font-bold text-[#B06E02] mt-1">{{ post.book }}</span>
+
+          <!-- Footer actions (Aligned to bottom-right) -->
+          <div class="flex justify-end items-center gap-4 text-xs select-none mt-2.5 pt-1">
+            <!-- Like button -->
+            <button 
+              @click="toggleLike(post.id)"
+              class="flex items-center gap-1.5 font-bold transition cursor-pointer focus:outline-none"
+              :class="post.isLiked ? 'text-[#E04B6E]' : 'text-gray-400 hover:text-[#E04B6E]'"
+            >
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+              <span>{{ post.likes }}</span>
+            </button>
+
+            <!-- Comment button -->
+            <button 
+              class="flex items-center gap-1.5 text-gray-400 hover:text-[#FCAE1E] font-bold transition cursor-pointer"
+            >
+              <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <span>{{ post.comments }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
 </template>
 
-<style>
-/* Simple pop zoom entry animation for the modal dialog */
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+<style scoped>
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
-
-.animate-zoom-in {
-  animation: zoomIn 0.2s ease-out forwards;
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 </style>
