@@ -1,19 +1,58 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { name, handle, bio } from '../store/userStore'
+import { name, handle, bio, temaClaro, tamanhoFonte, idioma, metaDiaria, generosFavoritosCount } from '../store/userStore'
 import andersonAvatar from '../assets/images/anderson_avatar.png'
 
 const router = useRouter()
 const route = useRoute()
 
 // Toggles states
-const temaClaro = ref(true)
 const metaDiariaNotif = ref(true)
 const recomendacoesNotif = ref(false)
 const atividadeSocialNotif = ref(true)
 const novosSeguidoresNotif = ref(true)
 const resumoSemanalNotif = ref(false)
+
+const cycleTamanhoFonte = () => {
+  if (tamanhoFonte.value === 'Pequeno') {
+    tamanhoFonte.value = 'Médio'
+  } else if (tamanhoFonte.value === 'Médio') {
+    tamanhoFonte.value = 'Grande'
+  } else {
+    tamanhoFonte.value = 'Pequeno'
+  }
+}
+
+const cycleIdioma = () => {
+  if (idioma.value === 'Português') {
+    idioma.value = 'Inglês'
+  } else if (idioma.value === 'Inglês') {
+    idioma.value = 'Espanhol'
+  } else {
+    idioma.value = 'Português'
+  }
+}
+
+const cycleMetaDiaria = () => {
+  if (metaDiaria.value === '15 min') {
+    metaDiaria.value = '30 min'
+  } else if (metaDiaria.value === '30 min') {
+    metaDiaria.value = '45 min'
+  } else if (metaDiaria.value === '45 min') {
+    metaDiaria.value = '60 min'
+  } else {
+    metaDiaria.value = '15 min'
+  }
+}
+
+const cycleGeneros = () => {
+  if (generosFavoritosCount.value < 10) {
+    generosFavoritosCount.value += 1
+  } else {
+    generosFavoritosCount.value = 1
+  }
+}
 
 // Edit Profile Modal states
 const showEditModal = ref(false)
@@ -208,6 +247,7 @@ onMounted(() => {
 
             <!-- Tamanho da fonte -->
             <button 
+              @click="cycleTamanhoFonte"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
             >
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
@@ -218,7 +258,7 @@ onMounted(() => {
                 <span>Tamanho da fonte</span>
               </div>
               <div class="flex items-center gap-1 text-gray-400">
-                <span class="text-xs font-semibold">Médio</span>
+                <span class="text-xs font-semibold">{{ tamanhoFonte }}</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                 </svg>
@@ -227,6 +267,7 @@ onMounted(() => {
 
             <!-- Idioma -->
             <button 
+              @click="cycleIdioma"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
             >
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
@@ -237,7 +278,7 @@ onMounted(() => {
                 <span>Idioma</span>
               </div>
               <div class="flex items-center gap-1 text-gray-400">
-                <span class="text-xs font-semibold">Português</span>
+                <span class="text-xs font-semibold">{{ idioma }}</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                 </svg>
@@ -352,6 +393,7 @@ onMounted(() => {
             
             <!-- Meta diária -->
             <button 
+              @click="cycleMetaDiaria"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
             >
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
@@ -361,7 +403,7 @@ onMounted(() => {
                 <span>Meta diária</span>
               </div>
               <div class="flex items-center gap-1 text-gray-400">
-                <span class="text-xs font-semibold">30 min</span>
+                <span class="text-xs font-semibold">{{ metaDiaria }}</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                 </svg>
@@ -370,6 +412,7 @@ onMounted(() => {
 
             <!-- Gêneros favoritos -->
             <button 
+              @click="cycleGeneros"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
             >
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
@@ -379,7 +422,7 @@ onMounted(() => {
                 <span>Gêneros favoritos</span>
               </div>
               <div class="flex items-center gap-1 text-gray-400">
-                <span class="text-xs font-semibold">4 selecionados</span>
+                <span class="text-xs font-semibold">{{ generosFavoritosCount }} selecionados</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                 </svg>

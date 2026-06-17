@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Sidebar from '../components/layout/Sidebar.vue'
 import Header from '../components/layout/Header.vue'
+import { temaClaro, tamanhoFonte } from '../store/userStore'
 
 const route = useRoute()
 const isSidebarOpen = ref(false)
@@ -24,7 +25,11 @@ const mobileNavLinks = [
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#FEF6D0]/10 font-poppins flex text-[#13213C] relative pb-16 lg:pb-0">
+  <div 
+    class="min-h-screen bg-[#FEF6D0]/10 font-poppins flex text-[#13213C] relative pb-16 lg:pb-0 transition-colors duration-300"
+    :class="{ 'app-dark-mode': !temaClaro }"
+    :style="{ fontSize: tamanhoFonte === 'Pequeno' ? '0.88em' : (tamanhoFonte === 'Grande' ? '1.12em' : '1em') }"
+  >
     
     <!-- Desktop Sidebar (Fixed Left) -->
     <Sidebar class="hidden lg:flex" />
@@ -106,5 +111,54 @@ const mobileNavLinks = [
 
 .animate-slide-in {
   animation: slideIn 0.25s ease-out forwards;
+}
+
+/* Custom premium Dark Mode overrides */
+.app-dark-mode {
+  background-color: #0B0F19 !important;
+  color: #E2E8F0 !important;
+}
+
+.app-dark-mode aside,
+.app-dark-mode nav.fixed,
+.app-dark-mode header,
+.app-dark-mode .bg-white,
+.app-dark-mode .bg-\[\#FFFDF3\],
+.app-dark-mode .bg-\[\#FFFDF0\],
+.app-dark-mode .bg-\[\#FEF6D0\]\/10 {
+  background-color: #13213C !important;
+  color: #E2E8F0 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.app-dark-mode .text-\[\#13213C\] {
+  color: #E2E8F0 !important;
+}
+
+.app-dark-mode .text-\[\#806602\] {
+  color: #FCAE1E !important;
+}
+
+.app-dark-mode .text-gray-400 {
+  color: #94A3B8 !important;
+}
+
+.app-dark-mode .border-gray-100,
+.app-dark-mode .border-gray-200,
+.app-dark-mode .border-\[\#B06E02\]\/10,
+.app-dark-mode .border-\[\#B06E02\]\/5 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.app-dark-mode input,
+.app-dark-mode textarea {
+  background-color: #0B0F19 !important;
+  color: #E2E8F0 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.app-dark-mode .hover\:bg-gray-50\/50:hover,
+.app-dark-mode .hover\:bg-gray-50:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 </style>
