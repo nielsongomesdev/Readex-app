@@ -6,7 +6,7 @@ import nomeVentoCover from '../assets/images/o_nome_do_vento_cover.png'
 import mascotReading from '../assets/images/mascote-3.png'
 
 const router = useRouter()
-const activeTabMobile = ref('detalhes') // 'detalhes', 'anotacoes', 'resenhas'
+const activeTabMobile = ref('detalhes') 
 
 const book = ref({
   title: 'O Nome do Vento',
@@ -39,7 +39,7 @@ const goBack = () => {
 <template>
   <div class="space-y-6 select-none font-poppins text-[#13213C]">
     
-    <!-- ================= DESKTOP HEADER ROW (Desktop only) ================= -->
+    
     <div class="hidden lg:flex items-center justify-between pb-3 border-b border-[#B06E02]/10">
       <div class="flex items-center text-sm font-medium">
         <button 
@@ -54,7 +54,7 @@ const goBack = () => {
         <span class="text-gray-300 mx-2.5">/</span>
         <span class="text-sm font-bold text-[#13213C]">Detalhes do Livro</span>
       </div>
-      <!-- Right Icons -->
+      
       <div class="flex items-center gap-3">
         <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +69,7 @@ const goBack = () => {
       </div>
     </div>
 
-    <!-- ================= MOBILE TOP HEADER BAR (Mobile only) ================= -->
+    
     <div class="flex lg:hidden items-center justify-between py-2 border-b border-[#B06E02]/10 mb-2">
       <button @click="goBack" class="p-1 text-[#13213C] hover:bg-gray-100 rounded-lg transition cursor-pointer">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,7 +78,7 @@ const goBack = () => {
       </button>
       <span class="text-base font-bold text-[#13213C]">Detalhes do livro</span>
       <button class="p-1 text-[#13213C] hover:bg-gray-100 rounded-lg transition cursor-pointer">
-        <!-- Share icon -->
+        
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l1.99 1.99a3 3 0 004.243 0l1.99-1.99a3 3 0 000-4.243l-1.99-1.99a3 3 0 00-4.243 0l-1.99 1.99a3 3 0 000 4.243z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21V12" />
@@ -86,23 +86,23 @@ const goBack = () => {
       </button>
     </div>
 
-    <!-- ================= BOOK TOP HERO BANNER ================= -->
-    <!-- Desktop Banner layout -->
+    
+    
     <div class="hidden lg:flex bg-[#13213C] rounded-3xl p-8 gap-8 items-center text-white">
-      <!-- Cover -->
+      
       <img 
         :src="book.cover" 
         :alt="book.title"
         class="w-40 h-60 object-cover rounded-2xl shadow-xl border border-white/10 flex-shrink-0"
       />
-      <!-- Book details -->
+      
       <div class="flex-1 space-y-4">
         <div>
           <h1 class="text-3xl lg:text-4xl font-bold tracking-tight">{{ book.title }}</h1>
           <p class="text-base text-white/80 mt-1.5">{{ book.author }}</p>
         </div>
         
-        <!-- Rating -->
+        
         <div class="flex items-center gap-2 text-xs text-white/80">
           <div class="flex items-center text-[#FCAE1E]">
             <svg v-for="i in 4" :key="i" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -116,7 +116,7 @@ const goBack = () => {
           <span>({{ book.reviewsCount }} avaliações)</span>
         </div>
 
-        <!-- Tags -->
+        
         <div class="flex flex-wrap gap-2.5">
           <span 
             v-for="tag in book.tags" 
@@ -127,7 +127,7 @@ const goBack = () => {
           </span>
         </div>
 
-        <!-- Buttons row -->
+        
         <div class="flex items-center gap-4 pt-2">
           <router-link :to="'/livro/' + $route.params.id + '/resenha'" class="bg-[#FCAE1E] hover:bg-[#FCAE1E]/95 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition cursor-pointer select-none text-center">
             Adicionar resenha
@@ -141,7 +141,7 @@ const goBack = () => {
       </div>
     </div>
 
-    <!-- Mobile Banner layout -->
+    
     <div class="flex lg:hidden bg-[#13213C] rounded-3xl p-6 flex-col items-center text-center text-white pt-8">
       <img 
         :src="book.cover" 
@@ -152,16 +152,16 @@ const goBack = () => {
       <p class="text-sm text-white/80 mt-1">{{ book.author }}</p>
     </div>
 
-    <!-- ================= MOBILE RATING & PROGRESS CONTAINER (Mobile only) ================= -->
+    
     <div class="flex lg:hidden flex-col gap-4 bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs">
       <div class="flex justify-between items-center">
-        <!-- Mascot -->
+        
         <img 
           :src="mascotReading" 
           alt="Mascote Readex"
           class="w-10 h-10 object-contain"
         />
-        <!-- Stars Rating -->
+        
         <div class="flex items-center gap-1.5 text-xs text-[#806602]">
           <div class="flex items-center text-[#FCAE1E]">
             <svg v-for="i in 4" :key="i" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
@@ -175,7 +175,7 @@ const goBack = () => {
           <span class="text-gray-400">({{ book.reviewsCount }})</span>
         </div>
       </div>
-      <!-- Progress Bar -->
+      
       <div>
         <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
           <div class="bg-[#FCAE1E] h-2 rounded-full" :style="{ width: book.progress + '%' }"></div>
@@ -186,7 +186,7 @@ const goBack = () => {
       </div>
     </div>
 
-    <!-- ================= MOBILE NAVIGATION TABS (Mobile only) ================= -->
+    
     <div class="flex lg:hidden border-b border-[#B06E02]/10 w-full mb-2">
       <button 
         @click="activeTabMobile = 'detalhes'"
@@ -214,16 +214,16 @@ const goBack = () => {
       </button>
     </div>
 
-    <!-- ================= MAIN LAYOUT BOTTOM DETAILS GRID ================= -->
-    <!-- Active tab dependent on mobile, all visible on desktop -->
+    
+    
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- LEFT AREA: Metadata, Progress -->
+      
       <div 
         class="space-y-6 lg:col-span-1"
         :class="[activeTabMobile === 'detalhes' ? 'block' : 'hidden lg:block']"
       >
-        <!-- 1. Informações Card (Desktop style) -->
+        
         <div class="hidden lg:block bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-4">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Informações</h2>
           
@@ -247,7 +247,7 @@ const goBack = () => {
           </div>
         </div>
 
-        <!-- 2. Seu Progresso Card (Desktop only) -->
+        
         <div class="hidden lg:block bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-3.5">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Seu progresso</h2>
           
@@ -258,17 +258,17 @@ const goBack = () => {
             </div>
             <span class="text-sm font-bold text-[#806602]">{{ book.progress }}%</span>
           </div>
-          <!-- Progress bar -->
+          
           <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
             <div class="bg-[#FCAE1E] h-2 rounded-full" :style="{ width: book.progress + '%' }"></div>
           </div>
         </div>
       </div>
 
-      <!-- RIGHT AREA: Synopsis, Reviews -->
+      
       <div class="lg:col-span-2 space-y-6">
         
-        <!-- 1. Sinopse -->
+        
         <div 
           class="bg-white border border-[#B06E02]/10 p-6 rounded-2xl shadow-xs space-y-3.5"
           :class="[activeTabMobile === 'detalhes' ? 'block' : 'hidden lg:block']"
@@ -279,7 +279,7 @@ const goBack = () => {
           </p>
         </div>
 
-        <!-- 2. Informações Grid Row (Mobile only, inside Details tab bottom) -->
+        
         <div 
           class="block lg:hidden bg-[#FFFBEA]/40 border border-[#B06E02]/10 p-4 rounded-2xl shadow-xs text-center"
           :class="[activeTabMobile === 'detalhes' ? 'block' : 'hidden']"
@@ -304,7 +304,7 @@ const goBack = () => {
           </div>
         </div>
 
-        <!-- 3. Community Reviews -->
+        
         <div 
           class="space-y-4"
           :class="[activeTabMobile === 'resenhas' ? 'block' : 'hidden lg:block']"
@@ -324,7 +324,7 @@ const goBack = () => {
             >
               <div class="space-y-3">
                 <div class="flex items-center gap-3">
-                  <!-- Avatar circle -->
+                  
                   <div class="w-8 h-8 bg-[#13213C] rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm">
                     {{ review.name.charAt(0) }}
                   </div>
@@ -333,13 +333,13 @@ const goBack = () => {
                     <span class="text-[9px] text-gray-400 block">{{ review.date }}</span>
                   </div>
                 </div>
-                <!-- Stars -->
+                
                 <div class="flex items-center text-[#FCAE1E]">
                   <svg v-for="s in review.rating" :key="s" class="w-3 h-3 fill-current" viewBox="0 0 24 24">
                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                   </svg>
                 </div>
-                <!-- Review comment text -->
+                
                 <p class="text-[10px] text-gray-400/90 leading-relaxed font-medium">
                   "{{ review.text }}"
                 </p>

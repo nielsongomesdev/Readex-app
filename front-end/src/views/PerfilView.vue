@@ -52,10 +52,10 @@ const editProfile = () => {
 <template>
   <div class="select-none font-poppins text-[#13213C] pb-6">
 
-    <!-- Profile Detail Banner (Spans full width on mobile) -->
+    
     <div class="bg-[#13213C] text-white -mx-6 -mt-6 md:-mx-8 md:-mt-8 p-6 lg:mx-0 lg:mt-0 lg:rounded-2xl lg:p-8 flex flex-col lg:flex-row lg:justify-between lg:items-center relative gap-6 shadow-xs">
       
-      <!-- Mobile Settings Gear Icon -->
+      
       <button @click="router.push('/configuracoes')" class="absolute top-4 right-4 text-[#FCAE1E] hover:text-[#FCAE1E]/80 transition-colors cursor-pointer lg:hidden">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -63,7 +63,7 @@ const editProfile = () => {
         </svg>
       </button>
 
-      <!-- Profile Header Main Content -->
+      
       <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 flex-1 min-w-0">
         <img :src="andersonAvatar" alt="Avatar" class="w-20 h-20 lg:w-24 lg:h-24 rounded-full border-2 border-white/20 object-cover shadow-sm flex-shrink-0" />
         <div class="min-w-0 flex-1 space-y-1">
@@ -75,10 +75,10 @@ const editProfile = () => {
         </div>
       </div>
 
-      <!-- Right Column (Desktop Edit & Stats / Mobile Stats) -->
+      
       <div class="flex flex-col items-center lg:items-end justify-between gap-5 self-stretch lg:self-auto select-none">
         
-        <!-- Desktop Edit Button -->
+        
         <button 
           @click="editProfile"
           class="hidden lg:flex items-center gap-1.5 bg-white text-[#13213C] hover:bg-gray-100 transition-colors font-bold text-xs px-4 py-2 rounded-xl cursor-pointer select-none"
@@ -89,7 +89,7 @@ const editProfile = () => {
           Editar perfil
         </button>
 
-        <!-- Stats row (Centered on mobile, aligned on desktop) -->
+        
         <div class="flex items-center justify-around w-full sm:w-auto sm:justify-center gap-8 lg:gap-6 pt-2 lg:pt-0">
           <div class="text-center">
             <span class="block text-2xl font-bold text-white leading-none">47</span>
@@ -107,7 +107,7 @@ const editProfile = () => {
 
       </div>
 
-      <!-- Mobile navigation tabs (Inside navy area) -->
+      
       <div class="lg:hidden flex border-t border-white/10 w-full mt-4 pt-4">
         <button 
           @click="activeTab = 'lendo'"
@@ -139,7 +139,7 @@ const editProfile = () => {
 
     </div>
 
-    <!-- Desktop Navigation Tab Pills -->
+    
     <div class="hidden lg:flex items-center gap-3 mt-6">
       <button 
         @click="activeTab = 'lendo'"
@@ -169,7 +169,7 @@ const editProfile = () => {
       </button>
     </div>
 
-    <!-- Active Tab Book Grid Content (For Lendo / Lidos) -->
+    
     <div v-if="activeTab === 'lendo' || activeTab === 'lidos'" class="grid grid-cols-3 gap-3 lg:grid-cols-6 lg:gap-6 mt-6">
       <div 
         v-for="book in (activeTab === 'lendo' ? lendoBooks : lidosBooks)" 
@@ -182,7 +182,7 @@ const editProfile = () => {
       </div>
     </div>
 
-    <!-- Active Tab Review Content (For Resenhas) -->
+    
     <div v-if="activeTab === 'resenhas'" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
       <div 
         v-for="review in userReviews" 
@@ -208,7 +208,7 @@ const editProfile = () => {
       </div>
     </div>
 
-    <!-- Recent Activity Timeline (Desktop only) -->
+    
     <div class="hidden lg:block space-y-4 mt-8">
       <h3 class="text-lg font-bold text-[#B06E02]">Atividade recente</h3>
       <div class="space-y-3">

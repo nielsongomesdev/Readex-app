@@ -10,7 +10,7 @@ const bio = ref('Amante de livros de ficção científica, fantasia e clássicos
     <h1 class="text-2xl md:text-3xl font-bold text-[#13213C]">Meu Perfil</h1>
 
     <div class="bg-white rounded-2xl border border-[#B06E02]/10 p-6 md:p-8 shadow-xs flex flex-col md:flex-row gap-8 items-center md:items-start">
-      <!-- Profile Picture Circle -->
+      
       <div class="w-24 h-24 rounded-full bg-[#B06E02] flex items-center justify-center font-bold text-white text-3xl shadow-sm tracking-wider select-none flex-shrink-0">
         AR
       </div>
@@ -26,7 +26,7 @@ const bio = ref('Amante de livros de ficção científica, fantasia e clássicos
           <p class="text-sm text-gray-500 leading-relaxed">{{ bio }}</p>
         </div>
 
-        <!-- Preferred Genres tags -->
+        
         <div class="space-y-2">
           <label class="block text-xs font-bold text-[#806602] uppercase tracking-wider">Gêneros Favoritos</label>
           <div class="flex flex-wrap justify-center md:justify-start gap-1.5">

@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import OnboardingView from '../views/OnboardingView.vue'
 import LoginView from '../views/LoginView.vue'
+import AuthCallback from '../views/AuthCallback.vue'
 import RegisterView from '../views/RegisterView.vue'
 import CadastroView from '../views/CadastroView.vue'
 import VerifyEmailView from '../views/VerifyEmailView.vue'
 import ForgotPasswordView from '../views/ForgotPasswordView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
 
-// Logged-in components & layouts
 import AppLayout from '../layouts/AppLayout.vue'
 import DashboardView from '../views/DashboardView.vue'
 import EstanteView from '../views/EstanteView.vue'
@@ -31,6 +31,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+    },
+    {
+      path: '/auth-callback',
+      name: 'auth-callback',
+      component: AuthCallback,
     },
     {
       path: '/cadastro',
@@ -57,7 +62,7 @@ const router = createRouter({
       name: 'reset-password',
       component: ResetPasswordView,
     },
-    // Logged-in pages routes (nested under AppLayout at root level)
+    
     {
       path: '/',
       component: AppLayout,

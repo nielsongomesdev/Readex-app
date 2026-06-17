@@ -40,7 +40,7 @@ const submitForm = () => {
     tags: [...selectedTags.value]
   })
 
-  // Reset form
+  
   rating.value = 0
   text.value = ''
   selectedTags.value = []
@@ -49,7 +49,7 @@ const submitForm = () => {
 
 <template>
   <div class="bg-white p-6 rounded-2xl w-full max-w-lg select-none font-poppins text-[#13213C]">
-    <!-- Form Title -->
+    
     <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
       <h2 class="text-lg font-bold text-[#806602]">Escrever Resenha</h2>
       <button 
@@ -65,7 +65,7 @@ const submitForm = () => {
 
     <form @submit.prevent="submitForm" class="space-y-5">
       
-      <!-- Interactive Rating Star Widget -->
+      
       <div class="space-y-2">
         <label class="block text-xs font-bold text-[#806602] uppercase tracking-wider">Sua Avaliação*</label>
         <div class="flex items-center gap-1.5">
@@ -79,7 +79,7 @@ const submitForm = () => {
             class="text-2xl transition-transform duration-150 hover:scale-110 focus:outline-none cursor-pointer"
             :class="[(hoverRating || rating) >= star ? 'text-amber-500' : 'text-gray-200']"
           >
-            <!-- Custom Star SVG -->
+            
             <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24">
               <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
             </svg>
@@ -90,7 +90,7 @@ const submitForm = () => {
         </div>
       </div>
 
-      <!-- Textarea Input -->
+      
       <div class="space-y-2">
         <label for="review-text" class="block text-xs font-bold text-[#806602] uppercase tracking-wider">Texto da Resenha*</label>
         <textarea 
@@ -103,7 +103,7 @@ const submitForm = () => {
         ></textarea>
       </div>
 
-      <!-- Tags Selector -->
+      
       <div class="space-y-2">
         <label class="block text-xs font-bold text-[#806602] uppercase tracking-wider">Adicionar Tags</label>
         <div class="flex flex-wrap gap-2">
@@ -123,7 +123,7 @@ const submitForm = () => {
         </div>
       </div>
 
-      <!-- Confirmation Buttons -->
+      
       <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-4 mt-6">
         <button 
           type="button" 

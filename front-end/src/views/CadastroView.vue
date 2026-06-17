@@ -21,18 +21,18 @@ const handleRegister = () => {
     return
   }
 
-  // Set loading state
+  
   loading.value = true
 
-  // Simulate server response delay of 1.5 seconds
+  
   setTimeout(() => {
-    // Save mock token to localStorage
+    
     localStorage.setItem('token', 'mock-token-123')
     
-    // Reset loading state
+    
     loading.value = false
 
-    // Redirect to dashboard
+    
     router.push('/verify-email')
   }, 1500)
 }
@@ -49,10 +49,10 @@ const toggleConfirmPasswordVisibility = () => {
 <template>
   <div class="min-h-screen w-full flex flex-col md:flex-row font-poppins bg-[#FEF6D0] md:bg-white relative">
     
-    <!-- ===== Left Section: Brand (Desktop only) ===== -->
+    
     <div class="hidden md:flex w-1/2 bg-[#FEF6D0] flex-col items-center justify-center p-16 text-center select-none min-h-screen relative">
       
-      <!-- Readex Logo (Top-Left) -->
+      
       <div class="absolute top-8 left-12 flex items-center gap-3">
         <div class="w-10 h-10 bg-white rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.05)] flex items-center justify-center p-2">
           <img 
@@ -64,7 +64,7 @@ const toggleConfirmPasswordVisibility = () => {
         <span class="text-xl font-bold text-[#806602] tracking-wide">Readex</span>
       </div>
 
-      <!-- Mascot -->
+      
       <div class="w-full max-w-[280px] flex justify-center">
         <img 
           src="../assets/images/mascote-1.png" 
@@ -73,7 +73,7 @@ const toggleConfirmPasswordVisibility = () => {
         />
       </div>
       
-      <!-- Welcome Texts -->
+      
       <h2 class="text-3xl md:text-4xl font-bold text-[#806602] mt-6 mb-2 leading-tight">
         Crie sua conta
       </h2>
@@ -82,9 +82,9 @@ const toggleConfirmPasswordVisibility = () => {
       </p>
     </div>
 
-    <!-- ===== Mobile Header: Mascot + Brand (Mobile only) ===== -->
+    
     <div class="flex md:hidden flex-col items-center pt-8 pb-4 px-6">
-      <!-- Mascot icon -->
+      
       <div class="w-24 h-24 flex items-center justify-center">
         <img 
           src="../assets/images/mascote-3.png" 
@@ -92,17 +92,17 @@ const toggleConfirmPasswordVisibility = () => {
           class="w-full h-full object-contain mix-blend-multiply"
         />
       </div>
-      <!-- App name -->
+      
       <span class="text-2xl font-bold text-[#806602] tracking-wide mt-1">Readex</span>
-      <!-- Welcome subtitle -->
+      
       <span class="text-sm text-[#806602]/80 mt-1">Bem-vindo, crie sua nova conta</span>
     </div>
 
-    <!-- ===== Right/Bottom Section: Register Form ===== -->
+    
     <div class="w-full md:w-1/2 md:bg-white flex items-start md:items-center justify-center px-6 pb-8 md:p-16">
       <div class="w-full max-w-md flex flex-col">
         
-        <!-- Form Header (Desktop only) -->
+        
         <div class="mb-6 text-center hidden md:block">
           <h1 class="text-2xl sm:text-3xl font-bold text-[#806602] mb-1">
             Criar nova conta
@@ -112,10 +112,10 @@ const toggleConfirmPasswordVisibility = () => {
           </p>
         </div>
 
-        <!-- Credentials Form -->
+        
         <form @submit.prevent="handleRegister" class="space-y-4">
           
-          <!-- Primeiro nome / Último nome Row -->
+          
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label for="firstName" class="block text-xs font-bold text-[#806602] uppercase tracking-wider mb-2">
@@ -147,7 +147,7 @@ const toggleConfirmPasswordVisibility = () => {
             </div>
           </div>
 
-          <!-- Email Input -->
+          
           <div>
             <label for="email" class="block text-xs font-bold text-[#806602] uppercase tracking-wider mb-2">
               Email*
@@ -163,7 +163,7 @@ const toggleConfirmPasswordVisibility = () => {
             />
           </div>
 
-          <!-- Phone Input -->
+          
           <div>
             <label for="phone" class="block text-xs font-bold text-[#806602] uppercase tracking-wider mb-2">
               Telefone*
@@ -179,7 +179,7 @@ const toggleConfirmPasswordVisibility = () => {
             />
           </div>
 
-          <!-- Password Input -->
+          
           <div>
             <label for="password" class="block text-xs font-bold text-[#806602] uppercase tracking-wider mb-2">
               Senha*
@@ -211,7 +211,7 @@ const toggleConfirmPasswordVisibility = () => {
             </div>
           </div>
 
-          <!-- Confirm Password Input -->
+          
           <div>
             <label for="confirmPassword" class="block text-xs font-bold text-[#806602] uppercase tracking-wider mb-2">
               Confirmar Senha*
@@ -243,7 +243,7 @@ const toggleConfirmPasswordVisibility = () => {
             </div>
           </div>
 
-          <!-- Lembrar-se Checkbox -->
+          
           <div class="flex items-center text-sm">
             <label class="flex items-center gap-2 text-[#806602]/85 font-medium select-none cursor-pointer">
               <input 
@@ -254,13 +254,13 @@ const toggleConfirmPasswordVisibility = () => {
             </label>
           </div>
 
-          <!-- Submit Button -->
+          
           <button 
             type="submit" 
             :disabled="loading"
             class="w-full bg-[#13213C] text-white font-semibold py-3.5 px-6 rounded-xl hover:bg-[#13213C]/95 hover:scale-[1.01] active:scale-[0.99] transition duration-200 shadow-sm cursor-pointer mt-2 flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-not-allowed"
           >
-            <!-- Loading Spinner -->
+            
             <svg v-if="loading" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -269,7 +269,7 @@ const toggleConfirmPasswordVisibility = () => {
           </button>
         </form>
 
-        <!-- Footer Text -->
+        
         <p class="text-sm text-center text-gray-500 mt-6 select-none">
           Já tem uma conta?
           <router-link to="/login" class="text-[#B06E02] hover:underline font-bold transition duration-150">
