@@ -5,12 +5,12 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Seeding database...')
 
-  // Limpa os dados existentes para evitar duplicidade
+  
   await prisma.userBook.deleteMany()
   await prisma.review.deleteMany()
   await prisma.book.deleteMany()
 
-  // Dados de livros padrão correspondentes aos mocks do front-end
+  
   const books = [
     {
       title: 'Atelier of Witch Hat',

@@ -26,7 +26,7 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    // Código atualizado para a sintaxe do Axios!
+    
     const response = await api.post<LoginResponse>('/login', {
       email: email.value,
       password: password.value,
@@ -39,7 +39,7 @@ const handleLogin = async () => {
 
     router.push('/dashboard')
   } catch (error: any) {
-    // O Axios guarda a mensagem de erro do back-end dentro de error.response.data
+    
     const message = error.response?.data?.error || error.response?.data?.message || 'Erro ao fazer login. Tente novamente.'
     alert(message)
   } finally {

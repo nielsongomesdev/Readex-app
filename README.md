@@ -4,7 +4,7 @@
 O **Readex-app** é uma plataforma web voltada para amantes da leitura. O objetivo principal é permitir que os usuários explorem um catálogo de livros, visualizem detalhes e acompanhem resenhas. O sistema utilizará a arquitetura de Monorepo e o padrão em camadas (Layered Architecture) no back-end.
 
 ## 👥 Integrantes da Equipe
-Nielson e Anderson
+Nielson, Anderson e Davi
 
 ## 🛠 Tecnologias Escolhidas
 **Front-end:** Vue.js 3 (Vite), Vue Router, Tailwind CSS.
