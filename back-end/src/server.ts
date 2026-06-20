@@ -1,3 +1,4 @@
+import fastifyCors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
 import Fastify from "fastify";
 import { userRoutes } from "./routes/user.routes.js";
@@ -11,6 +12,10 @@ const app = Fastify({
 
 
   logger: true,
+});
+
+app.register(fastifyCors, {
+  origin: true,
 });
 
 app.register(fastifyJwt, {
