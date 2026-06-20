@@ -66,18 +66,18 @@ const toggleLike = (postId: number) => {
 <template>
   <div class="select-none font-poppins text-[#13213C] pb-6">
 
-    <!-- ===================================================================== -->
-    <!-- ========================= DESKTOP LAYOUT ============================ -->
-    <!-- ===================================================================== -->
+    
+    
+    
     <div class="hidden lg:block space-y-6">
       
-      <!-- Desktop Header Row -->
+      
       <div class="flex items-center justify-between pb-3 border-b border-[#B06E02]/10 mb-6">
         <div class="flex flex-col gap-1">
           <h1 class="text-3xl font-bold text-[#13213C]">Comunidade</h1>
           <p class="text-xs text-gray-400 font-semibold">Veja o que outros leitores estão compartilhando</p>
         </div>
-        <!-- Right Icons -->
+        
         <div class="flex items-center gap-3 text-[#FCAE1E]">
           <button class="p-2 hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@ const toggleLike = (postId: number) => {
         </div>
       </div>
 
-      <!-- Filters (Tab pills row) -->
+      
       <div class="flex flex-wrap gap-2.5 mb-6">
         <button 
           v-for="tab in tabs" 
@@ -105,19 +105,19 @@ const toggleLike = (postId: number) => {
         </button>
       </div>
 
-      <!-- Main Columns Grid -->
+      
       <div class="grid grid-cols-3 gap-8">
         
-        <!-- Left: Feed Column -->
+        
         <div class="col-span-2 space-y-6">
           <div 
             v-for="post in posts" 
             :key="post.id"
             class="bg-white border border-[#B06E02]/10 p-6 rounded-2xl shadow-xs space-y-4 hover:shadow-[0_4px_16px_rgba(176,110,2,0.02)] transition"
           >
-            <!-- Header (User Info) -->
+            
             <div class="flex items-center gap-3">
-              <!-- Avatar circle placeholder -->
+              
               <div class="w-10 h-10 rounded-full bg-[#13213C] flex-shrink-0"></div>
               <div>
                 <h3 class="text-sm font-bold text-[#13213C]">{{ post.user.name }}</h3>
@@ -125,20 +125,20 @@ const toggleLike = (postId: number) => {
               </div>
             </div>
 
-            <!-- Body text -->
+            
             <p class="text-xs lg:text-sm text-gray-400/90 font-medium leading-relaxed">
               {{ post.text }}
             </p>
 
-            <!-- Book reference link -->
+            
             <span class="block text-xs font-bold text-[#B06E02]">{{ post.book }}</span>
 
-            <!-- Divider -->
+            
             <div class="h-px bg-[#B06E02]/10 my-3"></div>
 
-            <!-- Actions footer -->
+            
             <div class="flex items-center gap-6 text-xs text-gray-400 font-bold select-none">
-              <!-- Like button -->
+              
               <button 
                 @click="toggleLike(post.id)"
                 class="flex items-center gap-1.5 transition cursor-pointer focus:outline-none"
@@ -150,7 +150,7 @@ const toggleLike = (postId: number) => {
                 <span>{{ post.likes }}</span>
               </button>
 
-              <!-- Comment button -->
+              
               <button 
                 class="flex items-center gap-1.5 transition cursor-pointer hover:text-[#FCAE1E]"
               >
@@ -160,7 +160,7 @@ const toggleLike = (postId: number) => {
                 <span>{{ post.comments }}</span>
               </button>
 
-              <!-- Share button -->
+              
               <button 
                 class="flex items-center gap-1.5 transition cursor-pointer hover:text-[#B06E02]"
               >
@@ -174,10 +174,10 @@ const toggleLike = (postId: number) => {
           </div>
         </div>
 
-        <!-- Right Sidebar widgets -->
+        
         <div class="col-span-1 space-y-6">
           
-          <!-- Em alta -->
+          
           <div class="bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-4">
             <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Em alta</h2>
             
@@ -195,7 +195,7 @@ const toggleLike = (postId: number) => {
             </div>
           </div>
 
-          <!-- Pessoas para seguir -->
+          
           <div class="bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-4">
             <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Pessoas para seguir</h2>
             
@@ -228,17 +228,17 @@ const toggleLike = (postId: number) => {
       </div>
     </div>
 
-    <!-- ===================================================================== -->
-    <!-- ========================== MOBILE LAYOUT ============================ -->
-    <!-- ===================================================================== -->
+    
+    
+    
     <div class="lg:hidden flex flex-col space-y-4">
       
-      <!-- 1. Sticky Mobile Top Header Bar (Uses negative margins to go edge-to-edge inside main padding) -->
+      
       <div class="sticky top-0 z-40 bg-[#FFFDF3] px-6 py-4 border-b border-[#B06E02]/10 -mx-6 -mt-6 md:-mx-8 md:-mt-8 mb-4 flex items-center select-none shadow-xs">
         <span class="text-xl font-bold text-[#13213C]">Comunidade</span>
       </div>
 
-      <!-- 2. Filters horizontal scrolling bar -->
+      
       <div class="flex overflow-x-auto gap-2.5 pb-2 scrollbar-none select-none mb-1 max-w-full">
         <button 
           v-for="tab in tabs" 
@@ -251,14 +251,14 @@ const toggleLike = (postId: number) => {
         </button>
       </div>
 
-      <!-- 3. Stacking feed posts -->
+      
       <div class="space-y-4 pb-6">
         <div 
           v-for="post in posts" 
           :key="post.id + '-mobile'"
           class="bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-3 relative"
         >
-          <!-- Header (User avatar & details) -->
+          
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-full bg-[#13213C] flex-shrink-0"></div>
             <div>
@@ -267,17 +267,17 @@ const toggleLike = (postId: number) => {
             </div>
           </div>
 
-          <!-- Body text -->
+          
           <p class="text-xs text-gray-400/90 font-medium leading-relaxed">
             {{ post.text }}
           </p>
 
-          <!-- Book reference -->
+          
           <span class="block text-[11px] font-bold text-[#B06E02] mt-1">{{ post.book }}</span>
 
-          <!-- Footer actions (Aligned to bottom-right) -->
+          
           <div class="flex justify-end items-center gap-4 text-xs select-none mt-2.5 pt-1">
-            <!-- Like button -->
+            
             <button 
               @click="toggleLike(post.id)"
               class="flex items-center gap-1.5 font-bold transition cursor-pointer focus:outline-none"
@@ -289,7 +289,7 @@ const toggleLike = (postId: number) => {
               <span>{{ post.likes }}</span>
             </button>
 
-            <!-- Comment button -->
+            
             <button 
               class="flex items-center gap-1.5 text-gray-400 hover:text-[#FCAE1E] font-bold transition cursor-pointer"
             >
@@ -308,13 +308,13 @@ const toggleLike = (postId: number) => {
 </template>
 
 <style scoped>
-/* Hide scrollbar for Chrome, Safari and Opera */
+
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
-/* Hide scrollbar for IE, Edge and Firefox */
+
 .scrollbar-none {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
 }
 </style>

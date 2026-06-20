@@ -18,7 +18,8 @@
     "@fastify/jwt": "^10.1.0",
     "@prisma/client": "^6.19.3",
     "bcryptjs": "^2.4.3",
-    "fastify": "^5.8.5"
+    "fastify": "^5.8.5",
+    "@fastify/cors": "^10.0.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

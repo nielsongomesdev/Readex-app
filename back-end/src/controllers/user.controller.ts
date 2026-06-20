@@ -33,7 +33,6 @@ export class UserController {
     }
   };
 
-
   login = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { email, password } = request.body as any;

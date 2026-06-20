@@ -1,12 +1,53 @@
 import { ref } from 'vue'
+import { api } from '../services/api'
 
-export const name = ref('Anderson Ramalho')
-export const handle = ref('@charmander')
-export const bio = ref('Apaixonado por fantasia e ficção científica. 47 livros lidos em 2026.')
+export const name = ref('')
+export const handle = ref('')
+export const bio = ref('')
 
-// Appearance and Reading Preferences states
-export const temaClaro = ref(true) // true = Light, false = Dark
-export const tamanhoFonte = ref('Médio') // 'Pequeno', 'Médio', 'Grande'
-export const idioma = ref('Português') // 'Português', 'Inglês', 'Espanhol'
-export const metaDiaria = ref('30 min') // '15 min', '30 min', '45 min', '60 min'
-export const generosFavoritosCount = ref(4) // selected genres count
+export const token = ref(localStorage.getItem('token') || '')
+
+export const temaClaro = ref(true) 
+export const tamanhoFonte = ref('Médio') 
+export const idioma = ref('Português') 
+export const metaDiaria = ref('30 min') 
+export const generosFavoritosCount = ref(4) 
+
+export function setToken(t: string | null) {
+	if (t) {
+		token.value = t
+		localStorage.setItem('token', t)
+		api.defaults.headers.common['Authorization'] = `Bearer ${t}`
+	} else {
+		token.value = ''
+		localStorage.removeItem('token')
+		delete api.defaults.headers.common['Authorization']
+	}
+}
+
+export async function loadUser() {
+	try {
+		const res = await api.get('/users')
+		const user = Array.isArray(res.data) ? res.data[0] : res.data
+		if (user) {
+			name.value = user.name ?? ''
+			handle.value = user.handle ?? ''
+			bio.value = user.bio ?? ''
+		}
+	} catch (err) {
+		console.error('Falha ao carregar usuário', err)
+	}
+}
+
+export async function login(credentials: { email: string; password: string }) {
+	const res = await api.post('/login', credentials)
+	if (res.data?.token) setToken(res.data.token)
+	return res
+}
+
+export function logout() {
+	setToken(null)
+	name.value = ''
+	handle.value = ''
+	bio.value = ''
+}

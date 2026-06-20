@@ -1,4 +1,7 @@
+
 <script setup lang="ts">
+defineOptions({ name: 'AppSidebar' })
+ 
 import { name } from '../../store/userStore'
 
 const props = defineProps({
@@ -33,10 +36,10 @@ const handleLinkClick = () => {
     class="h-screen bg-[#FFFDF3] text-[#13213C] flex flex-col justify-between select-none"
     :class="[isMobile ? 'w-64 shadow-2xl z-50' : 'w-64 fixed left-0 top-0 border-r border-[#B06E02]/10']"
   >
-    <!-- Top Brand & Close Action (Mobile) -->
+    
     <div>
       <div class="h-16 px-6 flex items-center justify-between border-b border-[#B06E02]/10">
-        <!-- Brand Logo Badge -->
+        
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 bg-white border border-[#B06E02]/10 rounded-lg flex items-center justify-center p-1.5 shadow-sm">
             <img 
@@ -48,7 +51,7 @@ const handleLinkClick = () => {
           <span class="text-lg font-bold text-[#B06E02] tracking-wide">Readex</span>
         </div>
 
-        <!-- Close Button (Mobile Only) -->
+        
         <button 
           v-if="isMobile" 
           @click="emit('close')" 
@@ -61,9 +64,9 @@ const handleLinkClick = () => {
         </button>
       </div>
 
-      <!-- Navigation Links -->
+      
       <nav class="mt-6 px-4 space-y-1">
-        <!-- Main Links Group -->
+        
         <router-link 
           v-for="link in mainLinks" 
           :key="link.name" 
@@ -72,35 +75,35 @@ const handleLinkClick = () => {
           class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium text-[#806602]/80 hover:text-[#B06E02] hover:bg-[#FFF5CD]/50 transition duration-150 group"
           active-class="bg-[#13213C] text-[#FFF5CD] font-semibold hover:bg-[#13213C] shadow-sm"
         >
-          <!-- Custom Navigation SVG Icons -->
+          
           <span class="text-[#806602]/60 group-hover:text-[#B06E02] group-[.router-link-active]:text-[#FFF5CD]">
-            <!-- Início (Home) Icon -->
+            
             <svg v-if="link.icon === 'home'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
 
-            <!-- Minha Estante (Bookshelf) Icon -->
+            
             <svg v-else-if="link.icon === 'bookshelf'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
 
-            <!-- Explorar (Explore) Icon -->
+            
             <svg v-else-if="link.icon === 'explore'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l1.99 1.99a3 3 0 004.243 0l1.99-1.99a3 3 0 000-4.243l-1.99-1.99a3 3 0 00-4.243 0l-1.99 1.99a3 3 0 000 4.243zM12 21V12" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12v9m0 0l-3-3m3 3l3-3" />
             </svg>
 
-            <!-- Comunidade (Community) Icon -->
+            
             <svg v-else-if="link.icon === 'community'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
 
-            <!-- Progresso (Progress) Icon -->
+            
             <svg v-else-if="link.icon === 'progress'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
 
-            <!-- Perfil (Profile) Icon -->
+            
             <svg v-else-if="link.icon === 'profile'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
@@ -108,10 +111,10 @@ const handleLinkClick = () => {
           {{ link.name }}
         </router-link>
 
-        <!-- Separator Divider Line -->
+        
         <div class="h-px bg-[#B06E02]/10 my-4"></div>
 
-        <!-- Settings Link -->
+        
         <router-link 
           :to="settingsLink.path"
           @click="handleLinkClick"
@@ -129,16 +132,16 @@ const handleLinkClick = () => {
       </nav>
     </div>
 
-    <!-- Footer Profile Badge (White Card style matching Figma) -->
+    
     <div class="p-4">
       <div class="bg-white border border-[#B06E02]/10 rounded-2xl p-3 flex items-center gap-3.5 shadow-[0_4px_16px_rgba(176,110,2,0.03)]">
-        <!-- Profile Image -->
+        
         <img 
           src="../../assets/images/anderson_avatar.png" 
           alt="Anderson"
           class="w-10 h-10 rounded-full object-cover border border-[#B06E02]/10 shadow-xs"
         />
-        <!-- User Info -->
+        
         <div class="min-w-0 flex-1">
           <h4 class="text-sm font-bold text-[#13213C] truncate leading-tight">{{ name }}</h4>
           <span class="text-[11px] text-gray-400 font-semibold block mt-0.5 leading-none">Leitor</span>

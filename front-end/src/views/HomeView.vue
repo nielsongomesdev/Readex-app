@@ -1,10 +1,10 @@
 <script setup lang="ts">
-// HomeView.vue - Mock dashboard landing page
+
 </script>
 
 <template>
   <div class="space-y-6 select-none font-poppins">
-    <!-- Welcome Header Card -->
+    
     <div class="bg-gradient-to-r from-[#13213C] to-[#1D325A] rounded-3xl p-6 md:p-8 text-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
       <div class="space-y-2">
         <h1 class="text-2xl md:text-3xl font-bold">Olá, Anderson! 👋</h1>
@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <!-- Reading Analytics Stats Grid -->
+    
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
       <div class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-xs flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-[#FFF8D6] text-[#B06E02] flex items-center justify-center flex-shrink-0">
@@ -60,14 +60,14 @@
       </div>
     </div>
 
-    <!-- Main Dashboard Feed -->
+    
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Left side columns: Reading Progress list -->
+      
       <div class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-xs lg:col-span-2 space-y-4">
         <h2 class="text-lg font-bold text-[#13213C]">Continue Lendo</h2>
         
         <div class="space-y-4">
-          <!-- Book item 1 -->
+          
           <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition">
             <div class="w-12 h-16 bg-gray-200 rounded-lg shadow-xs overflow-hidden flex-shrink-0 flex items-center justify-center text-xs font-bold text-gray-400">Capa</div>
             <div class="flex-1 min-w-0">
@@ -80,7 +80,7 @@
             <span class="text-xs font-bold text-[#B06E02]">65%</span>
           </div>
 
-          <!-- Book item 2 -->
+          
           <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition">
             <div class="w-12 h-16 bg-gray-200 rounded-lg shadow-xs overflow-hidden flex-shrink-0 flex items-center justify-center text-xs font-bold text-gray-400">Capa</div>
             <div class="flex-1 min-w-0">
@@ -95,7 +95,7 @@
         </div>
       </div>
 
-      <!-- Right column: Activity / community info card -->
+      
       <div class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-xs space-y-4">
         <h2 class="text-lg font-bold text-[#13213C]">Desafios Ativos</h2>
         

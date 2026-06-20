@@ -11,31 +11,31 @@ const achievements = [
     <h1 class="text-2xl md:text-3xl font-bold text-[#13213C]">Meu Progresso</h1>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Reading Time Stats Card -->
+      
       <div class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-xs space-y-4">
         <h2 class="text-base font-bold text-[#13213C]">Tempo de Leitura (Minutos)</h2>
         <div class="h-40 flex items-end justify-between gap-2 pt-4 border-b border-gray-100 px-2">
-          <!-- Mock Chart Bar 1 -->
+          
           <div class="flex-1 flex flex-col items-center gap-1.5">
             <div class="w-full bg-[#13213C]/10 hover:bg-[#13213C]/20 rounded-lg h-24 transition"></div>
             <span class="text-[10px] font-bold text-gray-400">Seg</span>
           </div>
-          <!-- Mock Chart Bar 2 -->
+          
           <div class="flex-1 flex flex-col items-center gap-1.5">
             <div class="w-full bg-[#13213C]/10 hover:bg-[#13213C]/20 rounded-lg h-32 transition"></div>
             <span class="text-[10px] font-bold text-gray-400">Ter</span>
           </div>
-          <!-- Mock Chart Bar 3 -->
+          
           <div class="flex-1 flex flex-col items-center gap-1.5">
             <div class="w-full bg-[#B06E02] rounded-lg h-40 shadow-xs"></div>
             <span class="text-[10px] font-bold text-[#B06E02]">Qua</span>
           </div>
-          <!-- Mock Chart Bar 4 -->
+          
           <div class="flex-1 flex flex-col items-center gap-1.5">
             <div class="w-full bg-[#13213C]/10 hover:bg-[#13213C]/20 rounded-lg h-16 transition"></div>
             <span class="text-[10px] font-bold text-gray-400">Qui</span>
           </div>
-          <!-- Mock Chart Bar 5 -->
+          
           <div class="flex-1 flex flex-col items-center gap-1.5">
             <div class="w-full bg-[#13213C]/10 hover:bg-[#13213C]/20 rounded-lg h-28 transition"></div>
             <span class="text-[10px] font-bold text-gray-400">Sex</span>
@@ -43,7 +43,7 @@ const achievements = [
         </div>
       </div>
 
-      <!-- Achievements list card -->
+      
       <div class="bg-white p-6 rounded-2xl border border-[#B06E02]/10 shadow-xs space-y-4">
         <h2 class="text-base font-bold text-[#13213C]">Conquistas alcançadas</h2>
         
@@ -54,7 +54,7 @@ const achievements = [
             class="flex items-center gap-3.5 p-3 rounded-xl transition"
             :class="[badge.done ? 'bg-[#FFF8D6]/30 border border-[#B06E02]/15' : 'bg-gray-50 border border-transparent opacity-60']"
           >
-            <!-- Checkmark Indicator -->
+            
             <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs" :class="[badge.done ? 'bg-[#B06E02] text-white' : 'bg-gray-200 text-gray-400']">
               ✓
             </div>

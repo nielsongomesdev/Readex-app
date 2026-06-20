@@ -7,7 +7,6 @@ import andersonAvatar from '../assets/images/anderson_avatar.png'
 const router = useRouter()
 const route = useRoute()
 
-// Toggles states
 const metaDiariaNotif = ref(true)
 const recomendacoesNotif = ref(false)
 const atividadeSocialNotif = ref(true)
@@ -54,7 +53,6 @@ const cycleGeneros = () => {
   }
 }
 
-// Edit Profile Modal states
 const showEditModal = ref(false)
 const editName = ref('')
 const editHandle = ref('')
@@ -69,7 +67,7 @@ const openEditModal = () => {
 
 const closeEditModal = () => {
   showEditModal.value = false
-  // Clean up the query param
+  
   router.replace('/configuracoes')
 }
 
@@ -114,13 +112,13 @@ onMounted(() => {
 <template>
   <div class="select-none font-poppins text-[#13213C] pb-6 relative">
 
-    <!-- Screen Title (Desktop only) -->
+    
     <div class="hidden lg:flex items-center justify-between pb-3 border-b border-[#B06E02]/10 mb-6">
       <div>
         <h1 class="text-3xl font-bold text-[#13213C]">Configurações</h1>
         <p class="text-sm text-gray-400 font-semibold mt-1">Gerencie sua conta, preferências e privacidade</p>
       </div>
-      <!-- Right Icons -->
+      
       <div class="flex items-center gap-3 text-[#FCAE1E]">
         <button class="p-2 hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,18 +133,18 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Mobile Header Bar (Overrides standard mobile header) -->
+    
     <div class="lg:hidden sticky top-0 z-40 bg-[#FFFDF3] px-6 py-4 border-b border-[#B06E02]/10 -mx-6 -mt-6 md:-mx-8 md:-mt-8 mb-4 select-none flex items-center justify-between">
       <h1 class="text-xl font-bold text-[#13213C]">Configurações</h1>
     </div>
 
-    <!-- Main Content Layout Grid -->
+    
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4 lg:mt-0">
       
-      <!-- ================= LEFT COLUMN ================= -->
+      
       <div class="space-y-6">
         
-        <!-- User Profile Card -->
+        
         <router-link 
           to="/perfil"
           class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs flex items-center justify-between hover:bg-gray-50/50 transition-colors cursor-pointer block"
@@ -164,12 +162,12 @@ onMounted(() => {
           </svg>
         </router-link>
 
-        <!-- Category: Conta -->
+        
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest pl-1">Conta</h3>
           <div class="bg-white border border-[#B06E02]/5 rounded-2xl shadow-xs overflow-hidden divide-y divide-gray-100">
             
-            <!-- Editar perfil -->
+            
             <button 
               @click="openEditModal"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
@@ -185,7 +183,7 @@ onMounted(() => {
               </svg>
             </button>
 
-            <!-- Senha e segurança -->
+            
             <button 
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
             >
@@ -200,7 +198,7 @@ onMounted(() => {
               </svg>
             </button>
 
-            <!-- Privacidade e dados -->
+            
             <button 
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
             >
@@ -218,12 +216,12 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Category: Aparência -->
+        
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest pl-1">Aparência</h3>
           <div class="bg-white border border-[#B06E02]/5 rounded-2xl shadow-xs overflow-hidden divide-y divide-gray-100">
             
-            <!-- Tema claro -->
+            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,7 +230,7 @@ onMounted(() => {
                 </svg>
                 <span>Tema claro</span>
               </div>
-              <!-- Custom switch toggler -->
+              
               <button 
                 @click="temaClaro = !temaClaro"
                 class="w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-200 select-none outline-hidden"
@@ -245,7 +243,7 @@ onMounted(() => {
               </button>
             </div>
 
-            <!-- Tamanho da fonte -->
+            
             <button 
               @click="cycleTamanhoFonte"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
@@ -265,7 +263,7 @@ onMounted(() => {
               </div>
             </button>
 
-            <!-- Idioma -->
+            
             <button 
               @click="cycleIdioma"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
@@ -290,15 +288,15 @@ onMounted(() => {
 
       </div>
 
-      <!-- ================= RIGHT COLUMN ================= -->
+      
       <div class="space-y-6">
         
-        <!-- Category: Notificações -->
+        
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest pl-1">Notificações</h3>
           <div class="bg-white border border-[#B06E02]/5 rounded-2xl shadow-xs overflow-hidden divide-y divide-gray-100">
             
-            <!-- Metas diárias -->
+            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -315,7 +313,7 @@ onMounted(() => {
               </button>
             </div>
 
-            <!-- Recomendações -->
+            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -332,7 +330,7 @@ onMounted(() => {
               </button>
             </div>
 
-            <!-- Atividade social -->
+            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -349,7 +347,7 @@ onMounted(() => {
               </button>
             </div>
 
-            <!-- Novos seguidores -->
+            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,7 +364,7 @@ onMounted(() => {
               </button>
             </div>
 
-            <!-- Resumo semanal -->
+            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,12 +384,12 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Category: Preferências de leitura -->
+        
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest pl-1">Preferências de leitura</h3>
           <div class="bg-white border border-[#B06E02]/5 rounded-2xl shadow-xs overflow-hidden divide-y divide-gray-100">
             
-            <!-- Meta diária -->
+            
             <button 
               @click="cycleMetaDiaria"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
@@ -410,7 +408,7 @@ onMounted(() => {
               </div>
             </button>
 
-            <!-- Gêneros favoritos -->
+            
             <button 
               @click="cycleGeneros"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
@@ -432,7 +430,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Category: Zona de perigo -->
+        
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#E04B6E] uppercase tracking-widest pl-1">Zona de perigo</h3>
           <div class="flex flex-col sm:flex-row gap-3">
@@ -455,17 +453,17 @@ onMounted(() => {
 
     </div>
 
-    <!-- ===================================================================== -->
-    <!-- ==================== CREATIVE EDIT PROFILE MODAL ==================== -->
-    <!-- ===================================================================== -->
+    
+    
+    
     <div 
       v-if="showEditModal" 
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs select-none"
     >
-      <!-- Modal Box -->
+      
       <div class="bg-white border border-[#B06E02]/10 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-5 transform transition-all duration-300 animate-slide-in">
         
-        <!-- Modal Header -->
+        
         <div class="flex items-center justify-between border-b border-gray-100 pb-3">
           <h3 class="text-lg font-bold text-[#13213C]">Editar perfil</h3>
           <button 
@@ -478,9 +476,9 @@ onMounted(() => {
           </button>
         </div>
 
-        <!-- Modal Form Fields -->
+        
         <div class="space-y-4">
-          <!-- Name Field -->
+          
           <div class="space-y-1">
             <label class="block text-xs font-bold text-[#B06E02] uppercase tracking-wider">Nome completo</label>
             <input 
@@ -491,7 +489,7 @@ onMounted(() => {
             />
           </div>
 
-          <!-- Handle Field -->
+          
           <div class="space-y-1">
             <label class="block text-xs font-bold text-[#B06E02] uppercase tracking-wider">Nome de usuário</label>
             <input 
@@ -502,7 +500,7 @@ onMounted(() => {
             />
           </div>
 
-          <!-- Bio Field -->
+          
           <div class="space-y-1">
             <label class="block text-xs font-bold text-[#B06E02] uppercase tracking-wider">Biografia</label>
             <textarea 
@@ -514,7 +512,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Modal Footer Actions -->
+        
         <div class="flex items-center gap-3 pt-2">
           <button 
             @click="closeEditModal"
@@ -537,7 +535,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Simple pop entry animation */
+
 @keyframes slideIn {
   from {
     opacity: 0;

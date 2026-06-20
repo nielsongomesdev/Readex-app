@@ -26,7 +26,7 @@ const recentSearches = ref([
 
 const popularBooks = [
   {
-    id: 3, // Duna
+    id: 3, 
     title: 'Duna',
     author: 'Frank Herbert',
     rating: 4.8,
@@ -35,7 +35,7 @@ const popularBooks = [
     cover: dunaCover
   },
   {
-    id: 4, // 1984
+    id: 4, 
     title: '1984',
     author: 'George Orwell',
     rating: 4.6,
@@ -44,7 +44,7 @@ const popularBooks = [
     cover: orwellCover
   },
   {
-    id: 5, // O Senhor dos Anéis (using Hobbit cover as J.R.R. Tolkien placeholder)
+    id: 5, 
     title: 'O Senhor dos Anéis',
     author: 'J.R.R. Tolkien',
     rating: 4.9,
@@ -53,7 +53,7 @@ const popularBooks = [
     cover: hobbitCover
   },
   {
-    id: 9, // O Alquimista
+    id: 9, 
     title: 'O Alquimista',
     author: 'Paulo Coelho',
     rating: 4.5,
@@ -87,19 +87,19 @@ const selectCategory = (cat: string) => {
 <template>
   <div class="select-none font-poppins text-[#13213C] pb-6">
 
-    <!-- ===================================================================== -->
-    <!-- ========================= DESKTOP LAYOUT ============================ -->
-    <!-- ===================================================================== -->
+    
+    
+    
     <div class="hidden lg:block space-y-8">
       
-      <!-- 1. Full-width dark blue banner -->
+      
       <div class="bg-[#13213C] text-white py-12 px-8 text-center -mx-8 -mt-8 mb-8 relative">
         <h1 class="text-3xl font-bold">Explore o universo dos livros</h1>
         <p class="text-slate-300 text-xs font-semibold mt-2">
           Descubra novos autores, gêneros e histórias para sua próxima leitura
         </p>
 
-        <!-- Search Bar -->
+        
         <div class="mt-6 max-w-xl mx-auto relative flex items-center">
           <span class="absolute left-4 text-[#FCAE1E]">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,17 +120,17 @@ const selectCategory = (cat: string) => {
         </div>
       </div>
 
-      <!-- 2. Main Two-Column Layout Grid -->
+      
       <div class="grid grid-cols-3 gap-8">
         
-        <!-- Left: Resultados populares -->
+        
         <div class="col-span-2 space-y-4">
           <div class="flex justify-between items-center">
             <h2 class="text-lg font-bold text-[#E09A1C]">Resultados populares</h2>
             <span class="text-xs font-bold text-[#E09A1C] hover:underline cursor-pointer">Ver tudo →</span>
           </div>
 
-          <!-- Cards Stack -->
+          
           <div class="space-y-4">
             <router-link 
               v-for="book in filteredBooks" 
@@ -138,14 +138,14 @@ const selectCategory = (cat: string) => {
               :to="'/livro/' + book.id"
               class="bg-white border border-[#B06E02]/10 p-4 rounded-2xl flex gap-4 hover:shadow-xs transition relative min-w-0 flex-1 block group"
             >
-              <!-- Book Cover -->
+              
               <img 
                 :src="book.cover" 
                 :alt="book.title"
                 class="w-16 h-24 object-cover rounded-lg flex-shrink-0 shadow-xs border border-gray-100"
               />
               
-              <!-- Info block -->
+              
               <div class="flex-1 py-1 min-w-0 flex flex-col justify-between pr-20">
                 <div>
                   <h3 class="text-sm font-bold text-[#13213C] group-hover:text-[#B06E02] transition truncate leading-snug">{{ book.title }}</h3>
@@ -153,7 +153,7 @@ const selectCategory = (cat: string) => {
                 </div>
                 
                 <div class="flex items-center gap-1.5 text-xs text-gray-400 font-semibold mt-1">
-                  <!-- Single gold star -->
+                  
                   <svg class="w-3.5 h-3.5 text-[#FCAE1E] fill-current" viewBox="0 0 24 24">
                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                   </svg>
@@ -163,12 +163,12 @@ const selectCategory = (cat: string) => {
                 </div>
               </div>
 
-              <!-- Top Right: Solid gold bookmark ribbon -->
+              
               <svg class="w-4 h-4 text-[#FCAE1E] fill-current absolute top-4 right-4" viewBox="0 0 24 24">
                 <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
               </svg>
 
-              <!-- Bottom Right: Genre Tag -->
+              
               <span class="bg-[#FFF5CD]/60 text-[#B06E02] text-[10px] font-bold px-3 py-1 rounded-full absolute bottom-4 right-4 uppercase tracking-wider">
                 {{ book.genre }}
               </span>
@@ -180,10 +180,10 @@ const selectCategory = (cat: string) => {
           </div>
         </div>
 
-        <!-- Right: Search Sidebar -->
+        
         <div class="col-span-1 space-y-8">
           
-          <!-- Recent Searches -->
+          
           <div class="space-y-4">
             <h2 class="text-sm font-bold text-[#E09A1C]">Pesquisas recentes</h2>
             
@@ -214,7 +214,7 @@ const selectCategory = (cat: string) => {
             </div>
           </div>
 
-          <!-- Explore by genre -->
+          
           <div class="space-y-4">
             <h2 class="text-sm font-bold text-[#E09A1C]">Explorar por gênero</h2>
             
@@ -235,15 +235,15 @@ const selectCategory = (cat: string) => {
       </div>
     </div>
 
-    <!-- ===================================================================== -->
-    <!-- ========================== MOBILE LAYOUT ============================ -->
-    <!-- ===================================================================== -->
-    <!-- ===================================================================== -->
-    <!-- ========================== MOBILE LAYOUT ============================ -->
-    <!-- ===================================================================== -->
+    
+    
+    
+    
+    
+    
     <div class="lg:hidden flex flex-col space-y-6">
       
-      <!-- 1. Sticky Mobile Dark Blue Search Header Bar (Uses negative margins to go edge-to-edge inside main padding) -->
+      
       <div class="sticky top-0 z-40 bg-[#13213C] px-6 py-3.5 border-b border-[#B06E02]/10 -mx-6 -mt-6 md:-mx-8 md:-mt-8 mb-4 flex items-center justify-between select-none shadow-xs">
         <div class="w-full relative flex items-center">
           <span class="absolute left-3.5 text-gray-400">
@@ -265,7 +265,7 @@ const selectCategory = (cat: string) => {
         </div>
       </div>
 
-      <!-- 2. Pesquisas recentes -->
+      
       <div class="space-y-3">
         <h2 class="text-sm font-bold text-[#E09A1C]">Pesquisas recentes</h2>
         
@@ -284,7 +284,7 @@ const selectCategory = (cat: string) => {
         </div>
       </div>
 
-      <!-- 3. Explorar por gênero -->
+      
       <div class="space-y-3">
         <h2 class="text-sm font-bold text-[#E09A1C]">Explorar por gênero</h2>
         
@@ -301,11 +301,11 @@ const selectCategory = (cat: string) => {
         </div>
       </div>
 
-      <!-- 4. Resultados populares -->
+      
       <div class="space-y-3">
         <h2 class="text-sm font-bold text-[#E09A1C]">Resultados populares</h2>
         
-        <!-- Cards stack -->
+        
         <div class="space-y-4 pb-6">
           <router-link 
             v-for="book in filteredBooks" 
@@ -313,21 +313,21 @@ const selectCategory = (cat: string) => {
             :to="'/livro/' + book.id"
             class="bg-white border border-[#B06E02]/10 p-4 rounded-2xl flex gap-4 shadow-xs relative block"
           >
-            <!-- Cover -->
+            
             <img 
               :src="book.cover" 
               :alt="book.title"
               class="w-14 h-20 object-cover rounded-lg flex-shrink-0 shadow-xs border border-gray-50"
             />
             
-            <!-- Info block -->
+            
             <div class="flex-1 py-0.5 min-w-0 flex flex-col justify-between pr-14">
               <div>
                 <h3 class="text-xs font-bold text-[#13213C] truncate leading-snug">{{ book.title }}</h3>
                 <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ book.author }}</p>
               </div>
               
-              <!-- 5 Stars list (4 yellow and 1 grey, dynamic logic using Math.floor) -->
+              
               <div class="flex items-center gap-1 mt-1 text-[10px] text-gray-400 font-semibold">
                 <div class="flex items-center">
                   <svg 
@@ -344,12 +344,12 @@ const selectCategory = (cat: string) => {
               </div>
             </div>
 
-            <!-- Top Right: Solid gold bookmark ribbon -->
+            
             <svg class="w-4 h-4 text-[#FCAE1E] fill-current absolute top-4 right-4" viewBox="0 0 24 24">
               <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
             </svg>
 
-            <!-- Bottom Right: Genre badge -->
+            
             <span class="bg-[#FFF5CD]/60 text-[#B06E02] text-[9px] font-bold px-2.5 py-0.5 rounded-full absolute bottom-4 right-4 uppercase tracking-wider">
               {{ book.genre }}
             </span>

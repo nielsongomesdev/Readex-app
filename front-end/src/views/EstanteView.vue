@@ -11,7 +11,7 @@ import sapiensCover from '../assets/images/sapiens_cover.png'
 import atomicCover from '../assets/images/atomic_habits_cover.png'
 import alquimistaCover from '../assets/images/o_alquimista_cover.png'
 
-const activeTab = ref('todos') // 'todos', 'lendo', 'quero', 'lidos'
+const activeTab = ref('todos') 
 
 const tabs = [
   { id: 'todos', name: 'Todos', count: 47 },
@@ -42,21 +42,21 @@ const lidosBooks = ref([
 <template>
   <div class="space-y-6 select-none font-poppins text-[#13213C]">
     
-    <!-- ================= DESKTOP HEADER ROW (Desktop only) ================= -->
+    
     <div class="hidden lg:flex items-center justify-between">
       <div class="flex flex-col gap-1">
         <h1 class="text-3xl font-bold text-[#13213C]">Minha Estante</h1>
         <p class="text-xs text-gray-400 font-semibold">Acompanhe sua jornada de leitura</p>
       </div>
-      <!-- Right: Search and Notifications -->
+      
       <div class="flex items-center gap-3">
-        <!-- Notification -->
+        
         <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
         </button>
-        <!-- Search -->
+        
         <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -65,12 +65,12 @@ const lidosBooks = ref([
       </div>
     </div>
 
-    <!-- ================= MOBILE HEADER TITLE (Mobile only) ================= -->
+    
     <div class="block lg:hidden pt-2">
       <h1 class="text-2xl font-bold text-[#13213C]">Minha Estante</h1>
     </div>
 
-    <!-- ================= DESKTOP FILTERS PILLS (Desktop only) ================= -->
+    
     <div class="hidden lg:flex gap-4 items-center">
       <button 
         v-for="tab in tabs" 
@@ -93,7 +93,7 @@ const lidosBooks = ref([
       </button>
     </div>
 
-    <!-- ================= MOBILE TABS UNDERLINE (Mobile only) ================= -->
+    
     <div class="flex lg:hidden border-b border-[#B06E02]/10 w-full">
       <button 
         v-for="tab in tabs" 
@@ -110,10 +110,10 @@ const lidosBooks = ref([
       </button>
     </div>
 
-    <!-- ================= BOOKSHELF SECTIONS ================= -->
+    
     <div class="space-y-8 mt-4">
       
-      <!-- 1. LENDO SECTION -->
+      
       <div v-if="activeTab === 'todos' || activeTab === 'lendo'" class="space-y-4">
         <h2 class="text-sm md:text-base font-bold text-[#806602]">Lendo ({{ lendoBooks.length }})</h2>
         
@@ -124,14 +124,14 @@ const lidosBooks = ref([
             :to="'/livro/2'"
             class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex gap-5 hover:scale-[1.01] transition duration-150 cursor-pointer"
           >
-            <!-- Book Cover -->
+            
             <img 
               :src="book.cover" 
               :alt="book.title"
               class="w-20 h-28 lg:w-24 lg:h-36 object-cover rounded-xl shadow-md border border-[#B06E02]/10 flex-shrink-0"
             />
             
-            <!-- Book Details & Progress -->
+            
             <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
               <div class="flex justify-between items-start">
                 <div>
@@ -143,7 +143,7 @@ const lidosBooks = ref([
 
               <div>
                 <span class="text-[10px] lg:text-[11px] font-bold text-gray-400 block mb-1.5">{{ book.pagesRead }} de {{ book.totalPages }} páginas</span>
-                <!-- Progress bar -->
+                
                 <div class="w-full bg-gray-200/60 rounded-full h-1.5 lg:h-2 overflow-hidden">
                   <div class="bg-[#FCAE1E] h-1.5 lg:h-2 rounded-full" :style="{ width: book.progress + '%' }"></div>
                 </div>
@@ -153,14 +153,14 @@ const lidosBooks = ref([
         </div>
       </div>
 
-      <!-- 2. QUERO LER SECTION -->
+      
       <div v-if="activeTab === 'todos' || activeTab === 'quero'" class="space-y-4">
         <div class="flex justify-between items-center">
           <h2 class="text-sm md:text-base font-bold text-[#806602]">Quero ler (12)</h2>
           <span class="text-xs text-gray-400 font-semibold hover:text-[#B06E02] transition cursor-pointer select-none">Ver tudo →</span>
         </div>
         
-        <!-- Desktop Grid / Mobile horizontal scroll -->
+        
         <div 
           :class="[
             activeTab === 'todos' 
@@ -186,7 +186,7 @@ const lidosBooks = ref([
           </router-link>
         </div>
 
-        <!-- Mobile Horizontal Scroll (Only when showing "Todos" tab on mobile) -->
+        
         <div 
           v-if="activeTab === 'todos'"
           class="lg:hidden flex overflow-x-auto gap-4 pb-2 scrollbar-none select-none"
@@ -210,7 +210,7 @@ const lidosBooks = ref([
         </div>
       </div>
 
-      <!-- 3. LIDOS SECTION -->
+      
       <div v-if="activeTab === 'todos' || activeTab === 'lidos'" class="space-y-4">
         <div class="flex justify-between items-center">
           <h2 class="text-sm md:text-base font-bold text-[#806602]">Lidos (33)</h2>
@@ -225,7 +225,7 @@ const lidosBooks = ref([
             class="bg-[#FFFBEA] border border-[#B06E02]/10 p-3.5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex items-center justify-between hover:scale-[1.01] transition duration-150 cursor-pointer"
           >
             <div class="flex items-center gap-4 min-w-0">
-              <!-- Mini Book Cover -->
+              
               <img 
                 :src="book.cover" 
                 :alt="book.title"
@@ -237,7 +237,7 @@ const lidosBooks = ref([
               </div>
             </div>
 
-            <!-- Complete stats / Rating / Status -->
+            
             <div class="flex items-center gap-4 flex-shrink-0">
               <span class="hidden sm:inline text-xs text-gray-400 font-medium">Concluído em {{ book.date }}</span>
               <div class="flex items-center gap-1">
@@ -260,13 +260,13 @@ const lidosBooks = ref([
 </template>
 
 <style scoped>
-/* Hide scrollbar for Chrome, Safari and Opera */
+
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
-/* Hide scrollbar for IE, Edge and Firefox */
+
 .scrollbar-none {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
 }
 </style>

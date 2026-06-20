@@ -10,7 +10,7 @@ const discussions = [
   <div class="space-y-6 select-none font-poppins">
     <h1 class="text-2xl md:text-3xl font-bold text-[#13213C]">Comunidade</h1>
 
-    <!-- Clubs and Groups list -->
+    
     <div class="space-y-4">
       <h2 class="text-lg font-bold text-[#13213C]">Fóruns de Discussão</h2>
       <div class="space-y-3">

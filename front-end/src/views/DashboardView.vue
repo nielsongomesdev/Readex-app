@@ -44,21 +44,21 @@ const navigateShortcut = (icon: string) => {
 <template>
   <div class="space-y-6 select-none font-poppins text-[#13213C]">
     
-    <!-- ================= DESKTOP HEADER ROW (Desktop only) ================= -->
+    
     <div class="hidden lg:flex items-center justify-between">
       <div class="flex flex-col gap-1">
         <h1 class="text-3xl font-bold text-[#B06E02]">Bom dia, Anderson!</h1>
         <p class="text-xs text-gray-400 font-semibold">Domingo, 3 de maio de 2026</p>
       </div>
-      <!-- Right: Search and Notifications -->
+      
       <div class="flex items-center gap-3">
-        <!-- Notification -->
+        
         <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
         </button>
-        <!-- Search -->
+        
         <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -67,7 +67,7 @@ const navigateShortcut = (icon: string) => {
       </div>
     </div>
 
-    <!-- ================= MOBILE GREETING CARD (Mobile only) ================= -->
+    
     <div class="flex lg:hidden items-center gap-5 py-2 px-1">
       <div class="w-24 h-24 flex-shrink-0">
         <img 
@@ -82,25 +82,25 @@ const navigateShortcut = (icon: string) => {
       </div>
     </div>
 
-    <!-- ================= MAIN LAYOUT GRID ================= -->
+    
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- LEFT COLUMN: Now Reading, Shortcuts, Community (Desktop) / Stacked elements (Mobile) -->
+      
       <div class="lg:col-span-2 space-y-6">
         
-        <!-- 1. Lendo agora -->
+        
         <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Lendo agora</h2>
           
           <div class="flex gap-5">
-            <!-- Book Cover -->
+            
             <img 
               src="../assets/images/atelier_cover.png" 
               alt="Atelier of Witch Hat"
               class="w-24 h-36 object-cover rounded-xl shadow-md border border-[#B06E02]/10 flex-shrink-0"
             />
             
-            <!-- Book Details & Progress -->
+            
             <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
               <div class="flex justify-between items-start">
                 <div>
@@ -112,13 +112,13 @@ const navigateShortcut = (icon: string) => {
 
               <div>
                 <span class="text-[11px] font-bold text-gray-400 block mb-1.5">{{ nowReading.pagesRead }} de {{ nowReading.totalPages }} páginas</span>
-                <!-- Progress bar -->
+                
                 <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
                   <div class="bg-[#FCAE1E] h-2 rounded-full" :style="{ width: nowReading.progress + '%' }"></div>
                 </div>
               </div>
 
-              <!-- Action button (Desktop only, hidden on mobile) -->
+              
               <router-link to="/livro/2" class="hidden lg:block w-full border border-[#B06E02]/40 text-[#B06E02] hover:bg-[#FFF5CD]/30 text-xs font-bold py-2.5 rounded-xl transition cursor-pointer text-center mt-3">
                 Acompanhar progresso
               </router-link>
@@ -126,7 +126,7 @@ const navigateShortcut = (icon: string) => {
           </div>
         </div>
 
-        <!-- 2. Meta do Mês (Mobile only, rendered stacked in this section) -->
+        
         <div class="block lg:hidden bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-3.5">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Meta do mês</h2>
           <div class="flex justify-between items-center text-[#806602]">
@@ -136,22 +136,22 @@ const navigateShortcut = (icon: string) => {
             </div>
             <span class="text-sm font-bold">63%</span>
           </div>
-          <!-- Progress bar -->
+          
           <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
             <div class="bg-[#FCAE1E] h-2 rounded-full" style="width: 63%"></div>
           </div>
         </div>
 
-        <!-- 3. Acompanhar Progresso Button (Mobile only) -->
+        
         <router-link to="/livro/2" class="block lg:hidden w-full bg-white border border-[#E09A1C]/60 text-[#E09A1C] hover:bg-[#FFF5CD]/20 text-xs font-bold py-3.5 rounded-xl transition cursor-pointer text-center">
           Acompanhar progresso
         </router-link>
 
-        <!-- 4. Atalhos rápidos -->
+        
         <div class="space-y-3">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Atalhos rápidos</h2>
           
-          <!-- Desktop Version -->
+          
           <div class="hidden lg:grid grid-cols-4 gap-4">
             <button 
               v-for="item in shortcuts" 
@@ -175,7 +175,7 @@ const navigateShortcut = (icon: string) => {
             </button>
           </div>
 
-          <!-- Mobile version (Horizontal scroll list of pills, only plus icon for + Livro) -->
+          
           <div class="lg:hidden flex overflow-x-auto gap-3 pb-2 scrollbar-none select-none">
             <button 
               v-for="item in shortcuts" 
@@ -191,7 +191,7 @@ const navigateShortcut = (icon: string) => {
           </div>
         </div>
 
-        <!-- 5. Da comunidade -->
+        
         <div class="space-y-3">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Da comunidade</h2>
           
@@ -217,10 +217,10 @@ const navigateShortcut = (icon: string) => {
 
       </div>
 
-      <!-- RIGHT COLUMN: Monthly Goal & Reading Suggestions (Desktop only, hidden/repositioned on mobile) -->
+      
       <div class="hidden lg:block space-y-6">
         
-        <!-- 1. Meta do mês -->
+        
         <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
           <div class="flex justify-between items-start">
             <div>
@@ -230,18 +230,18 @@ const navigateShortcut = (icon: string) => {
             </div>
             <span class="text-sm font-bold text-[#806602] mt-6">63%</span>
           </div>
-          <!-- Progress bar -->
+          
           <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
             <div class="bg-[#FCAE1E] h-2 rounded-full" style="width: 63%"></div>
           </div>
         </div>
 
-        <!-- 2. Sugerido para você -->
+        
         <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Sugerido para você</h2>
           
           <div class="flex gap-4 p-1">
-            <!-- Book Cover -->
+            
             <img 
               src="../assets/images/duna_cover.png" 
               alt="Duna"
@@ -269,13 +269,13 @@ const navigateShortcut = (icon: string) => {
 </template>
 
 <style scoped>
-/* Hide scrollbar for Chrome, Safari and Opera */
+
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
-/* Hide scrollbar for IE, Edge and Firefox */
+
 .scrollbar-none {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
 }
 </style>

@@ -32,18 +32,15 @@ const handleRegister = async () => {
   loading.value = true
 
   try {
-    await api('/users', {
-      method: 'POST',
-      body: {
-        name: `${firstName.value} ${lastName.value}`.trim(),
-        email: email.value,
-        password: password.value,
-      },
+    await api.post('/users', {
+      name: `${firstName.value} ${lastName.value}`.trim(),
+      email: email.value,
+      password: password.value,
     })
 
     router.push('/verify-email')
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Erro ao criar conta. Tente novamente.'
+  } catch (error: any) {
+    const message = error.response?.data?.error || error.response?.data?.message || 'Erro ao criar conta. Tente novamente.'
     alert(message)
   } finally {
     loading.value = false

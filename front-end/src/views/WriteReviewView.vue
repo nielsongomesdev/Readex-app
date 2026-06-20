@@ -71,12 +71,12 @@ const publishReview = () => {
 <template>
   <div class="select-none font-poppins text-[#13213C] pb-6">
 
-    <!-- ===================================================================== -->
-    <!-- ========================= DESKTOP LAYOUT ============================ -->
-    <!-- ===================================================================== -->
+    
+    
+    
     <div class="hidden lg:block space-y-6">
       
-      <!-- Desktop Header Row -->
+      
       <div class="flex items-center justify-between pb-3 border-b border-[#B06E02]/10 mb-6">
         <div class="flex items-center gap-4">
           <button 
@@ -89,7 +89,7 @@ const publishReview = () => {
           </button>
           <span class="text-3xl font-bold text-[#13213C]">Escrever Resenha</span>
         </div>
-        <!-- Right Icons -->
+        
         <div class="flex items-center gap-3 text-[#FCAE1E]">
           <button class="p-2 hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,13 +104,13 @@ const publishReview = () => {
         </div>
       </div>
 
-      <!-- Two-Column Layout Grid -->
+      
       <div class="grid grid-cols-3 gap-8">
         
-        <!-- Left Column (Sub Cards) -->
+        
         <div class="col-span-1 space-y-6">
           
-          <!-- Book Info Card -->
+          
           <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs flex gap-4 items-center">
             <img :src="book.cover" :alt="book.title" class="w-16 h-24 object-cover rounded-lg flex-shrink-0 shadow-xs border border-gray-100" />
             <div class="min-w-0 flex-1">
@@ -122,12 +122,12 @@ const publishReview = () => {
             </div>
           </div>
 
-          <!-- Rating Card -->
+          
           <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs space-y-4">
             <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest">Sua avaliação</h3>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1">
-                <!-- Stars clickable interaction -->
+                
                 <svg 
                   v-for="star in 5" 
                   :key="star"
@@ -147,7 +147,7 @@ const publishReview = () => {
             </div>
           </div>
 
-          <!-- Sua Leitura dates Card -->
+          
           <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs space-y-4">
             <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest">Sua leitura</h3>
             <div class="grid grid-cols-2 gap-4">
@@ -162,7 +162,7 @@ const publishReview = () => {
             </div>
           </div>
 
-          <!-- Tags Card -->
+          
           <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs space-y-4">
             <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest">Tags</h3>
             <div class="flex flex-wrap gap-2">
@@ -185,17 +185,17 @@ const publishReview = () => {
 
         </div>
 
-        <!-- Right Column (Review input area) -->
+        
         <div class="col-span-2 space-y-6">
           
-          <!-- Sua resenha box -->
+          
           <div class="bg-white border border-[#B06E02]/5 p-6 rounded-2xl shadow-xs space-y-4">
             <div>
               <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest mb-1.5">Sua resenha</h3>
               <p class="text-xs text-gray-400 font-semibold">Compartilhe sua experiência sobre o livro com a comunidade.</p>
             </div>
 
-            <!-- Custom bordered text area container -->
+            
             <div class="border border-[#E5DED1] rounded-2xl p-5 bg-white">
               <textarea 
                 v-model="reviewText"
@@ -206,7 +206,7 @@ const publishReview = () => {
               ></textarea>
             </div>
 
-            <!-- Bottom Row -->
+            
             <div class="flex justify-between items-center pt-1">
               <span class="text-xs text-gray-400 font-semibold">{{ reviewText.length }}/1000 caracteres</span>
               <button 
@@ -218,7 +218,7 @@ const publishReview = () => {
             </div>
           </div>
 
-          <!-- Anotações Card -->
+          
           <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs flex flex-col space-y-3">
             <div>
               <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest mb-1.5">Anotações do livro</h3>
@@ -235,12 +235,12 @@ const publishReview = () => {
 
     </div>
 
-    <!-- ===================================================================== -->
-    <!-- ========================== MOBILE LAYOUT ============================ -->
-    <!-- ===================================================================== -->
+    
+    
+    
     <div class="lg:hidden flex flex-col space-y-4">
       
-      <!-- Sticky Mobile Top Header Bar -->
+      
       <div class="sticky top-0 z-40 bg-[#FFFDF3] px-6 py-4 border-b border-[#B06E02]/10 -mx-6 -mt-6 md:-mx-8 md:-mt-8 mb-4 flex items-center gap-4 select-none">
         <button @click="goBack" class="p-1 text-[#13213C] hover:bg-gray-100 rounded-lg transition duration-200 cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,10 +250,10 @@ const publishReview = () => {
         <span class="text-xl font-bold text-[#13213C]">Escrever Resenha</span>
       </div>
 
-      <!-- Content Stack -->
+      
       <div class="space-y-4 pb-6">
         
-        <!-- Book Info Card -->
+        
         <div class="bg-white border border-[#B06E02]/5 p-4 rounded-2xl shadow-xs flex items-center gap-4">
           <img :src="book.cover" :alt="book.title" class="w-14 h-20 object-cover rounded-lg flex-shrink-0 shadow-xs border border-gray-50" />
           <div class="flex-1 min-w-0 flex justify-between items-center">
@@ -267,7 +267,7 @@ const publishReview = () => {
           </div>
         </div>
 
-        <!-- Rating Card -->
+        
         <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs space-y-3.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest">Sua avaliação</h3>
           <div class="flex items-center justify-between">
@@ -291,7 +291,7 @@ const publishReview = () => {
           </div>
         </div>
 
-        <!-- Dates Card -->
+        
         <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs space-y-3.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest">Sua leitura</h3>
           <div class="flex items-center justify-between">
@@ -307,7 +307,7 @@ const publishReview = () => {
           </div>
         </div>
 
-        <!-- Tags Card -->
+        
         <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs space-y-3.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest">Tags</h3>
           <div class="flex flex-wrap gap-2">
@@ -328,11 +328,11 @@ const publishReview = () => {
           </div>
         </div>
 
-        <!-- Review Textarea Card (Titled "Sua leitura" to match Figma mobile screenshot) -->
+        
         <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs space-y-4">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest">Sua leitura</h3>
           
-          <!-- Orange bordered box -->
+          
           <div class="border border-[#FCAE1E] rounded-2xl p-4">
             <textarea 
               v-model="reviewText"
@@ -343,7 +343,7 @@ const publishReview = () => {
             ></textarea>
           </div>
 
-          <!-- Submit button -->
+          
           <button 
             @click="publishReview"
             class="w-full bg-[#FCAE1E] hover:bg-[#E09612] text-white font-bold text-xs py-3.5 rounded-xl transition duration-200 cursor-pointer select-none text-center"
