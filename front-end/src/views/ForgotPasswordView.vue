@@ -1,14 +1,28 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabaseClient } from '@/lib/supabase'
 
 const router = useRouter()
 const email = ref('')
+const loading = ref(false)
 
-const handleForgotPassword = () => {
-  console.log('Forgot password request for email:', email.value)
-  
-  router.push('/reset-password')
+const handleForgotPassword = async () => {
+  loading.value = true
+  try {
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email.value, {
+      redirectTo: window.location.origin + '/reset-password',
+    })
+    
+    if (error) throw error
+    
+    alert('Email de redefinição enviado com sucesso! Verifique sua caixa de entrada.')
+    router.push('/reset-password')
+  } catch (error: any) {
+    alert(error.message || 'Erro ao enviar email de redefinição.')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -110,9 +124,10 @@ const handleForgotPassword = () => {
           
           <button 
             type="submit" 
-            class="w-full bg-[#13213C] text-white font-semibold py-3.5 px-6 rounded-xl hover:bg-[#13213C]/95 hover:scale-[1.01] active:scale-[0.99] transition duration-200 shadow-sm cursor-pointer"
+            :disabled="loading"
+            class="w-full bg-[#13213C] text-white font-semibold py-3.5 px-6 rounded-xl hover:bg-[#13213C]/95 hover:scale-[1.01] active:scale-[0.99] transition duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            Enviar link
+            {{ loading ? 'Enviando...' : 'Enviar link' }}
           </button>
         </form>
 
