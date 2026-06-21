@@ -1,8 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { name, handle, bio, temaClaro, tamanhoFonte, idioma, metaDiaria, generosFavoritosCount } from '../store/userStore'
+import { name, handle, bio, temaClaro, tamanhoFonte, idioma, metaDiaria, generosFavoritosCount, avatarUrl, updateAvatar } from '../store/userStore'
 import andersonAvatar from '../assets/images/anderson_avatar.png'
+import mascot1 from '../assets/images/mascote-1.png'
+import mascot2 from '../assets/images/mascote-2.png'
+import mascot3 from '../assets/images/mascote-3.png'
+import mascot4 from '../assets/images/mascote-4.png'
+import mascot6 from '../assets/images/mascote-6.png'
+
+const avatarPresets = [
+  andersonAvatar,
+  mascot1,
+  mascot2,
+  mascot3,
+  mascot4,
+  mascot6
+]
 
 const router = useRouter()
 const route = useRoute()
@@ -57,18 +71,37 @@ const showEditModal = ref(false)
 const editName = ref('')
 const editHandle = ref('')
 const editBio = ref('')
+const editAvatar = ref('')
 
 const openEditModal = () => {
   editName.value = name.value
   editHandle.value = handle.value
   editBio.value = bio.value
+  editAvatar.value = avatarUrl.value
   showEditModal.value = true
 }
 
 const closeEditModal = () => {
   showEditModal.value = false
-  
   router.replace('/configuracoes')
+}
+
+const handleAvatarUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    if (file.size > 2 * 1024 * 1024) {
+      alert('A imagem é muito grande! Por favor, escolha uma imagem com menos de 2MB.')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        editAvatar.value = e.target.result as string
+      }
+    }
+    reader.readAsDataURL(file)
+  }
 }
 
 const saveProfile = () => {
@@ -87,6 +120,7 @@ const saveProfile = () => {
   }
   
   bio.value = editBio.value.trim()
+  updateAvatar(editAvatar.value)
   closeEditModal()
 }
 
@@ -112,7 +146,7 @@ onMounted(() => {
 <template>
   <div class="select-none font-poppins text-[#13213C] pb-6 relative">
 
-    
+    <!-- Header Desktop -->
     <div class="hidden lg:flex items-center justify-between pb-3 border-b border-[#B06E02]/10 mb-6">
       <div>
         <h1 class="text-3xl font-bold text-[#13213C]">Configurações</h1>
@@ -133,24 +167,24 @@ onMounted(() => {
       </div>
     </div>
 
-    
+    <!-- Header Mobile -->
     <div class="lg:hidden sticky top-0 z-40 bg-[#FFFDF3] px-6 py-4 border-b border-[#B06E02]/10 -mx-6 -mt-6 md:-mx-8 md:-mt-8 mb-4 select-none flex items-center justify-between">
       <h1 class="text-xl font-bold text-[#13213C]">Configurações</h1>
     </div>
 
-    
+    <!-- Main Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4 lg:mt-0">
       
-      
+      <!-- Left Column -->
       <div class="space-y-6">
         
-        
+        <!-- User Profile Card -->
         <router-link 
           to="/perfil"
           class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs flex items-center justify-between hover:bg-gray-50/50 transition-colors cursor-pointer block"
         >
           <div class="flex items-center gap-4 min-w-0">
-            <img :src="andersonAvatar" alt="Avatar" class="w-14 h-14 rounded-full object-cover border border-gray-100 flex-shrink-0" />
+            <img :src="avatarUrl" alt="Avatar" class="w-14 h-14 rounded-full object-cover border border-gray-100 flex-shrink-0" />
             <div class="min-w-0">
               <h2 class="text-base font-bold text-[#13213C] truncate leading-tight">{{ name }}</h2>
               <p class="text-xs text-gray-400 font-semibold truncate mt-0.5">{{ handle }}</p>
@@ -162,12 +196,12 @@ onMounted(() => {
           </svg>
         </router-link>
 
-        
+        <!-- Account Settings Links -->
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest pl-1">Conta</h3>
           <div class="bg-white border border-[#B06E02]/5 rounded-2xl shadow-xs overflow-hidden divide-y divide-gray-100">
             
-            
+            <!-- Edit Profile -->
             <button 
               @click="openEditModal"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
@@ -183,7 +217,7 @@ onMounted(() => {
               </svg>
             </button>
 
-            
+            <!-- Password and Security -->
             <button 
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
             >
@@ -198,7 +232,7 @@ onMounted(() => {
               </svg>
             </button>
 
-            
+            <!-- Privacy -->
             <button 
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
             >
@@ -216,12 +250,12 @@ onMounted(() => {
           </div>
         </div>
 
-        
+        <!-- Appearance Settings -->
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest pl-1">Aparência</h3>
           <div class="bg-white border border-[#B06E02]/5 rounded-2xl shadow-xs overflow-hidden divide-y divide-gray-100">
             
-            
+            <!-- Light/Dark Mode -->
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,7 +277,7 @@ onMounted(() => {
               </button>
             </div>
 
-            
+            <!-- Font Size -->
             <button 
               @click="cycleTamanhoFonte"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
@@ -263,7 +297,7 @@ onMounted(() => {
               </div>
             </button>
 
-            
+            <!-- Language -->
             <button 
               @click="cycleIdioma"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
@@ -288,14 +322,13 @@ onMounted(() => {
 
       </div>
 
-      
+      <!-- Right Column -->
       <div class="space-y-6">
         
-        
+        <!-- Notifications -->
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest pl-1">Notificações</h3>
           <div class="bg-white border border-[#B06E02]/5 rounded-2xl shadow-xs overflow-hidden divide-y divide-gray-100">
-            
             
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
@@ -313,7 +346,6 @@ onMounted(() => {
               </button>
             </div>
 
-            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -330,7 +362,6 @@ onMounted(() => {
               </button>
             </div>
 
-            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,7 +378,6 @@ onMounted(() => {
               </button>
             </div>
 
-            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -364,7 +394,6 @@ onMounted(() => {
               </button>
             </div>
 
-            
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-3.5 text-sm font-semibold text-[#13213C]">
                 <svg class="w-5 h-5 text-[#B06E02]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -384,11 +413,10 @@ onMounted(() => {
           </div>
         </div>
 
-        
+        <!-- Reading Preferences -->
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#B06E02] uppercase tracking-widest pl-1">Preferências de leitura</h3>
           <div class="bg-white border border-[#B06E02]/5 rounded-2xl shadow-xs overflow-hidden divide-y divide-gray-100">
-            
             
             <button 
               @click="cycleMetaDiaria"
@@ -408,7 +436,6 @@ onMounted(() => {
               </div>
             </button>
 
-            
             <button 
               @click="cycleGeneros"
               class="w-full flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors text-left cursor-pointer outline-hidden"
@@ -430,7 +457,7 @@ onMounted(() => {
           </div>
         </div>
 
-        
+        <!-- Danger Zone -->
         <div class="space-y-2.5">
           <h3 class="text-xs font-bold text-[#E04B6E] uppercase tracking-widest pl-1">Zona de perigo</h3>
           <div class="flex flex-col sm:flex-row gap-3">
@@ -453,16 +480,12 @@ onMounted(() => {
 
     </div>
 
-    
-    
-    
+    <!-- Edit Profile Modal -->
     <div 
       v-if="showEditModal" 
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs select-none"
     >
-      
       <div class="bg-white border border-[#B06E02]/10 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-5 transform transition-all duration-300 animate-slide-in">
-        
         
         <div class="flex items-center justify-between border-b border-gray-100 pb-3">
           <h3 class="text-lg font-bold text-[#13213C]">Editar perfil</h3>
@@ -476,9 +499,47 @@ onMounted(() => {
           </button>
         </div>
 
-        
         <div class="space-y-4">
           
+          <!-- Profile Photo Selection/Upload -->
+          <div class="space-y-2 pb-2 border-b border-gray-100">
+            <label class="block text-xs font-bold text-[#B06E02] uppercase tracking-wider">Foto de perfil</label>
+            <div class="flex items-center gap-4">
+              <img :src="editAvatar" alt="Avatar Preview" class="w-14 h-14 rounded-full object-cover border border-gray-200 shadow-sm" />
+              <div class="flex flex-col gap-2">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  @change="handleAvatarUpload" 
+                  class="hidden" 
+                  id="avatar-upload-input" 
+                />
+                <label 
+                  for="avatar-upload-input" 
+                  class="bg-[#13213C] hover:bg-[#13213C]/95 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg cursor-pointer transition select-none text-center"
+                >
+                  Enviar imagem
+                </label>
+              </div>
+            </div>
+            
+            <div class="space-y-1.5 pt-2">
+              <span class="block text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Avatares padrão:</span>
+              <div class="flex flex-wrap gap-2">
+                <button 
+                  v-for="(preset, index) in avatarPresets" 
+                  :key="index"
+                  type="button"
+                  @click="editAvatar = preset"
+                  class="w-10 h-10 rounded-full overflow-hidden border-2 transition hover:scale-105 active:scale-95 cursor-pointer"
+                  :class="editAvatar === preset ? 'border-[#FCAE1E]' : 'border-gray-200'"
+                >
+                  <img :src="preset" class="w-full h-full object-cover" />
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="space-y-1">
             <label class="block text-xs font-bold text-[#B06E02] uppercase tracking-wider">Nome completo</label>
             <input 
@@ -489,7 +550,6 @@ onMounted(() => {
             />
           </div>
 
-          
           <div class="space-y-1">
             <label class="block text-xs font-bold text-[#B06E02] uppercase tracking-wider">Nome de usuário</label>
             <input 
@@ -500,7 +560,6 @@ onMounted(() => {
             />
           </div>
 
-          
           <div class="space-y-1">
             <label class="block text-xs font-bold text-[#B06E02] uppercase tracking-wider">Biografia</label>
             <textarea 
@@ -512,7 +571,6 @@ onMounted(() => {
           </div>
         </div>
 
-        
         <div class="flex items-center gap-3 pt-2">
           <button 
             @click="closeEditModal"
@@ -535,7 +593,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -546,7 +603,6 @@ onMounted(() => {
     transform: scale(1);
   }
 }
-
 .animate-slide-in {
   animation: slideIn 0.2s ease-out forwards;
 }

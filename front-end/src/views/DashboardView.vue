@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
+import { api } from '../services/api'
 import { name as userName } from '@/store/userStore'
 import { googleBooksApi } from '../services/googleBooks'
-import { getMockBooks } from '../services/mockBooks'
+import { getMockBooks, getMockBookDetails } from '../services/mockBooks'
 
 const router = useRouter()
 
@@ -36,6 +38,30 @@ interface SuggestionBook {
 const suggestions = ref<SuggestionBook[]>([])
 const loadingSuggestions = ref(false)
 
+const lendoBooks = ref<any[]>([])
+const lidosBooks = ref<any[]>([])
+const loadingShelf = ref(true)
+const monthGoal = ref(8)
+
+// Compute values for Currently Reading book and Goal Progress
+const lendoBook = computed(() => {
+  return lendoBooks.value.length > 0 ? lendoBooks.value[0] : null
+})
+
+const lidosThisMonth = computed(() => {
+  const now = new Date()
+  return lidosBooks.value.filter(b => {
+    const updateDate = new Date(b.updatedAt)
+    return updateDate.getFullYear() === now.getFullYear() && updateDate.getMonth() === now.getMonth()
+  }).length
+})
+
+const metaPercent = computed(() => {
+  if (monthGoal.value <= 0) return 0
+  const pct = Math.round((lidosThisMonth.value / monthGoal.value) * 100)
+  return Math.min(pct, 100)
+})
+
 const fetchSuggestions = async () => {
   loadingSuggestions.value = true
   try {
@@ -67,8 +93,66 @@ const fetchSuggestions = async () => {
   }
 }
 
+const fetchShelfData = async () => {
+  loadingShelf.value = true
+  try {
+    const res = await api.get('/shelf')
+    const items = res.data || []
+    lendoBooks.value = []
+    lidosBooks.value = []
+    
+    for (const item of items) {
+      const dbBook = item.book || {}
+      
+      let totalPages = 250
+      let bookCover = dbBook.coverUrl || ''
+      
+      try {
+        const gResponse = await googleBooksApi.getVolume(dbBook.id)
+        const volumeInfo = gResponse.data.volumeInfo || {}
+        totalPages = volumeInfo.pageCount || totalPages
+        if (!bookCover && volumeInfo.imageLinks?.thumbnail) {
+          bookCover = volumeInfo.imageLinks.thumbnail
+        }
+      } catch (gErr) {
+        const mock = getMockBookDetails(dbBook.id)
+        totalPages = mock.pages || totalPages
+        if (!bookCover && mock.cover) {
+          bookCover = mock.cover
+        }
+      }
+      
+      const mapped = {
+        id: dbBook.id,
+        title: dbBook.title || 'Título desconhecido',
+        author: dbBook.author || 'Autor desconhecido',
+        cover: bookCover,
+        pagesRead: item.pagesRead || 0,
+        totalPages,
+        progress: totalPages > 0 ? Math.round(((item.pagesRead || 0) / totalPages) * 100) : 0,
+        updatedAt: item.updatedAt,
+        status: item.status
+      }
+      
+      if (item.status === 'Lendo') {
+        lendoBooks.value.push(mapped)
+      } else if (item.status === 'Lido') {
+        lidosBooks.value.push(mapped)
+      }
+    }
+    
+    // Sort currently reading by updated date descending
+    lendoBooks.value.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+  } catch (err) {
+    console.error('Error fetching dashboard shelf data:', err)
+  } finally {
+    loadingShelf.value = false
+  }
+}
+
 onMounted(() => {
   fetchSuggestions()
+  fetchShelfData()
 })
 
 const navigateShortcut = (icon: string) => {
@@ -87,7 +171,7 @@ const navigateShortcut = (icon: string) => {
 <template>
   <div class="space-y-6 select-none font-poppins text-[#13213C]">
     
-    
+    <!-- Title Desktop -->
     <div class="hidden lg:flex items-center justify-between">
       <div class="flex flex-col gap-1">
         <h1 class="text-3xl font-bold text-[#B06E02]">Bom dia, {{ firstName }}!</h1>
@@ -95,13 +179,11 @@ const navigateShortcut = (icon: string) => {
       </div>
       
       <div class="flex items-center gap-3">
-        
         <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
         </button>
-        
         <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -110,7 +192,7 @@ const navigateShortcut = (icon: string) => {
       </div>
     </div>
 
-    
+    <!-- Title Mobile -->
     <div class="flex lg:hidden items-center gap-5 py-2 px-1">
       <div class="w-24 h-24 flex-shrink-0">
         <img 
@@ -125,17 +207,55 @@ const navigateShortcut = (icon: string) => {
       </div>
     </div>
 
-    
+    <!-- Main Content -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      
+      <!-- Left Column -->
       <div class="lg:col-span-2 space-y-6">
         
-        
+        <!-- Currently Reading dynamically linked -->
         <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Lendo agora</h2>
           
-          <div class="border-2 border-dashed border-[#B06E02]/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-4">
+          <!-- Loading state -->
+          <div v-if="loadingShelf" class="flex flex-col items-center justify-center py-8 space-y-2">
+            <svg class="animate-spin h-6 w-6 text-[#E09A1C]" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider animate-pulse">Carregando livro...</span>
+          </div>
+
+          <!-- Dynamic Book Display -->
+          <div v-else-if="lendoBook" class="flex gap-5 items-center bg-white border border-[#B06E02]/10 p-4 rounded-xl shadow-xs">
+            <img 
+              v-if="lendoBook.cover"
+              :src="lendoBook.cover" 
+              :alt="lendoBook.title"
+              class="w-16 h-24 object-cover rounded-lg shadow-sm border border-[#B06E02]/10 flex-shrink-0"
+            />
+            <div v-else class="w-16 h-24 bg-[#E5ECF6] rounded-lg flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+              <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+            </div>
+            <div class="flex-1 min-w-0 flex flex-col justify-between h-24 py-1">
+              <div>
+                <h3 class="text-sm font-bold text-[#13213C] truncate leading-snug">{{ lendoBook.title }}</h3>
+                <p class="text-xs text-gray-400 font-semibold truncate mt-0.5">{{ lendoBook.author }}</p>
+              </div>
+              <div>
+                <div class="flex justify-between items-center text-xs mb-1.5 font-bold text-[#806602]">
+                  <span>{{ lendoBook.pagesRead }} de {{ lendoBook.totalPages }} págs</span>
+                  <span>{{ lendoBook.progress }}%</span>
+                </div>
+                <div class="w-full bg-gray-200/60 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-[#FCAE1E] h-1.5 rounded-full" :style="{ width: lendoBook.progress + '%' }"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-else class="border-2 border-dashed border-[#B06E02]/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-4">
             <div class="p-3 bg-[#FFF5CD]/40 rounded-full text-[#B06E02]">
               <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -151,27 +271,27 @@ const navigateShortcut = (icon: string) => {
           </div>
         </div>
 
-        
+        <!-- Mobile Meta do Mês -->
         <div class="block lg:hidden bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-3.5">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Meta do mês</h2>
           <div class="flex justify-between items-center text-[#806602]">
             <div>
-              <span class="text-base font-bold">5 de 8</span>
+              <span class="text-base font-bold">{{ lidosThisMonth }} de {{ monthGoal }}</span>
               <span class="text-sm font-medium ml-1.5">livros lidos</span>
             </div>
-            <span class="text-sm font-bold">63%</span>
+            <span class="text-sm font-bold">{{ metaPercent }}%</span>
           </div>
           
           <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
-            <div class="bg-[#FCAE1E] h-2 rounded-full" style="width: 63%"></div>
+            <div class="bg-[#FCAE1E] h-2 rounded-full" :style="{ width: metaPercent + '%' }"></div>
           </div>
         </div>
 
-        
+        <!-- Quick Shortcuts -->
         <div class="space-y-3">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Atalhos rápidos</h2>
           
-          
+          <!-- Desktop Grid -->
           <div class="hidden lg:grid grid-cols-4 gap-4">
             <button 
               v-for="item in shortcuts" 
@@ -195,7 +315,7 @@ const navigateShortcut = (icon: string) => {
             </button>
           </div>
 
-          
+          <!-- Mobile Carousel -->
           <div class="lg:hidden flex overflow-x-auto gap-3 pb-2 scrollbar-none select-none">
             <button 
               v-for="item in shortcuts" 
@@ -211,10 +331,9 @@ const navigateShortcut = (icon: string) => {
           </div>
         </div>
 
-        
+        <!-- Social Activity Placeholder -->
         <div class="space-y-3">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Da comunidade</h2>
-          
           <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-6 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex flex-col items-center justify-center text-center py-8">
             <svg class="w-8 h-8 text-[#B06E02]/60 mb-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -225,26 +344,26 @@ const navigateShortcut = (icon: string) => {
 
       </div>
 
-      
+      <!-- Right Column (Desktop sidebar only) -->
       <div class="hidden lg:block space-y-6">
         
-        
+        <!-- Desktop Meta do Mês -->
         <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
           <div class="flex justify-between items-start">
             <div>
               <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest mb-2">Meta do mês</h2>
-              <span class="text-xl font-bold text-[#806602]">5 de 8</span>
+              <span class="text-xl font-bold text-[#806602]">{{ lidosThisMonth }} de {{ monthGoal }}</span>
               <span class="text-xs text-gray-400 font-semibold block mt-0.5">livros lidos</span>
             </div>
-            <span class="text-sm font-bold text-[#806602] mt-6">63%</span>
+            <span class="text-sm font-bold text-[#806602] mt-6">{{ metaPercent }}%</span>
           </div>
           
           <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
-            <div class="bg-[#FCAE1E] h-2 rounded-full" style="width: 63%"></div>
+            <div class="bg-[#FCAE1E] h-2 rounded-full" :style="{ width: metaPercent + '%' }"></div>
           </div>
         </div>
 
-        
+        <!-- Suggested books -->
         <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Sugerido para você</h2>
           
@@ -291,11 +410,9 @@ const navigateShortcut = (icon: string) => {
 </template>
 
 <style scoped>
-
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
-
 .scrollbar-none {
   -ms-overflow-style: none;  
   scrollbar-width: none;  

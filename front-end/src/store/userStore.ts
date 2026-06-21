@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { api } from '../services/api'
+import defaultAvatar from '../assets/images/anderson_avatar.png'
 
 const getStoredUser = () => {
   try {
@@ -14,6 +15,12 @@ export const userId = ref(storedUser.id || '')
 export const name = ref(storedUser.name || '')
 export const handle = ref(storedUser.handle || '')
 export const bio = ref(storedUser.bio || '')
+export const avatarUrl = ref(localStorage.getItem('avatarUrl') || defaultAvatar)
+
+export function updateAvatar(url: string) {
+  avatarUrl.value = url
+  localStorage.setItem('avatarUrl', url)
+}
 
 export const token = ref(localStorage.getItem('token') || '')
 

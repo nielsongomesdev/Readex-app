@@ -2,7 +2,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'AppSidebar' })
  
-import { name } from '../../store/userStore'
+import { name, avatarUrl } from '../../store/userStore'
 
 const props = defineProps({
   isMobile: {
@@ -137,7 +137,7 @@ const handleLinkClick = () => {
       <div class="bg-white border border-[#B06E02]/10 rounded-2xl p-3 flex items-center gap-3.5 shadow-[0_4px_16px_rgba(176,110,2,0.03)]">
         
         <img 
-          src="../../assets/images/anderson_avatar.png" 
+          :src="avatarUrl" 
           :alt="name || 'Avatar'"
           class="w-10 h-10 rounded-full object-cover border border-[#B06E02]/10 shadow-xs"
         />
