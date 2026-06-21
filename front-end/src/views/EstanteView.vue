@@ -1,0 +1,404 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { api } from '../services/api'
+import { googleBooksApi } from '../services/googleBooks'
+import { getMockBookDetails } from '../services/mockBooks'
+
+const router = useRouter()
+
+import atelierCover from '../assets/images/atelier_cover.png'
+import nomeVentoCover from '../assets/images/o_nome_do_vento_cover.png'
+import dunaCover from '../assets/images/duna_cover.png'
+import orwellCover from '../assets/images/1984_cover.png'
+import hobbitCover from '../assets/images/o_hobbit_cover.png'
+import objetosCover from '../assets/images/objetos_cortantes_cover.png'
+import sapiensCover from '../assets/images/sapiens_cover.png'
+import atomicCover from '../assets/images/atomic_habits_cover.png'
+import alquimistaCover from '../assets/images/o_alquimista_cover.png'
+
+const coverMapping: Record<string, string> = {
+  'oN-ODwAAQBAJ': atelierCover,
+  'L_SjAgAAQBAJ': nomeVentoCover,
+  'oT9-DwAAQBAJ': dunaCover,
+  '1N8zEAAAQBAJ': orwellCover,
+  '0s1u9iT788AC': hobbitCover,
+  'qjZPAAAAMAAJ': objetosCover,
+  'w9P3BAAAQBAJ': sapiensCover,
+  'W1_LDQAAQBAJ': atomicCover,
+  'o3v8AgAAQBAJ': alquimistaCover
+}
+
+const activeTab = ref('todos') 
+const loading = ref(true)
+
+const lendoBooks = ref<any[]>([])
+const queroBooks = ref<any[]>([])
+const lidosBooks = ref<any[]>([])
+
+const tabs = ref([
+  { id: 'todos', name: 'Todos', count: 0 },
+  { id: 'lendo', name: 'Lendo', count: 0 },
+  { id: 'quero', name: 'Quero Ler', count: 0 },
+  { id: 'lidos', name: 'Lidos', count: 0 }
+])
+
+const fetchShelf = async () => {
+  loading.value = true
+  try {
+    const res = await api.get('/shelf')
+    const items = res.data || []
+    
+    lendoBooks.value = []
+    queroBooks.value = []
+    lidosBooks.value = []
+    
+    for (const item of items) {
+      const dbBook = item.book || {}
+      
+      let totalPages = 250
+      let rating = 4.5
+      let bookCover = dbBook.coverUrl || coverMapping[dbBook.id] || ''
+      
+      try {
+        const gResponse = await googleBooksApi.getVolume(dbBook.id)
+        const volumeInfo = gResponse.data.volumeInfo || {}
+        totalPages = volumeInfo.pageCount || totalPages
+        rating = volumeInfo.averageRating || rating
+        if (!bookCover && volumeInfo.imageLinks?.thumbnail) {
+          bookCover = volumeInfo.imageLinks.thumbnail
+        }
+      } catch (gErr) {
+        console.log('Error fetching google book details:', dbBook.id, gErr)
+        // Fallback to offline mock data
+        const mock = getMockBookDetails(dbBook.id)
+        totalPages = mock.pages || totalPages
+        rating = mock.rating || rating
+        if (!bookCover && mock.cover) {
+          bookCover = mock.cover
+        }
+      }
+      
+      const mappedBook = {
+        id: dbBook.id,
+        title: dbBook.title || 'Título desconhecido',
+        author: dbBook.author || 'Autor desconhecido',
+        cover: bookCover,
+        pagesRead: item.pagesRead || 0,
+        totalPages: totalPages,
+        progress: totalPages > 0 ? Math.round(((item.pagesRead || 0) / totalPages) * 100) : 0,
+        rating: rating,
+        date: new Date(item.updatedAt).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }),
+        statusText: item.status
+      }
+      
+      if (item.status === 'Lendo') {
+        lendoBooks.value.push(mappedBook)
+      } else if (item.status === 'Quero Ler') {
+        queroBooks.value.push(mappedBook)
+      } else if (item.status === 'Lido') {
+        lidosBooks.value.push(mappedBook)
+      }
+    }
+    
+    if (tabs.value[0]) tabs.value[0].count = lendoBooks.value.length + queroBooks.value.length + lidosBooks.value.length
+    if (tabs.value[1]) tabs.value[1].count = lendoBooks.value.length
+    if (tabs.value[2]) tabs.value[2].count = queroBooks.value.length
+    if (tabs.value[3]) tabs.value[3].count = lidosBooks.value.length
+  } catch (err) {
+    console.error('Erro ao buscar estante:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchShelf()
+})
+</script>
+
+<template>
+  <div class="space-y-6 select-none font-poppins text-[#13213C]">
+    
+    
+    <div class="hidden lg:flex items-center justify-between">
+      <div class="flex flex-col gap-1">
+        <h1 class="text-3xl font-bold text-[#13213C]">Minha Estante</h1>
+        <p class="text-xs text-gray-400 font-semibold">Acompanhe sua jornada de leitura</p>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        
+        <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        </button>
+        
+        <button type="button" class="p-2 text-[#B06E02] hover:bg-[#FFF5CD]/50 rounded-xl transition cursor-pointer">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    
+    <div class="block lg:hidden pt-2">
+      <h1 class="text-2xl font-bold text-[#13213C]">Minha Estante</h1>
+    </div>
+
+    
+    <div class="hidden lg:flex gap-4 items-center">
+      <button 
+        v-for="tab in tabs" 
+        :key="tab.id" 
+        @click="activeTab = tab.id"
+        class="flex items-center px-5 py-2.5 rounded-full text-xs font-bold transition shadow-xs cursor-pointer border"
+        :class="activeTab === tab.id 
+          ? 'bg-[#13213C] border-[#13213C] text-white' 
+          : 'bg-white border-gray-200 text-gray-400 hover:text-[#B06E02]'"
+      >
+        {{ tab.name }}
+        <span 
+          class="rounded-full px-2 py-0.5 ml-2 text-[10px] font-bold"
+          :class="activeTab === tab.id 
+            ? 'bg-white text-[#13213C]' 
+            : 'bg-gray-100 text-gray-500'"
+        >
+          {{ tab.count }}
+        </span>
+      </button>
+    </div>
+
+    
+    <div class="flex lg:hidden border-b border-[#B06E02]/10 w-full">
+      <button 
+        v-for="tab in tabs" 
+        :key="tab.id + '-mobile'" 
+        @click="activeTab = tab.id"
+        class="flex-1 text-center pb-2.5 text-xs font-bold tracking-wide transition relative cursor-pointer"
+        :class="activeTab === tab.id ? 'text-[#B06E02]' : 'text-gray-400'"
+      >
+        {{ tab.name }}
+        <span 
+          v-if="activeTab === tab.id" 
+          class="absolute bottom-0 left-0 right-0 h-[2px] bg-[#B06E02]"
+        ></span>
+      </button>
+    </div>
+
+    
+    <!-- Loading State -->
+    <div v-if="loading" class="min-h-[40vh] flex flex-col items-center justify-center space-y-3 bg-white border border-[#B06E02]/10 rounded-2xl p-8">
+      <svg class="animate-spin h-8 w-8 text-[#E09A1C]" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="text-xs text-gray-400 font-bold uppercase tracking-wider animate-pulse">Carregando estante...</span>
+    </div>
+
+    <div v-else class="space-y-8 mt-4">
+      
+      
+      <div v-if="activeTab === 'todos' || activeTab === 'lendo'" class="space-y-4">
+        <h2 class="text-sm md:text-base font-bold text-[#806602]">Lendo ({{ lendoBooks.length }})</h2>
+        
+        <div v-if="lendoBooks.length === 0" class="text-center py-8 text-gray-400 text-xs font-semibold border-2 border-dashed border-[#B06E02]/15 rounded-2xl bg-[#FFFBEA]/30">
+          Nenhum livro sendo lido no momento.
+        </div>
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div 
+            v-for="book in lendoBooks" 
+            :key="book.id"
+            @click="router.push('/livro/' + book.id)"
+            class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex gap-5 hover:scale-[1.01] transition duration-150 cursor-pointer"
+          >
+            
+            <img 
+              v-if="book.cover"
+              :src="book.cover" 
+              :alt="book.title"
+              class="w-20 h-28 lg:w-24 lg:h-36 object-cover rounded-xl shadow-md border border-[#B06E02]/10 flex-shrink-0"
+            />
+            <div v-else class="w-20 h-28 lg:w-24 lg:h-36 bg-[#E5ECF6] rounded-xl flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+              <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+            </div>
+            
+            
+            <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-sm lg:text-base font-bold text-[#806602] leading-snug truncate">{{ book.title }}</h3>
+                  <p class="text-xs text-gray-400 font-semibold mt-0.5 truncate">{{ book.author }}</p>
+                </div>
+                <span class="text-xs lg:text-sm font-bold text-[#806602] flex-shrink-0 ml-2">{{ book.progress }}%</span>
+              </div>
+
+              <div>
+                <span class="text-[10px] lg:text-[11px] font-bold text-gray-400 block mb-1.5">{{ book.pagesRead }} de {{ book.totalPages }} páginas</span>
+                
+                <div class="w-full bg-gray-200/60 rounded-full h-1.5 lg:h-2 overflow-hidden">
+                  <div class="bg-[#FCAE1E] h-1.5 lg:h-2 rounded-full" :style="{ width: book.progress + '%' }"></div>
+                </div>
+              </div>
+
+              <!-- Ler agora button -->
+              <button 
+                @click.stop="router.push('/ler/' + book.id)"
+                class="mt-3 bg-[#13213C] hover:bg-[#13213C]/95 text-white hover:text-[#FCAE1E] font-bold text-[10px] px-4 py-2 rounded-xl flex items-center justify-center gap-1.5 transition self-start cursor-pointer shadow-xs"
+              >
+                <svg class="w-3.5 h-3.5 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+                </svg>
+                Ler agora
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div v-if="activeTab === 'todos' || activeTab === 'quero'" class="space-y-4">
+        <div class="flex justify-between items-center">
+          <h2 class="text-sm md:text-base font-bold text-[#806602]">Quero ler ({{ queroBooks.length }})</h2>
+        </div>
+        
+        <div v-if="queroBooks.length === 0" class="text-center py-8 text-gray-400 text-xs font-semibold border-2 border-dashed border-[#B06E02]/15 rounded-2xl bg-[#FFFBEA]/30">
+          Nenhum livro adicionado na lista 'Quero Ler'.
+        </div>
+        <template v-else>
+          <div 
+            :class="[
+              activeTab === 'todos' 
+                ? 'hidden lg:grid lg:grid-cols-6 gap-6' 
+                : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6'
+            ]"
+          >
+            <div 
+              v-for="book in queroBooks" 
+              :key="book.id"
+              @click="router.push('/livro/' + book.id)"
+              class="flex flex-col items-center text-center gap-2 select-none cursor-pointer hover:scale-[1.02] transition duration-150"
+            >
+              <img 
+                v-if="book.cover"
+                :src="book.cover" 
+                :alt="book.title"
+                class="w-[110px] h-[160px] object-cover rounded-xl shadow-xs border border-[#B06E02]/10 hover:scale-[1.02] transition"
+              />
+              <div v-else class="w-[110px] h-[160px] bg-[#E5ECF6] rounded-xl flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+                <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+              </div>
+              <div class="w-full min-w-0 px-1 mt-1 flex flex-col items-center">
+                <h4 class="text-xs font-bold text-[#806602] truncate leading-tight w-full">{{ book.title }}</h4>
+                <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5 w-full">{{ book.author }}</p>
+                <button 
+                  @click.stop="router.push('/ler/' + book.id)"
+                  class="mt-2 bg-[#13213C] hover:bg-[#13213C]/95 text-white hover:text-[#FCAE1E] font-bold text-[9px] px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition cursor-pointer shadow-xs w-full max-w-[80px]"
+                >
+                  <svg class="w-2.5 h-2.5 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+                  </svg>
+                  Ler
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div 
+            v-if="activeTab === 'todos'"
+            class="lg:hidden flex overflow-x-auto gap-4 pb-2 scrollbar-none select-none"
+          >
+            <div 
+              v-for="book in queroBooks" 
+              :key="book.id + '-mobile'"
+              @click="router.push('/livro/' + book.id)"
+              class="flex flex-col items-center flex-shrink-0 text-center gap-2 cursor-pointer w-[110px] hover:scale-[1.02] transition duration-150"
+            >
+              <img 
+                v-if="book.cover"
+                :src="book.cover" 
+                :alt="book.title"
+                class="w-[110px] h-[160px] object-cover rounded-xl shadow-xs border border-[#B06E02]/10"
+              />
+              <div v-else class="w-[110px] h-[160px] bg-[#E5ECF6] rounded-xl flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+                <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+              </div>
+              <div class="w-full min-w-0 px-1 mt-1 flex flex-col items-center">
+                <h4 class="text-xs font-bold text-[#806602] truncate leading-tight w-full">{{ book.title }}</h4>
+                <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5 w-full">{{ book.author }}</p>
+                <button 
+                  @click.stop="router.push('/ler/' + book.id)"
+                  class="mt-2 bg-[#13213C] hover:bg-[#13213C]/95 text-white hover:text-[#FCAE1E] font-bold text-[9px] px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition cursor-pointer shadow-xs w-full max-w-[80px]"
+                >
+                  <svg class="w-2.5 h-2.5 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+                  </svg>
+                  Ler
+                </button>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+          <div v-if="activeTab === 'todos' || activeTab === 'lidos'" class="space-y-4">
+        <h2 class="text-sm md:text-base font-bold text-[#806602]">Lidos ({{ lidosBooks.length }})</h2>
+        
+        <div v-if="lidosBooks.length === 0" class="text-center py-8 text-gray-400 text-xs font-semibold border-2 border-dashed border-[#B06E02]/15 rounded-2xl bg-[#FFFBEA]/30">
+          Nenhum livro lido ainda.
+        </div>
+        <div v-else class="grid grid-cols-1 gap-4">
+          <router-link 
+            v-for="book in lidosBooks" 
+            :key="book.id"
+            :to="'/livro/' + book.id"
+            class="bg-[#FFFBEA] border border-[#B06E02]/10 p-3.5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex items-center justify-between hover:scale-[1.01] transition duration-150 cursor-pointer"
+          >
+            <div class="flex items-center gap-4 min-w-0">
+              <img 
+                v-if="book.cover"
+                :src="book.cover" 
+                :alt="book.title"
+                class="w-10 h-14 object-cover rounded-lg shadow-sm border border-[#B06E02]/10 flex-shrink-0"
+              />
+              <div v-else class="w-10 h-14 bg-[#E5ECF6] rounded-lg flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+                <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+              </div>
+              <div class="min-w-0">
+                <h4 class="text-sm font-bold text-[#806602] truncate">{{ book.title }}</h4>
+                <p class="text-xs text-gray-400 font-semibold mt-0.5 truncate">{{ book.author }}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4 flex-shrink-0">
+              <span class="hidden sm:inline text-xs text-gray-400 font-medium">Concluído em {{ book.date }}</span>
+              <div class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5 text-[#FCAE1E]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+                <span class="text-xs font-bold text-[#B06E02]">{{ book.rating }}</span>
+              </div>
+              <span class="bg-[#137333] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-xs">
+                {{ book.statusText }}
+              </span>
+            </div>
+          </router-link>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+}
+</style>
