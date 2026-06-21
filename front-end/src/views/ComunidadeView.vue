@@ -1,38 +1,45 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { api } from '../services/api'
+import { userId as currentUserId } from '../store/userStore'
 
 const activeTab = ref('Todos')
 const tabs = ['Todos', 'Seguindo', 'Resenhas', 'Discussões']
+const loading = ref(false)
 
-const posts = ref([
-  {
-    id: 1,
-    user: { name: 'Alexandre Cabral', time: 'Há 2h' },
-    text: 'Acabei de terminar Duna e não consigo parar de pensar nisso. A construção do mundo é simplesmente incrível!',
-    book: 'Duna — Frank Herbert',
-    likes: 132,
-    comments: 47,
-    isLiked: false
-  },
-  {
-    id: 2,
-    user: { name: 'Jussandro Vítor', time: 'Há 5h' },
-    text: 'Alguém mais acha que 1984 é mais relevante hoje do que quando foi escrito? Relendo pela terceira vez...',
-    book: '1984 — George Orwell',
-    likes: 24,
-    comments: 7,
-    isLiked: false
-  },
-  {
-    id: 3,
-    user: { name: 'Ryan Guedes', time: 'Há 8h' },
-    text: '“Ler é voar sem sair do lugar.” - minha citação favorita de O Alquimista.',
-    book: 'O Alquimista – Paulo Coelho',
-    likes: 58,
-    comments: 12,
-    isLiked: false
+const posts = ref<any[]>([])
+
+const fetchReviews = async () => {
+  loading.value = true
+  try {
+    const res = await api.get('/reviews')
+    const reviews = res.data || []
+    
+    posts.value = reviews.map((rev: any) => {
+      const isLiked = rev.likes ? rev.likes.some((like: any) => like.userId === currentUserId.value) : false
+      const timeFormatted = new Date(rev.createdAt).toLocaleDateString('pt-BR', {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+      
+      return {
+        id: rev.id,
+        user: { name: rev.user?.name || 'Leitor anônimo', time: timeFormatted },
+        text: rev.comment || 'Nenhum comentário.',
+        book: `${rev.book?.title || 'Livro Desconhecido'} — ${rev.book?.author || 'Autor Desconhecido'}`,
+        likes: rev.likes ? rev.likes.length : 0,
+        comments: 0,
+        isLiked: isLiked
+      }
+    })
+  } catch (err) {
+    console.error('Erro ao carregar avaliações:', err)
+  } finally {
+    loading.value = false
   }
-])
+}
 
 const trending = ref([
   { tag: '#Duna', postsCount: '234' },
@@ -54,13 +61,27 @@ const toggleFollow = (userId: number) => {
   }
 }
 
-const toggleLike = (postId: number) => {
+const toggleLike = async (postId: string) => {
   const post = posts.value.find(p => p.id === postId)
-  if (post) {
-    post.isLiked = !post.isLiked
+  if (!post) return
+
+  const originallyLiked = post.isLiked
+  post.isLiked = !post.isLiked
+  post.likes = post.isLiked ? post.likes + 1 : post.likes - 1
+
+  try {
+    const res = await api.post(`/reviews/${postId}/like`)
+    post.isLiked = res.data.liked
+  } catch (err) {
+    console.error('Erro ao curtir resenha:', err)
+    post.isLiked = originallyLiked
     post.likes = post.isLiked ? post.likes + 1 : post.likes - 1
   }
 }
+
+onMounted(() => {
+  fetchReviews()
+})
 </script>
 
 <template>
@@ -110,68 +131,87 @@ const toggleLike = (postId: number) => {
         
         
         <div class="col-span-2 space-y-6">
-          <div 
-            v-for="post in posts" 
-            :key="post.id"
-            class="bg-white border border-[#B06E02]/10 p-6 rounded-2xl shadow-xs space-y-4 hover:shadow-[0_4px_16px_rgba(176,110,2,0.02)] transition"
-          >
+          <!-- Loading State -->
+          <div v-if="loading" class="min-h-[40vh] flex flex-col items-center justify-center space-y-3 bg-white border border-[#B06E02]/10 rounded-2xl p-8 shadow-xs">
+            <svg class="animate-spin h-8 w-8 text-[#E09A1C]" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-xs text-gray-400 font-bold uppercase tracking-wider animate-pulse">Carregando feed de resenhas...</span>
+          </div>
+
+          <template v-else>
+            <!-- Empty state for community reviews -->
+            <div v-if="posts.length === 0" class="text-center py-12 text-gray-400 text-sm font-semibold border-2 border-dashed border-[#B06E02]/15 rounded-2xl bg-[#FFFBEA]/30">
+              Nenhuma resenha foi publicada na comunidade ainda.
+            </div>
             
-            <div class="flex items-center gap-3">
+            <div 
+              v-else
+              v-for="post in posts" 
+              :key="post.id"
+              class="bg-white border border-[#B06E02]/10 p-6 rounded-2xl shadow-xs space-y-4 hover:shadow-[0_4px_16px_rgba(176,110,2,0.02)] transition"
+            >
               
-              <div class="w-10 h-10 rounded-full bg-[#13213C] flex-shrink-0"></div>
-              <div>
-                <h3 class="text-sm font-bold text-[#13213C]">{{ post.user.name }}</h3>
-                <span class="text-[10px] text-gray-400 font-semibold block mt-0.5">{{ post.user.time }}</span>
+              <div class="flex items-center gap-3">
+                
+                <div class="w-10 h-10 rounded-full bg-[#13213C] flex items-center justify-center font-bold text-white shadow-sm uppercase">
+                  {{ post.user.name.charAt(0) }}
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-[#13213C]">{{ post.user.name }}</h3>
+                  <span class="text-[10px] text-gray-400 font-semibold block mt-0.5">{{ post.user.time }}</span>
+                </div>
+              </div>
+
+              
+              <p class="text-xs lg:text-sm text-gray-400/90 font-medium leading-relaxed">
+                {{ post.text }}
+              </p>
+
+              
+              <span class="block text-xs font-bold text-[#B06E02]">{{ post.book }}</span>
+
+              
+              <div class="h-px bg-[#B06E02]/10 my-3"></div>
+
+              
+              <div class="flex items-center gap-6 text-xs text-gray-400 font-bold select-none">
+                
+                <button 
+                  @click="toggleLike(post.id)"
+                  class="flex items-center gap-1.5 transition cursor-pointer focus:outline-none"
+                  :class="post.isLiked ? 'text-[#E04B6E]' : 'hover:text-[#E04B6E]'"
+                >
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                  <span>{{ post.likes }}</span>
+                </button>
+
+                
+                <button 
+                  class="flex items-center gap-1.5 transition cursor-pointer hover:text-[#FCAE1E]"
+                >
+                  <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  <span>{{ post.comments }}</span>
+                </button>
+
+                
+                <button 
+                  class="flex items-center gap-1.5 transition cursor-pointer hover:text-[#B06E02]"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l1.99 1.99a3 3 0 004.243 0l1.99-1.99a3 3 0 000-4.243l-1.99-1.99a3 3 0 00-4.243 0l-1.99 1.99a3 3 0 000 4.243z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21V12" />
+                  </svg>
+                  <span>Compartilhar</span>
+                </button>
               </div>
             </div>
-
-            
-            <p class="text-xs lg:text-sm text-gray-400/90 font-medium leading-relaxed">
-              {{ post.text }}
-            </p>
-
-            
-            <span class="block text-xs font-bold text-[#B06E02]">{{ post.book }}</span>
-
-            
-            <div class="h-px bg-[#B06E02]/10 my-3"></div>
-
-            
-            <div class="flex items-center gap-6 text-xs text-gray-400 font-bold select-none">
-              
-              <button 
-                @click="toggleLike(post.id)"
-                class="flex items-center gap-1.5 transition cursor-pointer focus:outline-none"
-                :class="post.isLiked ? 'text-[#E04B6E]' : 'hover:text-[#E04B6E]'"
-              >
-                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-                <span>{{ post.likes }}</span>
-              </button>
-
-              
-              <button 
-                class="flex items-center gap-1.5 transition cursor-pointer hover:text-[#FCAE1E]"
-              >
-                <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                <span>{{ post.comments }}</span>
-              </button>
-
-              
-              <button 
-                class="flex items-center gap-1.5 transition cursor-pointer hover:text-[#B06E02]"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l1.99 1.99a3 3 0 004.243 0l1.99-1.99a3 3 0 000-4.243l-1.99-1.99a3 3 0 00-4.243 0l-1.99 1.99a3 3 0 000 4.243z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21V12" />
-                </svg>
-                <span>Compartilhar</span>
-              </button>
-            </div>
-          </div>
+          </template>
         </div>
 
         
@@ -253,53 +293,70 @@ const toggleLike = (postId: number) => {
 
       
       <div class="space-y-4 pb-6">
-        <div 
-          v-for="post in posts" 
-          :key="post.id + '-mobile'"
-          class="bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-3 relative"
-        >
+        <!-- Loading State Mobile -->
+        <div v-if="loading" class="space-y-4 py-8 flex flex-col items-center justify-center bg-white border border-[#B06E02]/10 rounded-2xl shadow-xs">
+          <svg class="animate-spin h-6 w-6 text-[#E09A1C]" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Carregando resenhas...</span>
+        </div>
+
+        <template v-else>
+          <!-- Empty State Mobile -->
+          <div v-if="posts.length === 0" class="text-center py-8 text-gray-400 text-xs font-semibold border-2 border-dashed border-[#B06E02]/15 rounded-2xl bg-[#FFFBEA]/30">
+            Nenhuma resenha foi publicada na comunidade ainda.
+          </div>
           
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-[#13213C] flex-shrink-0"></div>
-            <div>
-              <h3 class="text-xs font-bold text-[#13213C] leading-snug">{{ post.user.name }}</h3>
-              <span class="text-[9px] text-gray-400 font-semibold block mt-0.5">{{ post.user.time }}</span>
+          <div 
+            v-else
+            v-for="post in posts" 
+            :key="post.id + '-mobile'"
+            class="bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-3 relative"
+          >
+            <!-- Header do Post -->
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-[#13213C] flex items-center justify-center font-bold text-white shadow-sm uppercase">
+                {{ post.user.name.charAt(0) }}
+              </div>
+              <div>
+                <h3 class="text-xs font-bold text-[#13213C] leading-snug">{{ post.user.name }}</h3>
+                <span class="text-[9px] text-gray-400 font-semibold block mt-0.5">{{ post.user.time }}</span>
+              </div>
+            </div>
+
+            <!-- Texto da Resenha -->
+            <p class="text-xs text-gray-400/90 font-medium leading-relaxed">
+              {{ post.text }}
+            </p>
+
+            <!-- Livro Resenhado -->
+            <span class="block text-[11px] font-bold text-[#B06E02] mt-1">{{ post.book }}</span>
+
+            <!-- Ações -->
+            <div class="flex justify-end items-center gap-4 text-xs select-none mt-2.5 pt-1">
+              <!-- Curtir -->
+              <button 
+                @click="toggleLike(post.id)"
+                class="flex items-center gap-1.5 font-bold transition cursor-pointer focus:outline-none"
+                :class="post.isLiked ? 'text-[#E04B6E]' : 'text-gray-400 hover:text-[#E04B6E]'"
+              >
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+                <span>{{ post.likes }}</span>
+              </button>
+
+              <!-- Comentários -->
+              <button class="flex items-center gap-1.5 text-gray-400 hover:text-[#FCAE1E] font-bold transition cursor-pointer">
+                <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <span>{{ post.comments }}</span>
+              </button>
             </div>
           </div>
-
-          
-          <p class="text-xs text-gray-400/90 font-medium leading-relaxed">
-            {{ post.text }}
-          </p>
-
-          
-          <span class="block text-[11px] font-bold text-[#B06E02] mt-1">{{ post.book }}</span>
-
-          
-          <div class="flex justify-end items-center gap-4 text-xs select-none mt-2.5 pt-1">
-            
-            <button 
-              @click="toggleLike(post.id)"
-              class="flex items-center gap-1.5 font-bold transition cursor-pointer focus:outline-none"
-              :class="post.isLiked ? 'text-[#E04B6E]' : 'text-gray-400 hover:text-[#E04B6E]'"
-            >
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-              <span>{{ post.likes }}</span>
-            </button>
-
-            
-            <button 
-              class="flex items-center gap-1.5 text-gray-400 hover:text-[#FCAE1E] font-bold transition cursor-pointer"
-            >
-              <svg class="w-4 h-4 fill-none stroke-currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              <span>{{ post.comments }}</span>
-            </button>
-          </div>
-        </div>
+        </template>
       </div>
 
     </div>

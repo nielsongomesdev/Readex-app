@@ -1,37 +1,45 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { api } from '../services/api'
+import { googleBooksApi } from '../services/googleBooks'
+import { getMockBookDetails } from '../services/mockBooks'
 
 import dunaCover from '../assets/images/duna_cover.png'
 import orwellCover from '../assets/images/1984_cover.png'
 import hobbitCover from '../assets/images/o_hobbit_cover.png'
 import alquimistaCover from '../assets/images/o_alquimista_cover.png'
 import nomeVentoCover from '../assets/images/o_nome_do_vento_cover.png'
+import atelierCover from '../assets/images/atelier_cover.png'
+import objetosCover from '../assets/images/objetos_cortantes_cover.png'
+import sapiensCover from '../assets/images/sapiens_cover.png'
+import atomicCover from '../assets/images/atomic_habits_cover.png'
+
+const coverMapping: Record<string, string> = {
+  'oN-ODwAAQBAJ': atelierCover,
+  'L_SjAgAAQBAJ': nomeVentoCover,
+  'oT9-DwAAQBAJ': dunaCover,
+  '1N8zEAAAQBAJ': orwellCover,
+  '0s1u9iT788AC': hobbitCover,
+  'qjZPAAAAMAAJ': objetosCover,
+  'w9P3BAAAQBAJ': sapiensCover,
+  'W1_LDQAAQBAJ': atomicCover,
+  'o3v8AgAAQBAJ': alquimistaCover
+}
 
 const router = useRouter()
 const route = useRoute()
 
-interface BookInfo {
-  title: string
-  author: string
-  cover: string
-  genre: string
-  pages: number
-  startDate: string
-  endDate: string
-}
-
-const booksDatabase: Record<string, BookInfo> = {
-  '1': { title: '1984', author: 'George Orwell', cover: orwellCover, genre: 'Distopia', pages: 416, startDate: '10 de março, 2026', endDate: '20 de março, 2026' },
-  '2': { title: 'O Nome do Vento', author: 'Patrick Rothfuss', cover: nomeVentoCover, genre: 'Fantasia', pages: 672, startDate: '1 de abril, 2026', endDate: '12 de abril, 2026' },
-  '3': { title: 'Duna', author: 'Frank Herbert', cover: dunaCover, genre: 'Ficção', pages: 688, startDate: '15 de março, 2026', endDate: '2 de maio, 2026' },
-  '4': { title: '1984', author: 'George Orwell', cover: orwellCover, genre: 'Distopia', pages: 416, startDate: '10 de março, 2026', endDate: '20 de março, 2026' },
-  '5': { title: 'O Senhor dos Anéis', author: 'J.R.R. Tolkien', cover: hobbitCover, genre: 'Fantasia', pages: 1216, startDate: '1 de janeiro, 2026', endDate: '25 de janeiro, 2026' },
-  '9': { title: 'O Alquimista', author: 'Paulo Coelho', cover: alquimistaCover, genre: 'Romance', pages: 200, startDate: '5 de abril, 2026', endDate: '10 de abril, 2026' }
-}
-
-const bookId = (route.params.id as string) || '3'
-const book = computed(() => (booksDatabase[bookId] || booksDatabase['3']) as BookInfo)
+const bookId = route.params.id as string
+const loading = ref(true)
+const book = ref({
+  title: '',
+  author: '',
+  cover: '',
+  pages: 0,
+  startDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }),
+  endDate: new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+})
 
 const reviewRating = ref(4)
 const reviewText = ref('')
@@ -47,6 +55,36 @@ Dicas do que escrever:
 
 const mobilePlaceholder = `O que você achou do livro? Compartilhe sua experiência com a comunidade...`
 
+const fetchBookDetails = async () => {
+  loading.value = true
+  try {
+    const response = await googleBooksApi.getVolume(bookId)
+    const volumeInfo = response.data.volumeInfo || {}
+    book.value = {
+      title: volumeInfo.title || 'Título desconhecido',
+      author: volumeInfo.authors ? volumeInfo.authors[0] : 'Autor desconhecido',
+      cover: volumeInfo.imageLinks?.thumbnail || coverMapping[bookId] || '',
+      pages: volumeInfo.pageCount || 250,
+      startDate: book.value.startDate,
+      endDate: book.value.endDate
+    }
+  } catch (err) {
+    console.error('Erro ao buscar detalhes do livro para resenha:', err)
+    // Fallback to offline mock book details
+    const mock = getMockBookDetails(bookId)
+    book.value = {
+      title: mock.title,
+      author: mock.author,
+      cover: mock.cover || coverMapping[bookId] || '',
+      pages: mock.pages,
+      startDate: book.value.startDate,
+      endDate: book.value.endDate
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
 const addTag = () => {
   const newTag = prompt('Digite a nova tag:')
   if (newTag && newTag.trim()) {
@@ -58,23 +96,61 @@ const goBack = () => {
   router.push('/livro/' + bookId)
 }
 
-const publishReview = () => {
+const publishReview = async () => {
   if (!reviewText.value.trim()) {
     alert('Por favor, escreva sua resenha antes de publicar!')
     return
   }
-  alert('Resenha publicada com sucesso na comunidade!')
-  router.push('/comunidade')
+  
+  try {
+    // Ensure book exists in backend DB first
+    try {
+      await api.post('/books', {
+        id: bookId,
+        title: book.value.title,
+        author: book.value.author,
+        description: '',
+        coverUrl: book.value.cover
+      })
+    } catch (err) {
+      console.log('Book might already exist', err)
+    }
+
+    // Add review
+    await api.post('/reviews', {
+      bookId: bookId,
+      rating: reviewRating.value,
+      comment: reviewText.value
+    })
+
+    alert('Resenha publicada com sucesso na comunidade!')
+    router.push('/comunidade')
+  } catch (err) {
+    console.error('Erro ao publicar resenha:', err)
+    alert('Erro ao publicar resenha.')
+  }
 }
+
+onMounted(() => {
+  fetchBookDetails()
+})
 </script>
 
 <template>
   <div class="select-none font-poppins text-[#13213C] pb-6">
 
-    
-    
-    
-    <div class="hidden lg:block space-y-6">
+    <!-- Loading State -->
+    <div v-if="loading" class="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
+      <svg class="animate-spin h-10 w-10 text-[#E09A1C]" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="text-sm text-gray-400 font-bold uppercase tracking-wider animate-pulse">Carregando livro para resenha...</span>
+    </div>
+
+    <!-- Main Content -->
+    <template v-else>
+      <div class="hidden lg:block space-y-6">
       
       
       <div class="flex items-center justify-between pb-3 border-b border-[#B06E02]/10 mb-6">
@@ -112,7 +188,10 @@ const publishReview = () => {
           
           
           <div class="bg-white border border-[#B06E02]/5 p-5 rounded-2xl shadow-xs flex gap-4 items-center">
-            <img :src="book.cover" :alt="book.title" class="w-16 h-24 object-cover rounded-lg flex-shrink-0 shadow-xs border border-gray-100" />
+            <img v-if="book.cover" :src="book.cover" :alt="book.title" class="w-16 h-24 object-cover rounded-lg flex-shrink-0 shadow-xs border border-gray-100" />
+            <div v-else class="w-16 h-24 bg-[#E5ECF6] rounded-lg flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+              <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+            </div>
             <div class="min-w-0 flex-1">
               <h2 class="text-lg font-bold text-[#13213C] truncate leading-snug">{{ book.title }}</h2>
               <p class="text-xs text-gray-400 font-semibold truncate mt-0.5">{{ book.author }}</p>
@@ -255,7 +334,10 @@ const publishReview = () => {
         
         
         <div class="bg-white border border-[#B06E02]/5 p-4 rounded-2xl shadow-xs flex items-center gap-4">
-          <img :src="book.cover" :alt="book.title" class="w-14 h-20 object-cover rounded-lg flex-shrink-0 shadow-xs border border-gray-50" />
+          <img v-if="book.cover" :src="book.cover" :alt="book.title" class="w-14 h-20 object-cover rounded-lg flex-shrink-0 shadow-xs border border-gray-50" />
+          <div v-else class="w-14 h-20 bg-[#E5ECF6] rounded-lg flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+            <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+          </div>
           <div class="flex-1 min-w-0 flex justify-between items-center">
             <div>
               <h2 class="text-sm font-bold text-[#13213C] truncate leading-snug">{{ book.title }}</h2>
@@ -356,6 +438,7 @@ const publishReview = () => {
 
     </div>
 
+    </template>
   </div>
 </template>
 

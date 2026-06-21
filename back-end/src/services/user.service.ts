@@ -1,6 +1,7 @@
 import { UserRepository } from "../repositories/user.repository.js";
 import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { resendClient } from "../lib/resend.js";
 
 export class UserService {
   private userRepository: UserRepository;
@@ -33,12 +34,44 @@ export class UserService {
       throw new Error("Este e-mail já está em uso no sistema!");
     }
 
+    // const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = await this.userRepository.create({
       ...data,
       password: hashedPassword,
+      verificationCode: null,
+      isVerified: true,
     });
+
+    /*
+    try {
+      await resendClient.emails.send({
+        from: 'onboarding@resend.dev',
+        to: user.email,
+        subject: 'Código de Verificação - Readex',
+        html: `<p>Olá, <strong>${user.name}</strong>!</p><p>Seu código de verificação para o Readex é: <strong>${verificationCode}</strong></p>`
+      });
+    } catch (emailError) {
+      console.error("Erro ao enviar e-mail via Resend:", emailError);
+    }
+    */
+
     return user;
+  }
+
+  async verifyUser(email: string, code: string) {
+    const user = await this.userRepository.findByEmail(email);
+
+    if (!user) {
+      throw new Error("Usuário não encontrado!");
+    }
+
+    if (user.verificationCode !== code) {
+      throw new Error("Código de verificação incorreto!");
+    }
+
+    await this.userRepository.updateVerification(user.id, true, null);
+    return true;
   }
 
   async getAllUsers() {

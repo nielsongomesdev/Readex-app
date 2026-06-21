@@ -75,4 +75,22 @@ export class UserRepository {
         .map((r) => ({ id: r.id, createdAt: r.createdAt }));
     }
   }
+
+  async updateVerification(id: string, isVerified: boolean, verificationCode: string | null) {
+    try {
+      const user = await prisma.user.update({
+        where: { id },
+        data: { isVerified, verificationCode }
+      });
+      return user;
+    } catch (err) {
+      const user = UserRepository._users.find((u) => u.id === id);
+      if (user) {
+        user.isVerified = isVerified;
+        user.verificationCode = verificationCode;
+        user.updatedAt = new Date();
+      }
+      return user;
+    }
+  }
 }

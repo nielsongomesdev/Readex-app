@@ -1,8 +1,13 @@
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const projectRoot = join(__dirname, '').replace(/\\/g, '/')
 
 export default {
   content: [
-    "./index.html",
-    "./src*.{vue,js,ts}"
+    `${projectRoot}/index.html`,
+    `${projectRoot}/src/**/*.{vue,js,ts,jsx,tsx}`
   ],
   theme: {
     extend: {
@@ -36,4 +41,3 @@ export default {
   },
   plugins: [],
 }
-

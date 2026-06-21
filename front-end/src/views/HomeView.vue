@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { name as userName } from '@/store/userStore'
 
+const firstName = computed(() => {
+  const nameValue = userName.value.trim()
+  return nameValue ? nameValue.split(' ')[0] : 'Leitor'
+})
 </script>
 
 <template>
@@ -7,7 +13,7 @@
     
     <div class="bg-gradient-to-r from-[#13213C] to-[#1D325A] rounded-3xl p-6 md:p-8 text-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
       <div class="space-y-2">
-        <h1 class="text-2xl md:text-3xl font-bold">Olá, Anderson! 👋</h1>
+        <h1 class="text-2xl md:text-3xl font-bold">Olá, {{ firstName }}! 👋</h1>
         <p class="text-white/80 text-sm md:text-base max-w-md">
           Pronto para continuar sua jornada de leitura de hoje? Você está a apenas 2 capítulos de atingir sua meta diária!
         </p>

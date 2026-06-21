@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { name as userName } from '@/store/userStore'
+import { googleBooksApi } from '../services/googleBooks'
+import { getMockBooks } from '../services/mockBooks'
 
 const router = useRouter()
 
-const nowReading = ref({
-  title: 'Atelier of Witch Hat',
-  author: 'Kamome Shirahama',
-  pagesRead: 456,
-  totalPages: 672,
-  progress: 68
+const firstName = computed(() => {
+  const nameValue = userName.value.trim()
+  return nameValue ? nameValue.split(' ')[0] : 'Leitor'
+})
+
+const formattedDate = computed(() => {
+  const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }
+  const dateStr = new Date().toLocaleDateString('pt-BR', options)
+  return dateStr.charAt(0).toUpperCase() + dateStr.slice(1)
 })
 
 const shortcuts = [
@@ -19,19 +25,56 @@ const shortcuts = [
   { name: 'Progresso', icon: 'progress' }
 ]
 
-const suggestion = ref({
-  title: 'Duna',
-  author: 'Frank Herbert',
-  genre: 'Ficção Científica'
+interface SuggestionBook {
+  id: string
+  title: string
+  author: string
+  genre: string
+  cover: string
+}
+
+const suggestions = ref<SuggestionBook[]>([])
+const loadingSuggestions = ref(false)
+
+const fetchSuggestions = async () => {
+  loadingSuggestions.value = true
+  try {
+    const response = await googleBooksApi.searchVolumes('subject:fiction', 2)
+    const items = response.data.items || []
+    suggestions.value = items.map((item: any) => {
+      const volumeInfo = item.volumeInfo || {}
+      return {
+        id: item.id,
+        title: volumeInfo.title || 'Título desconhecido',
+        author: volumeInfo.authors ? volumeInfo.authors[0] : 'Autor desconhecido',
+        genre: volumeInfo.categories ? volumeInfo.categories[0] : 'Ficção',
+        cover: volumeInfo.imageLinks?.thumbnail || ''
+      }
+    })
+  } catch (error) {
+    console.error('Erro ao buscar sugestões:', error)
+    // Fallback to offline mock suggestions
+    const mockList = getMockBooks('ficção')
+    suggestions.value = mockList.slice(0, 2).map(b => ({
+      id: b.id,
+      title: b.title,
+      author: b.author,
+      genre: b.genre,
+      cover: b.cover
+    }))
+  } finally {
+    loadingSuggestions.value = false
+  }
+}
+
+onMounted(() => {
+  fetchSuggestions()
 })
 
-const communityReviews = [
-  { name: 'Carlos M.', action: 'Está lendo 1984', quote: 'O Grande Irmão me perturbou profundamente' },
-  { name: 'Ana L.', action: 'Terminou Duna', quote: 'Construção de mundo épica e envolvente!' }
-]
-
 const navigateShortcut = (icon: string) => {
-  if (icon === 'bookshelf') {
+  if (icon === 'plus') {
+    router.push('/explorar')
+  } else if (icon === 'bookshelf') {
     router.push('/estante')
   } else if (icon === 'community') {
     router.push('/comunidade')
@@ -47,8 +90,8 @@ const navigateShortcut = (icon: string) => {
     
     <div class="hidden lg:flex items-center justify-between">
       <div class="flex flex-col gap-1">
-        <h1 class="text-3xl font-bold text-[#B06E02]">Bom dia, Anderson!</h1>
-        <p class="text-xs text-gray-400 font-semibold">Domingo, 3 de maio de 2026</p>
+        <h1 class="text-3xl font-bold text-[#B06E02]">Bom dia, {{ firstName }}!</h1>
+        <p class="text-xs text-gray-400 font-semibold">{{ formattedDate }}</p>
       </div>
       
       <div class="flex items-center gap-3">
@@ -77,8 +120,8 @@ const navigateShortcut = (icon: string) => {
         />
       </div>
       <div>
-        <h1 class="text-2xl font-bold text-[#E09A1C]">Bom dia, Anderson!</h1>
-        <p class="text-sm text-gray-400 font-medium mt-1">Domingo, 3 de maio de 2026</p>
+        <h1 class="text-2xl font-bold text-[#E09A1C]">Bom dia, {{ firstName }}!</h1>
+        <p class="text-sm text-gray-400 font-medium mt-1">{{ formattedDate }}</p>
       </div>
     </div>
 
@@ -92,37 +135,19 @@ const navigateShortcut = (icon: string) => {
         <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Lendo agora</h2>
           
-          <div class="flex gap-5">
-            
-            <img 
-              src="../assets/images/atelier_cover.png" 
-              alt="Atelier of Witch Hat"
-              class="w-24 h-36 object-cover rounded-xl shadow-md border border-[#B06E02]/10 flex-shrink-0"
-            />
-            
-            
-            <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="text-base font-bold text-[#806602] leading-snug">{{ nowReading.title }}</h3>
-                  <p class="text-xs text-gray-400 font-semibold mt-0.5">{{ nowReading.author }}</p>
-                </div>
-                <span class="text-sm font-bold text-[#806602] flex-shrink-0 ml-2">{{ nowReading.progress }}%</span>
-              </div>
-
-              <div>
-                <span class="text-[11px] font-bold text-gray-400 block mb-1.5">{{ nowReading.pagesRead }} de {{ nowReading.totalPages }} páginas</span>
-                
-                <div class="w-full bg-gray-200/60 rounded-full h-2 overflow-hidden">
-                  <div class="bg-[#FCAE1E] h-2 rounded-full" :style="{ width: nowReading.progress + '%' }"></div>
-                </div>
-              </div>
-
-              
-              <router-link to="/livro/2" class="hidden lg:block w-full border border-[#B06E02]/40 text-[#B06E02] hover:bg-[#FFF5CD]/30 text-xs font-bold py-2.5 rounded-xl transition cursor-pointer text-center mt-3">
-                Acompanhar progresso
-              </router-link>
+          <div class="border-2 border-dashed border-[#B06E02]/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-4">
+            <div class="p-3 bg-[#FFF5CD]/40 rounded-full text-[#B06E02]">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
             </div>
+            <p class="text-sm font-semibold text-gray-500">Você ainda não iniciou nenhuma leitura.</p>
+            <button 
+              @click="router.push('/explorar')"
+              class="bg-[#13213C] hover:bg-[#13213C]/95 text-white font-bold text-xs py-2.5 px-6 rounded-xl transition duration-150 cursor-pointer shadow-sm"
+            >
+              Explorar Livros
+            </button>
           </div>
         </div>
 
@@ -141,11 +166,6 @@ const navigateShortcut = (icon: string) => {
             <div class="bg-[#FCAE1E] h-2 rounded-full" style="width: 63%"></div>
           </div>
         </div>
-
-        
-        <router-link to="/livro/2" class="block lg:hidden w-full bg-white border border-[#E09A1C]/60 text-[#E09A1C] hover:bg-[#FFF5CD]/20 text-xs font-bold py-3.5 rounded-xl transition cursor-pointer text-center">
-          Acompanhar progresso
-        </router-link>
 
         
         <div class="space-y-3">
@@ -195,23 +215,11 @@ const navigateShortcut = (icon: string) => {
         <div class="space-y-3">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Da comunidade</h2>
           
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div 
-              v-for="review in communityReviews" 
-              :key="review.name"
-              class="bg-[#FFFBEA] border border-[#B06E02]/10 p-4 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex gap-3.5"
-            >
-              <div class="w-12 h-12 bg-[#13213C] rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white shadow-sm select-none">
-                {{ review.name.charAt(0) }}
-              </div>
-              <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-bold text-[#13213C] truncate">{{ review.name }}</h4>
-                <p class="text-[11px] text-gray-400 font-semibold mt-0.5">{{ review.action }}</p>
-                <p class="text-[11px] italic text-gray-400 mt-2.5 font-medium leading-relaxed">
-                  "{{ review.quote }}"
-                </p>
-              </div>
-            </div>
+          <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-6 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex flex-col items-center justify-center text-center py-8">
+            <svg class="w-8 h-8 text-[#B06E02]/60 mb-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <p class="text-xs md:text-sm font-semibold text-gray-500">Nenhuma atividade recente na comunidade. Siga leitores para ver as atualizações!</p>
           </div>
         </div>
 
@@ -240,25 +248,39 @@ const navigateShortcut = (icon: string) => {
         <div class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] space-y-4">
           <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Sugerido para você</h2>
           
-          <div class="flex gap-4 p-1">
-            
-            <img 
-              src="../assets/images/duna_cover.png" 
-              alt="Duna"
-              class="w-14 h-20 object-cover rounded-lg shadow-sm border border-[#B06E02]/10 flex-shrink-0"
-            />
-            <div class="flex-1 min-w-0 flex flex-col justify-center">
-              <h3 class="text-xs font-bold text-[#806602] truncate">{{ suggestion.title }}</h3>
-              <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ suggestion.author }}</p>
-              <span class="inline-block self-start text-[8px] font-bold text-[#B06E02] bg-[#FFF5CD]/50 px-2 py-0.5 rounded-full mt-1.5">
-                {{ suggestion.genre }}
-              </span>
-            </div>
+          <div v-if="loadingSuggestions" class="flex flex-col items-center justify-center py-4 space-y-2">
+            <svg class="animate-spin h-5 w-5 text-[#E09A1C]" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider animate-pulse">Buscando sugestões...</span>
           </div>
 
-          <button class="w-full bg-[#13213C] hover:bg-[#13213C]/95 text-white font-semibold text-xs py-2.5 rounded-xl transition cursor-pointer text-center">
-            Adicionar à estante
-          </button>
+          <template v-else>
+            <div v-for="book in suggestions" :key="book.id" class="flex gap-4 p-1 border-b border-[#B06E02]/5 last:border-b-0 pb-3 last:pb-0">
+              <router-link :to="'/livro/' + book.id" class="flex gap-4 w-full group">
+                <img 
+                  v-if="book.cover"
+                  :src="book.cover" 
+                  :alt="book.title"
+                  class="w-14 h-20 object-cover rounded-lg shadow-sm border border-[#B06E02]/10 flex-shrink-0"
+                />
+                <div v-else class="w-14 h-20 bg-[#E5ECF6] rounded-lg flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+                  <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+                </div>
+                <div class="flex-1 min-w-0 flex flex-col justify-center">
+                  <h3 class="text-xs font-bold text-[#806602] truncate group-hover:text-[#B06E02] transition">{{ book.title }}</h3>
+                  <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ book.author }}</p>
+                  <span class="inline-block self-start text-[8px] font-bold text-[#B06E02] bg-[#FFF5CD]/50 px-2 py-0.5 rounded-full mt-1.5">
+                    {{ book.genre }}
+                  </span>
+                </div>
+              </router-link>
+            </div>
+            <div v-if="suggestions.length === 0" class="text-center py-2 text-gray-400 text-xs font-semibold">
+              Nenhuma sugestão encontrada.
+            </div>
+          </template>
         </div>
 
       </div>

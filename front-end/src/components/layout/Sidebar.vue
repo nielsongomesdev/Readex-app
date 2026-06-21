@@ -138,7 +138,7 @@ const handleLinkClick = () => {
         
         <img 
           src="../../assets/images/anderson_avatar.png" 
-          alt="Anderson"
+          :alt="name || 'Avatar'"
           class="w-10 h-10 rounded-full object-cover border border-[#B06E02]/10 shadow-xs"
         />
         

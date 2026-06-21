@@ -20,6 +20,21 @@ export class UserController {
     }
   };
 
+  verify = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { email, code } = request.body as { email: string; code: string };
+      
+      if (!email || !code) {
+        return reply.status(400).send({ error: "Email e código são obrigatórios!" });
+      }
+
+      await this.userService.verifyUser(email, code);
+      return reply.status(200).send({ message: "E-mail verificado com sucesso!" });
+    } catch (error: any) {
+      return reply.status(400).send({ error: error.message });
+    }
+  };
+
   list = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const users = await this.userService.getAllUsers();

@@ -1,9 +1,19 @@
 import { ref } from 'vue'
 import { api } from '../services/api'
 
-export const name = ref('')
-export const handle = ref('')
-export const bio = ref('')
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('user') || '{}')
+  } catch {
+    return {}
+  }
+}
+
+const storedUser = getStoredUser()
+export const userId = ref(storedUser.id || '')
+export const name = ref(storedUser.name || '')
+export const handle = ref(storedUser.handle || '')
+export const bio = ref(storedUser.bio || '')
 
 export const token = ref(localStorage.getItem('token') || '')
 
@@ -18,9 +28,12 @@ export function setToken(t: string | null) {
 		token.value = t
 		localStorage.setItem('token', t)
 		api.defaults.headers.common['Authorization'] = `Bearer ${t}`
+		loadUser()
 	} else {
 		token.value = ''
+		userId.value = ''
 		localStorage.removeItem('token')
+		localStorage.removeItem('user')
 		delete api.defaults.headers.common['Authorization']
 	}
 }
@@ -30,13 +43,19 @@ export async function loadUser() {
 		const res = await api.get('/users')
 		const user = Array.isArray(res.data) ? res.data[0] : res.data
 		if (user) {
+			userId.value = user.id ?? ''
 			name.value = user.name ?? ''
 			handle.value = user.handle ?? ''
 			bio.value = user.bio ?? ''
+			localStorage.setItem('user', JSON.stringify(user))
 		}
 	} catch (err) {
 		console.error('Falha ao carregar usuário', err)
 	}
+}
+
+if (token.value) {
+	loadUser()
 }
 
 export async function login(credentials: { email: string; password: string }) {

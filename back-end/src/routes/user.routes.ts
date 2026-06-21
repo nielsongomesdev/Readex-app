@@ -5,6 +5,7 @@ export async function userRoutes(app: FastifyInstance) {
   const userController = new UserController();
 
   app.post("/users", userController.create);
+  app.post("/users/verify", userController.verify);
   app.get("/users", userController.list);
   app.post("/login", userController.login);
   app.get(

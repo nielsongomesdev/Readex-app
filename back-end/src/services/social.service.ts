@@ -14,6 +14,7 @@ export class SocialService {
 
     const res = await fetch(`${process.env.SUPABASE_URL}/auth/v1/user`, {
       headers: {
+        apikey: process.env.SUPABASE_ANON_KEY || "",
         Authorization: `Bearer ${accessToken}`,
         Accept: "application/json",
       },

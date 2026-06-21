@@ -9,6 +9,9 @@ const router = useRouter()
 const loginComGoogle = async () => {
   await supabaseClient.auth.signInWithOAuth({
     provider: 'google',
+    options: {
+      redirectTo: window.location.origin + '/auth-callback',
+    },
   })
 }
 
@@ -18,10 +21,11 @@ const email = ref('')
 const phone = ref('')
 const password = ref('')
 const confirmPassword = ref('')
-
 const loading = ref(false)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
+
+const showSuccessToast = ref(false)
 
 const handleRegister = async () => {
   if (password.value !== confirmPassword.value) {
@@ -38,7 +42,10 @@ const handleRegister = async () => {
       password: password.value,
     })
 
-    router.push('/verify-email')
+    showSuccessToast.value = true
+    setTimeout(() => {
+      router.push('/login')
+    }, 2500)
   } catch (error: any) {
     const message = error.response?.data?.error || error.response?.data?.message || 'Erro ao criar conta. Tente novamente.'
     alert(message)
@@ -316,6 +323,14 @@ const toggleConfirmPasswordVisibility = () => {
       </div>
     </div>
 
+  </div>
+
+  <!-- Toast de Sucesso -->
+  <div 
+    v-if="showSuccessToast" 
+    class="fixed top-5 right-5 z-50 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg transition-all duration-300 transform animate-bounce"
+  >
+    Conta criada com sucesso! Redirecionando...
   </div>
 </template>
 

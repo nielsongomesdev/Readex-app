@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { api } from '../services/api'
+import { googleBooksApi } from '../services/googleBooks'
+import { getMockBookDetails } from '../services/mockBooks'
 
 import atelierCover from '../assets/images/atelier_cover.png'
 import nomeVentoCover from '../assets/images/o_nome_do_vento_cover.png'
@@ -11,32 +14,104 @@ import sapiensCover from '../assets/images/sapiens_cover.png'
 import atomicCover from '../assets/images/atomic_habits_cover.png'
 import alquimistaCover from '../assets/images/o_alquimista_cover.png'
 
+const coverMapping: Record<string, string> = {
+  'oN-ODwAAQBAJ': atelierCover,
+  'L_SjAgAAQBAJ': nomeVentoCover,
+  'oT9-DwAAQBAJ': dunaCover,
+  '1N8zEAAAQBAJ': orwellCover,
+  '0s1u9iT788AC': hobbitCover,
+  'qjZPAAAAMAAJ': objetosCover,
+  'w9P3BAAAQBAJ': sapiensCover,
+  'W1_LDQAAQBAJ': atomicCover,
+  'o3v8AgAAQBAJ': alquimistaCover
+}
+
 const activeTab = ref('todos') 
+const loading = ref(true)
 
-const tabs = [
-  { id: 'todos', name: 'Todos', count: 47 },
-  { id: 'lendo', name: 'Lendo', count: 2 },
-  { id: 'quero', name: 'Quero Ler', count: 12 },
-  { id: 'lidos', name: 'Lidos', count: 33 }
-]
+const lendoBooks = ref<any[]>([])
+const queroBooks = ref<any[]>([])
+const lidosBooks = ref<any[]>([])
 
-const lendoBooks = ref([
-  { id: 1, title: 'Atelier of Witch Hat', author: 'Kamome Shirahama', pagesRead: 24, totalPages: 38, progress: 68, cover: atelierCover },
-  { id: 2, title: 'O Nome do Vento', author: 'Patrick Rothfuss', pagesRead: 456, totalPages: 672, progress: 65, cover: nomeVentoCover }
+const tabs = ref([
+  { id: 'todos', name: 'Todos', count: 0 },
+  { id: 'lendo', name: 'Lendo', count: 0 },
+  { id: 'quero', name: 'Quero Ler', count: 0 },
+  { id: 'lidos', name: 'Lidos', count: 0 }
 ])
 
-const queroBooks = ref([
-  { id: 3, title: 'Duna', author: 'Frank Herbert', cover: dunaCover },
-  { id: 4, title: '1984', author: 'George Orwell', cover: orwellCover },
-  { id: 5, title: 'O Hobbit', author: 'J.R.R. Tolkien', cover: hobbitCover },
-  { id: 6, title: 'Objetos Cortantes', author: 'Gillian Flynn', cover: objetosCover },
-  { id: 7, title: 'Sapiens', author: 'Y.N. Harari', cover: sapiensCover },
-  { id: 8, title: 'Atomic Habits', author: 'James Clear', cover: atomicCover }
-])
+const fetchShelf = async () => {
+  loading.value = true
+  try {
+    const res = await api.get('/shelf')
+    const items = res.data || []
+    
+    lendoBooks.value = []
+    queroBooks.value = []
+    lidosBooks.value = []
+    
+    for (const item of items) {
+      const dbBook = item.book || {}
+      
+      let totalPages = 250
+      let rating = 4.5
+      let bookCover = dbBook.coverUrl || coverMapping[dbBook.id] || ''
+      
+      try {
+        const gResponse = await googleBooksApi.getVolume(dbBook.id)
+        const volumeInfo = gResponse.data.volumeInfo || {}
+        totalPages = volumeInfo.pageCount || totalPages
+        rating = volumeInfo.averageRating || rating
+        if (!bookCover && volumeInfo.imageLinks?.thumbnail) {
+          bookCover = volumeInfo.imageLinks.thumbnail
+        }
+      } catch (gErr) {
+        console.log('Error fetching google book details:', dbBook.id, gErr)
+        // Fallback to offline mock data
+        const mock = getMockBookDetails(dbBook.id)
+        totalPages = mock.pages || totalPages
+        rating = mock.rating || rating
+        if (!bookCover && mock.cover) {
+          bookCover = mock.cover
+        }
+      }
+      
+      const mappedBook = {
+        id: dbBook.id,
+        title: dbBook.title || 'Título desconhecido',
+        author: dbBook.author || 'Autor desconhecido',
+        cover: bookCover,
+        pagesRead: item.pagesRead || 0,
+        totalPages: totalPages,
+        progress: totalPages > 0 ? Math.round(((item.pagesRead || 0) / totalPages) * 100) : 0,
+        rating: rating,
+        date: new Date(item.updatedAt).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' }),
+        statusText: item.status
+      }
+      
+      if (item.status === 'Lendo') {
+        lendoBooks.value.push(mappedBook)
+      } else if (item.status === 'Quero Ler') {
+        queroBooks.value.push(mappedBook)
+      } else if (item.status === 'Lido') {
+        lidosBooks.value.push(mappedBook)
+      }
+    }
+    
+    if (tabs.value[0]) tabs.value[0].count = lendoBooks.value.length + queroBooks.value.length + lidosBooks.value.length
+    if (tabs.value[1]) tabs.value[1].count = lendoBooks.value.length
+    if (tabs.value[2]) tabs.value[2].count = queroBooks.value.length
+    if (tabs.value[3]) tabs.value[3].count = lidosBooks.value.length
+  } catch (err) {
+    console.error('Erro ao buscar estante:', err)
+  } finally {
+    loading.value = false
+  }
+}
 
-const lidosBooks = ref([
-  { id: 9, title: 'O Alquimista', author: 'Paulo Coelho', cover: alquimistaCover, rating: 4.8, date: '12 Abr 2026', statusText: 'Lido' }
-])
+onMounted(() => {
+  fetchShelf()
+})
 </script>
 
 <template>
@@ -111,25 +186,41 @@ const lidosBooks = ref([
     </div>
 
     
-    <div class="space-y-8 mt-4">
+    <!-- Loading State -->
+    <div v-if="loading" class="min-h-[40vh] flex flex-col items-center justify-center space-y-3 bg-white border border-[#B06E02]/10 rounded-2xl p-8">
+      <svg class="animate-spin h-8 w-8 text-[#E09A1C]" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="text-xs text-gray-400 font-bold uppercase tracking-wider animate-pulse">Carregando estante...</span>
+    </div>
+
+    <div v-else class="space-y-8 mt-4">
       
       
       <div v-if="activeTab === 'todos' || activeTab === 'lendo'" class="space-y-4">
         <h2 class="text-sm md:text-base font-bold text-[#806602]">Lendo ({{ lendoBooks.length }})</h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div v-if="lendoBooks.length === 0" class="text-center py-8 text-gray-400 text-xs font-semibold border-2 border-dashed border-[#B06E02]/15 rounded-2xl bg-[#FFFBEA]/30">
+          Nenhum livro sendo lido no momento.
+        </div>
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <router-link 
             v-for="book in lendoBooks" 
             :key="book.id"
-            :to="'/livro/2'"
+            :to="'/livro/' + book.id"
             class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex gap-5 hover:scale-[1.01] transition duration-150 cursor-pointer"
           >
             
             <img 
+              v-if="book.cover"
               :src="book.cover" 
               :alt="book.title"
               class="w-20 h-28 lg:w-24 lg:h-36 object-cover rounded-xl shadow-md border border-[#B06E02]/10 flex-shrink-0"
             />
+            <div v-else class="w-20 h-28 lg:w-24 lg:h-36 bg-[#E5ECF6] rounded-xl flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+              <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+            </div>
             
             
             <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
@@ -156,88 +247,99 @@ const lidosBooks = ref([
       
       <div v-if="activeTab === 'todos' || activeTab === 'quero'" class="space-y-4">
         <div class="flex justify-between items-center">
-          <h2 class="text-sm md:text-base font-bold text-[#806602]">Quero ler (12)</h2>
-          <span class="text-xs text-gray-400 font-semibold hover:text-[#B06E02] transition cursor-pointer select-none">Ver tudo →</span>
+          <h2 class="text-sm md:text-base font-bold text-[#806602]">Quero ler ({{ queroBooks.length }})</h2>
         </div>
         
-        
-        <div 
-          :class="[
-            activeTab === 'todos' 
-              ? 'hidden lg:grid lg:grid-cols-6 gap-6' 
-              : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6'
-          ]"
-        >
-          <router-link 
-            v-for="book in queroBooks" 
-            :key="book.id"
-            :to="'/livro/2'"
-            class="flex flex-col items-center text-center gap-2 select-none cursor-pointer hover:scale-[1.02] transition duration-150"
+        <div v-if="queroBooks.length === 0" class="text-center py-8 text-gray-400 text-xs font-semibold border-2 border-dashed border-[#B06E02]/15 rounded-2xl bg-[#FFFBEA]/30">
+          Nenhum livro adicionado na lista 'Quero Ler'.
+        </div>
+        <template v-else>
+          <div 
+            :class="[
+              activeTab === 'todos' 
+                ? 'hidden lg:grid lg:grid-cols-6 gap-6' 
+                : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6'
+            ]"
           >
-            <img 
-              :src="book.cover" 
-              :alt="book.title"
-              class="w-[110px] h-[160px] object-cover rounded-xl shadow-xs border border-[#B06E02]/10 hover:scale-[1.02] transition"
-            />
-            <div class="w-full min-w-0 px-1 mt-1">
-              <h4 class="text-xs font-bold text-[#806602] truncate leading-tight">{{ book.title }}</h4>
-              <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ book.author }}</p>
-            </div>
-          </router-link>
-        </div>
+            <router-link 
+              v-for="book in queroBooks" 
+              :key="book.id"
+              :to="'/livro/' + book.id"
+              class="flex flex-col items-center text-center gap-2 select-none cursor-pointer hover:scale-[1.02] transition duration-150"
+            >
+              <img 
+                v-if="book.cover"
+                :src="book.cover" 
+                :alt="book.title"
+                class="w-[110px] h-[160px] object-cover rounded-xl shadow-xs border border-[#B06E02]/10 hover:scale-[1.02] transition"
+              />
+              <div v-else class="w-[110px] h-[160px] bg-[#E5ECF6] rounded-xl flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+                <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+              </div>
+              <div class="w-full min-w-0 px-1 mt-1">
+                <h4 class="text-xs font-bold text-[#806602] truncate leading-tight">{{ book.title }}</h4>
+                <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ book.author }}</p>
+              </div>
+            </router-link>
+          </div>
 
-        
-        <div 
-          v-if="activeTab === 'todos'"
-          class="lg:hidden flex overflow-x-auto gap-4 pb-2 scrollbar-none select-none"
-        >
-          <router-link 
-            v-for="book in queroBooks" 
-            :key="book.id + '-mobile'"
-            :to="'/livro/2'"
-            class="flex flex-col items-center flex-shrink-0 text-center gap-2 cursor-pointer w-[110px] hover:scale-[1.02] transition duration-150"
+          <div 
+            v-if="activeTab === 'todos'"
+            class="lg:hidden flex overflow-x-auto gap-4 pb-2 scrollbar-none select-none"
           >
-            <img 
-              :src="book.cover" 
-              :alt="book.title"
-              class="w-[110px] h-[160px] object-cover rounded-xl shadow-xs border border-[#B06E02]/10"
-            />
-            <div class="w-full min-w-0 px-1 mt-1">
-              <h4 class="text-xs font-bold text-[#806602] truncate leading-tight">{{ book.title }}</h4>
-              <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ book.author }}</p>
-            </div>
-          </router-link>
-        </div>
+            <router-link 
+              v-for="book in queroBooks" 
+              :key="book.id + '-mobile'"
+              :to="'/livro/' + book.id"
+              class="flex flex-col items-center flex-shrink-0 text-center gap-2 cursor-pointer w-[110px] hover:scale-[1.02] transition duration-150"
+            >
+              <img 
+                v-if="book.cover"
+                :src="book.cover" 
+                :alt="book.title"
+                class="w-[110px] h-[160px] object-cover rounded-xl shadow-xs border border-[#B06E02]/10"
+              />
+              <div v-else class="w-[110px] h-[160px] bg-[#E5ECF6] rounded-xl flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+                <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+              </div>
+              <div class="w-full min-w-0 px-1 mt-1">
+                <h4 class="text-xs font-bold text-[#806602] truncate leading-tight">{{ book.title }}</h4>
+                <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ book.author }}</p>
+              </div>
+            </router-link>
+          </div>
+        </template>
       </div>
 
-      
-      <div v-if="activeTab === 'todos' || activeTab === 'lidos'" class="space-y-4">
-        <div class="flex justify-between items-center">
-          <h2 class="text-sm md:text-base font-bold text-[#806602]">Lidos (33)</h2>
-          <span class="text-xs text-gray-400 font-semibold hover:text-[#B06E02] transition cursor-pointer select-none">Ver tudo →</span>
-        </div>
+          <div v-if="activeTab === 'todos' || activeTab === 'lidos'" class="space-y-4">
+        <h2 class="text-sm md:text-base font-bold text-[#806602]">Lidos ({{ lidosBooks.length }})</h2>
         
-        <div class="grid grid-cols-1 gap-4">
+        <div v-if="lidosBooks.length === 0" class="text-center py-8 text-gray-400 text-xs font-semibold border-2 border-dashed border-[#B06E02]/15 rounded-2xl bg-[#FFFBEA]/30">
+          Nenhum livro lido ainda.
+        </div>
+        <div v-else class="grid grid-cols-1 gap-4">
           <router-link 
             v-for="book in lidosBooks" 
             :key="book.id"
-            :to="'/livro/2'"
+            :to="'/livro/' + book.id"
             class="bg-[#FFFBEA] border border-[#B06E02]/10 p-3.5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex items-center justify-between hover:scale-[1.01] transition duration-150 cursor-pointer"
           >
             <div class="flex items-center gap-4 min-w-0">
-              
               <img 
+                v-if="book.cover"
                 :src="book.cover" 
                 :alt="book.title"
                 class="w-10 h-14 object-cover rounded-lg shadow-sm border border-[#B06E02]/10 flex-shrink-0"
               />
+              <div v-else class="w-10 h-14 bg-[#E5ECF6] rounded-lg flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
+                <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
+              </div>
               <div class="min-w-0">
                 <h4 class="text-sm font-bold text-[#806602] truncate">{{ book.title }}</h4>
                 <p class="text-xs text-gray-400 font-semibold mt-0.5 truncate">{{ book.author }}</p>
               </div>
             </div>
 
-            
             <div class="flex items-center gap-4 flex-shrink-0">
               <span class="hidden sm:inline text-xs text-gray-400 font-medium">Concluído em {{ book.date }}</span>
               <div class="flex items-center gap-1">
@@ -253,9 +355,7 @@ const lidosBooks = ref([
           </router-link>
         </div>
       </div>
-
     </div>
-
   </div>
 </template>
 
