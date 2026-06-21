@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { googleBooksApi } from '../services/googleBooks'
 
 import dunaCover from '../assets/images/duna_cover.png'
@@ -26,11 +26,20 @@ const categories = [
   'Clássicos'
 ]
 
-const recentSearches = ref([
-  'Ficção científica',
-  'Patrick Rothfuss',
-  'Duna Sequel'
-])
+const loadRecentSearches = () => {
+  try {
+    const saved = localStorage.getItem('recent-searches')
+    return saved ? JSON.parse(saved) : ['Ficção científica', 'Patrick Rothfuss', 'Duna Sequel']
+  } catch {
+    return ['Ficção científica', 'Patrick Rothfuss', 'Duna Sequel']
+  }
+}
+
+const recentSearches = ref<string[]>(loadRecentSearches())
+
+const saveRecentSearches = () => {
+  localStorage.setItem('recent-searches', JSON.stringify(recentSearches.value))
+}
 
 const popularBooks = [
   {
@@ -114,6 +123,7 @@ const searchBooks = async () => {
       if (recentSearches.value.length > 5) {
         recentSearches.value.pop()
       }
+      saveRecentSearches()
     }
   } catch (error: any) {
     console.error('Erro de busca:', error)
@@ -140,6 +150,7 @@ const clearSearch = () => {
 
 const removeSearch = (index: number) => {
   recentSearches.value.splice(index, 1)
+  saveRecentSearches()
 }
 
 const selectRecentSearch = (search: string) => {
@@ -152,6 +163,14 @@ const selectCategory = (cat: string) => {
   searchQuery.value = cat
   searchBooks()
 }
+
+let searchTimeout: any = null
+watch(searchQuery, (newQuery) => {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    searchBooks()
+  }, 400) // 400ms debounce
+})
 
 onMounted(() => {
   // Inicializa sem fazer requisições na montagem para evitar bloqueios desnecessários

@@ -33,5 +33,13 @@ export class FollowService {
 
     await this.followRepository.delete(followerId, followingId);
   }
+
+  async getFollowers(userId: string) {
+    return this.followRepository.getFollowers(userId);
+  }
+
+  async getFollowing(userId: string) {
+    return this.followRepository.getFollowing(userId);
+  }
 }
 

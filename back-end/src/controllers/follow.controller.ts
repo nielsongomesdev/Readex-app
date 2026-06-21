@@ -36,5 +36,25 @@ export class FollowController {
       return reply.status(400).send({ error: error.message });
     }
   };
+
+  getFollowers = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { sub: userId } = request.user as { sub: string };
+      const followers = await this.followService.getFollowers(userId);
+      return reply.status(200).send(followers);
+    } catch (error: any) {
+      return reply.status(400).send({ error: error.message });
+    }
+  };
+
+  getFollowing = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { sub: userId } = request.user as { sub: string };
+      const following = await this.followService.getFollowing(userId);
+      return reply.status(200).send(following);
+    } catch (error: any) {
+      return reply.status(400).send({ error: error.message });
+    }
+  };
 }
 

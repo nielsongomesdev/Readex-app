@@ -154,4 +154,12 @@ export class UserService {
       },
     };
   }
+
+  async getUserProfile(userId: string) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new Error("Usuário não encontrado!");
+    }
+    return user;
+  }
 }

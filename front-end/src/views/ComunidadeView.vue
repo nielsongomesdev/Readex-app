@@ -6,8 +6,10 @@ import { userId as currentUserId } from '../store/userStore'
 const activeTab = ref('Todos')
 const tabs = ['Todos', 'Seguindo', 'Resenhas', 'Discussões']
 const loading = ref(false)
+const loadingUsers = ref(false)
 
 const posts = ref<any[]>([])
+const usersToFollow = ref<any[]>([])
 
 const fetchReviews = async () => {
   loading.value = true
@@ -34,6 +36,44 @@ const fetchReviews = async () => {
         isLiked: isLiked
       }
     })
+
+    // Calculate trending tags from actual reviews in the DB
+    const tagCounts: Record<string, number> = {}
+    reviews.forEach((rev: any) => {
+      // Extract hashtags from the comment if they exist
+      if (rev.comment) {
+        const hashtags = rev.comment.match(/#[\wÀ-ÿ]+/g) || []
+        hashtags.forEach((tag: string) => {
+          const formattedTag = tag.charAt(0) === '#' ? tag : '#' + tag
+          tagCounts[formattedTag] = (tagCounts[formattedTag] || 0) + 1
+        })
+      }
+      
+      // Also turn the book category/genre into a tag
+      if (rev.book?.genre) {
+        const genreTag = '#' + rev.book.genre.replace(/\s+/g, '')
+        tagCounts[genreTag] = (tagCounts[genreTag] || 0) + 1
+      } else if (rev.book?.title) {
+        // Fallback to book title as hashtag
+        const titleTag = '#' + rev.book.title.replace(/[^a-zA-Z0-9À-ÿ]/g, '')
+        tagCounts[titleTag] = (tagCounts[titleTag] || 0) + 1
+      }
+    })
+
+    const sortedTags = Object.entries(tagCounts)
+      .map(([tag, count]) => ({ tag, postsCount: String(count) }))
+      .sort((a, b) => Number(b.postsCount) - Number(a.postsCount))
+      .slice(0, 4)
+
+    if (sortedTags.length > 0) {
+      trending.value = sortedTags
+    } else {
+      trending.value = [
+        { tag: '#Duna', postsCount: '0' },
+        { tag: '#Fantasia', postsCount: '0' },
+        { tag: '#Leitura', postsCount: '0' }
+      ]
+    }
   } catch (err) {
     console.error('Erro ao carregar avaliações:', err)
   } finally {
@@ -41,23 +81,59 @@ const fetchReviews = async () => {
   }
 }
 
-const trending = ref([
-  { tag: '#Duna', postsCount: '234' },
-  { tag: '#Distopia', postsCount: '127' },
-  { tag: '#PauloCoelho', postsCount: '89' },
-  { tag: '#FicçãoCientífica', postsCount: '67' }
+const fetchUsersToFollow = async () => {
+  loadingUsers.value = true
+  try {
+    const [usersRes, followingRes] = await Promise.all([
+      api.get('/users'),
+      api.get('/following')
+    ])
+    
+    const allUsers = usersRes.data || []
+    const followingList = followingRes.data || []
+    const followingIds = followingList.map((f: any) => f.followingId)
+    
+    // Filter out current user
+    const otherUsers = allUsers.filter((u: any) => u.id !== currentUserId.value)
+    
+    usersToFollow.value = otherUsers.map((u: any) => {
+      const isFollowing = followingIds.includes(u.id)
+      return {
+        id: u.id,
+        name: u.name,
+        desc: u.bio || 'Leitor no Readex',
+        following: isFollowing
+      }
+    })
+  } catch (err) {
+    console.error('Erro ao carregar usuários para seguir:', err)
+  } finally {
+    loadingUsers.value = false
+  }
+}
+
+const trending = ref<any[]>([
+  { tag: '#Duna', postsCount: '0' },
+  { tag: '#Fantasia', postsCount: '0' },
+  { tag: '#Leitura', postsCount: '0' }
 ])
 
-const usersToFollow = ref([
-  { id: 1, name: 'Maria Silva', desc: 'Crítica literária', following: false },
-  { id: 2, name: 'João Pedro', desc: 'Apaixonado por fantasia', following: false },
-  { id: 3, name: 'Ana Costa', desc: 'Resenha 100 livros/ano', following: false }
-])
-
-const toggleFollow = (userId: number) => {
+const toggleFollow = async (userId: string) => {
   const user = usersToFollow.value.find(u => u.id === userId)
-  if (user) {
-    user.following = !user.following
+  if (!user) return
+
+  const originalState = user.following
+  user.following = !user.following
+
+  try {
+    if (user.following) {
+      await api.post(`/users/${userId}/follow`)
+    } else {
+      await api.delete(`/users/${userId}/unfollow`)
+    }
+  } catch (err) {
+    console.error('Erro ao seguir/unfollow:', err)
+    user.following = originalState
   }
 }
 
@@ -81,6 +157,7 @@ const toggleLike = async (postId: string) => {
 
 onMounted(() => {
   fetchReviews()
+  fetchUsersToFollow()
 })
 </script>
 
@@ -239,7 +316,10 @@ onMounted(() => {
           <div class="bg-white border border-[#B06E02]/10 p-5 rounded-2xl shadow-xs space-y-4">
             <h2 class="text-xs font-bold text-[#806602] uppercase tracking-widest">Pessoas para seguir</h2>
             
-            <div class="space-y-4.5">
+            <div v-if="usersToFollow.length === 0" class="text-center py-4 text-xs font-semibold text-gray-400">
+              Nenhum outro leitor cadastrado no momento.
+            </div>
+            <div v-else class="space-y-4.5">
               <div 
                 v-for="user in usersToFollow" 
                 :key="user.id"

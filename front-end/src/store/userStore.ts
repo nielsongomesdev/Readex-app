@@ -47,8 +47,8 @@ export function setToken(t: string | null) {
 
 export async function loadUser() {
 	try {
-		const res = await api.get('/users')
-		const user = Array.isArray(res.data) ? res.data[0] : res.data
+		const res = await api.get('/users/me')
+		const user = res.data
 		if (user) {
 			userId.value = user.id ?? ''
 			name.value = user.name ?? ''

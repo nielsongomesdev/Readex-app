@@ -84,4 +84,15 @@ export class UserController {
       return reply.status(500).send({ error: error?.message ?? "Erro ao gerar dashboard" });
     }
   };
+
+  getProfile = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { sub: userId } = request.user as { sub: string };
+      const user = await this.userService.getUserProfile(userId);
+      const { password, ...userWithoutPassword } = user as any;
+      return reply.status(200).send(userWithoutPassword);
+    } catch (error: any) {
+      return reply.status(400).send({ error: error.message });
+    }
+  };
 }

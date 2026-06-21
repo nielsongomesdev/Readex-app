@@ -22,7 +22,7 @@ const book = ref({
   author: '',
   cover: '',
   rating: 4.5,
-  reviewsCount: '1.2k',
+  reviewsCount: '0',
   tags: [] as string[],
   editora: '',
   ano: 2026,
@@ -30,13 +30,10 @@ const book = ref({
   genero: '',
   progress: 0,
   pagesRead: 0,
-  synopsis: '',
-  reviews: [
-    { name: 'Maria S.', date: '12/04/2026', rating: 5, text: 'Leitura transformadora! Me fez repensar meus sonhos e objetivos de vida. Recomendo muito.' },
-    { name: 'João P.', date: '05/04/2026', rating: 4, text: 'Livro muito inspirador, porém a narrativa é um pouco lenta no meio. Ainda assim vale muito a leitura.' },
-    { name: 'Ana L.', date: '01/04/2026', rating: 5, text: 'Um clássico que todo mundo deveria ler! A história é simples mas profunda e muito bem escrita.' }
-  ]
+  synopsis: ''
 })
+
+const bookReviews = ref<any[]>([])
 
 const fetchBookDetails = async () => {
   const id = route.params.id
@@ -70,8 +67,7 @@ const fetchBookDetails = async () => {
       genero: volumeInfo.categories ? volumeInfo.categories[0] : 'Geral',
       progress: 0,
       pagesRead: 0,
-      synopsis: volumeInfo.description ? volumeInfo.description.replace(/<[^>]*>/g, '') : 'Sinopse não disponível.',
-      reviews: book.value.reviews
+      synopsis: volumeInfo.description ? volumeInfo.description.replace(/<[^>]*>/g, '') : 'Sinopse não disponível.'
     }
   } catch (error: any) {
     console.error('Erro ao buscar detalhes do livro:', error)
@@ -97,8 +93,7 @@ const fetchBookDetails = async () => {
       genero: mock.genre,
       progress: 0,
       pagesRead: 0,
-      synopsis: mock.synopsis,
-      reviews: book.value.reviews
+      synopsis: mock.synopsis
     }
   } finally {
     loading.value = false
@@ -201,9 +196,37 @@ const updateReadingProgress = async () => {
   }
 }
 
+const fetchBookReviews = async () => {
+  try {
+    const res = await api.get('/reviews')
+    const allReviews = res.data || []
+    const id = route.params.id as string
+    
+    const filtered = allReviews.filter((r: any) => r.bookId === id)
+    bookReviews.value = filtered.map((r: any) => {
+      const dateStr = new Date(r.createdAt).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+      return {
+        name: r.user?.name || 'Leitor anônimo',
+        date: dateStr,
+        rating: r.rating,
+        text: r.comment || 'Sem comentários.'
+      }
+    })
+    
+    book.value.reviewsCount = String(bookReviews.value.length)
+  } catch (err) {
+    console.error('Erro ao carregar resenhas do livro:', err)
+  }
+}
+
 onMounted(async () => {
   await fetchBookDetails()
   await fetchShelfStatus()
+  await fetchBookReviews()
 })
 
 const goBack = () => {
@@ -347,6 +370,14 @@ const goBack = () => {
             <router-link :to="'/livro/' + $route.params.id + '/resenha'" class="bg-[#FCAE1E] hover:bg-[#FCAE1E]/95 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition cursor-pointer select-none text-center">
               Adicionar resenha
             </router-link>
+
+            <!-- Read Now Button -->
+            <router-link :to="'/ler/' + $route.params.id" class="bg-[#13213C] hover:bg-[#13213C]/95 text-white font-bold text-xs px-6 py-3.5 rounded-xl transition cursor-pointer select-none text-center flex items-center justify-center gap-1.5">
+              <svg class="w-4 h-4 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+              </svg>
+              Ler agora
+            </router-link>
           </div>
 
           <!-- Reading Progress Editor (only if status is Lendo) -->
@@ -444,6 +475,19 @@ const goBack = () => {
           <option value="Lendo">Lendo</option>
           <option value="Lido">Lido</option>
         </select>
+      </div>
+
+      <!-- Mobile Read Now Button -->
+      <div class="pt-2 border-t border-[#B06E02]/5">
+        <router-link 
+          :to="'/ler/' + $route.params.id" 
+          class="w-full bg-[#13213C] text-white font-bold text-xs py-2.5 rounded-xl transition cursor-pointer text-center flex items-center justify-center gap-1.5"
+        >
+          <svg class="w-3.5 h-3.5 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+          </svg>
+          Ler agora
+        </router-link>
       </div>
 
       <!-- Mobile Reading Progress Editor (only if status is Lendo) -->
@@ -605,10 +649,13 @@ const goBack = () => {
             </span>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div v-if="bookReviews.length === 0" class="text-center py-8 text-gray-400 text-xs font-semibold border-2 border-dashed border-[#B06E02]/15 rounded-2xl bg-[#FFFBEA]/30">
+            Nenhuma resenha foi publicada para este livro ainda. Seja o primeiro a avaliar!
+          </div>
+          <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div 
-              v-for="review in book.reviews" 
-              :key="review.name"
+              v-for="review in bookReviews" 
+              :key="review.name + review.date"
               class="bg-white border border-[#B06E02]/10 p-4 rounded-2xl shadow-xs flex flex-col justify-between"
             >
               <div class="space-y-3">

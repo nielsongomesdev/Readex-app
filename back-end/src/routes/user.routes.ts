@@ -21,4 +21,18 @@ export async function userRoutes(app: FastifyInstance) {
     },
     userController.getDashboard
   );
+
+  app.get(
+    "/users/me",
+    {
+      onRequest: async (request, reply) => {
+        try {
+          await request.jwtVerify();
+        } catch {
+          return reply.status(401).send({ error: "Não autorizado. Token inválido ou ausente." });
+        }
+      },
+    },
+    userController.getProfile
+  );
 }

@@ -191,6 +191,90 @@ export const MOCK_BOOKS: MockBook[] = [
     ano: 1999,
     synopsis: 'Harry Potter retorna a Hogwarts para o seu terceiro ano letivo e descobre que o perigoso prisioneiro Sirius Black escapou da prisão de segurança máxima de Azkaban e está no seu encalço.',
     tags: ['Fantasia', 'Magia', 'Aventura']
+  },
+  {
+    id: 'pequeno_principe',
+    title: 'O Pequeno Príncipe',
+    author: 'Antoine de Saint-Exupéry',
+    rating: 4.9,
+    reviewsCount: '25k',
+    pages: 96,
+    genre: 'Clássicos',
+    cover: 'https://images-na.ssl-images-amazon.com/images/I/81794b-X8tL.jpg',
+    editora: 'HarperCollins',
+    ano: 1943,
+    synopsis: 'Uma das obras mais lidas do mundo, conta a história de um piloto de avião que cai no deserto do Saara e lá encontra um jovem príncipe vindo de um asteroide distante, com quem aprende valiosas lições sobre a vida, o amor e a amizade.',
+    tags: ['Clássicos', 'Fábula', 'Filosofia', 'Fantasia']
+  },
+  {
+    id: 'culpa_estrelas',
+    title: 'A Culpa é das Estrelas',
+    author: 'John Green',
+    rating: 4.7,
+    reviewsCount: '18k',
+    pages: 288,
+    genre: 'Romance',
+    cover: 'https://images-na.ssl-images-amazon.com/images/I/81Mbg6iW2OL.jpg',
+    editora: 'Intrínseca',
+    ano: 2012,
+    synopsis: 'Hazel Grace é uma paciente terminal que descobre um novo sentido na vida quando conhece Augustus Waters no grupo de apoio para jovens com câncer. Juntos, eles compartilham uma história intensa e comovente sobre a vida, o amor e a fragilidade humana.',
+    tags: ['Romance', 'Drama', 'Jovem Adulto']
+  },
+  {
+    id: 'dom_casmurro',
+    title: 'Dom Casmurro',
+    author: 'Machado de Assis',
+    rating: 4.8,
+    reviewsCount: '8k',
+    pages: 256,
+    genre: 'Clássicos',
+    cover: 'https://images-na.ssl-images-amazon.com/images/I/81v5P5vOqyL.jpg',
+    editora: 'Carambaia',
+    ano: 1899,
+    synopsis: 'O clássico romance brasileiro narrado em primeira pessoa por Bento Santiago (Bentinho), que relata sua obsessão e ciúme doentio pela enigmática Capitu, questionando se ela o traiu com seu melhor amigo Escobar.',
+    tags: ['Clássicos', 'Romance', 'Realismo']
+  },
+  {
+    id: 'iluminado',
+    title: 'O Iluminado',
+    author: 'Stephen King',
+    rating: 4.8,
+    reviewsCount: '9k',
+    pages: 464,
+    genre: 'Terror',
+    cover: 'https://images-na.ssl-images-amazon.com/images/I/81x1hLecV8L.jpg',
+    editora: 'Suma',
+    ano: 1977,
+    synopsis: 'Jack Torrance consegue um emprego como zelador de inverno no isolado hotel Overlook, para onde se muda com sua esposa e seu jovem filho Danny, que possui poderes telepáticos. Isolados pela neve, forças sombrias começam a influenciar a mente de Jack.',
+    tags: ['Terror', 'Suspense', 'Clássico']
+  },
+  {
+    id: 'dracula',
+    title: 'Drácula',
+    author: 'Bram Stoker',
+    rating: 4.7,
+    reviewsCount: '6k',
+    pages: 480,
+    genre: 'Terror',
+    cover: 'https://images-na.ssl-images-amazon.com/images/I/818f92+oVvL.jpg',
+    editora: 'Darkside',
+    ano: 1897,
+    synopsis: 'O clássico romance epistolar de Bram Stoker que introduziu o conde vampiro mais famoso da história. Acompanhamos a jornada de Jonathan Harker, Van Helsing e seus aliados para deter o conde Drácula em sua tentativa de espalhar a maldição na Inglaterra.',
+    tags: ['Terror', 'Gótico', 'Clássicos']
+  },
+  {
+    id: 'frankenstein',
+    title: 'Frankenstein',
+    author: 'Mary Shelley',
+    rating: 4.8,
+    reviewsCount: '7k',
+    pages: 240,
+    genre: 'Terror',
+    cover: 'https://images-na.ssl-images-amazon.com/images/I/81-y6-5pVOL.jpg',
+    editora: 'Darkside',
+    ano: 1818,
+    synopsis: 'A pioneira obra de Mary Shelley sobre Victor Frankenstein, um cientista brilhante mas obcecado que dá vida a uma criatura construída a partir de restos humanos, desencadeando tragédia e questionamentos éticos profundos.',
+    tags: ['Terror', 'Ficção Científica', 'Clássicos']
   }
 ]
 
@@ -226,25 +310,44 @@ export const getMockBooks = (query: string): MockBook[] => {
   if (q.includes('habits') || q.includes('habitos') || q.includes('clear')) {
     return MOCK_BOOKS.filter(b => b.id === 'W1_LDQAAQBAJ')
   }
+  if (q.includes('pequeno') || q.includes('principe') || q.includes('exupéry')) {
+    return MOCK_BOOKS.filter(b => b.id === 'pequeno_principe')
+  }
+  if (q.includes('culpa') || q.includes('estrelas') || q.includes('green')) {
+    return MOCK_BOOKS.filter(b => b.id === 'culpa_estrelas')
+  }
+  if (q.includes('casmurro') || q.includes('machado') || q.includes('assis')) {
+    return MOCK_BOOKS.filter(b => b.id === 'dom_casmurro')
+  }
+  if (q.includes('iluminado') || q.includes('king')) {
+    return MOCK_BOOKS.filter(b => b.id === 'iluminado')
+  }
+  if (q.includes('dracula') || q.includes('stoker')) {
+    return MOCK_BOOKS.filter(b => b.id === 'dracula')
+  }
+  if (q.includes('frankenstein') || q.includes('shelley')) {
+    return MOCK_BOOKS.filter(b => b.id === 'frankenstein')
+  }
 
-  // Genre/Category matches
-  if (q === 'ficção científica' || q === 'ficção' || q === 'scifi' || q === 'fiction') {
-    return MOCK_BOOKS.filter(b => b.genre === 'Ficção Científica' || b.genre === 'Clássicos' || b.id === 'oT9-DwAAQBAJ')
+  // Genre/Category matches (matching accurately in lower case)
+  const normalizedGenre = q.replace('-', ' ')
+  if (normalizedGenre === 'ficcao cientifica' || normalizedGenre === 'ficção científica' || normalizedGenre === 'scifi' || normalizedGenre === 'ficção') {
+    return MOCK_BOOKS.filter(b => b.genre.toLowerCase().includes('ficção científica') || b.id === 'oT9-DwAAQBAJ' || b.id === '1N8zEAAAQBAJ')
   }
-  if (q === 'fantasia' || q === 'fantasy') {
-    return MOCK_BOOKS.filter(b => b.genre === 'Fantasia' || ['i48xDQAAQBAJ', 'bJg0DwAAQBAJ', 'y_ZCDwAAQBAJ'].includes(b.id))
+  if (normalizedGenre === 'fantasia' || normalizedGenre === 'fantasy') {
+    return MOCK_BOOKS.filter(b => b.genre.toLowerCase().includes('fantasia') || ['i48xDQAAQBAJ', 'bJg0DwAAQBAJ', 'y_ZCDwAAQBAJ', 'pequeno_principe'].includes(b.id))
   }
-  if (q === 'não-ficção' || q === 'não ficção' || q === 'non-fiction' || q === 'nonfiction') {
-    return MOCK_BOOKS.filter(b => b.genre === 'Não-ficção')
+  if (normalizedGenre === 'nao ficcao' || normalizedGenre === 'não ficção' || normalizedGenre === 'não-ficção' || normalizedGenre === 'nonfiction') {
+    return MOCK_BOOKS.filter(b => b.genre.toLowerCase().includes('não-ficção') || b.id === 'w9P3BAAAQBAJ' || b.id === 'W1_LDQAAQBAJ')
   }
-  if (q === 'romance') {
-    return MOCK_BOOKS.filter(b => b.genre === 'Romance' || b.id === 'o3v8AgAAQBAJ')
+  if (normalizedGenre === 'romance') {
+    return MOCK_BOOKS.filter(b => b.genre.toLowerCase().includes('romance') || ['o3v8AgAAQBAJ', 'culpa_estrelas', 'dom_casmurro'].includes(b.id))
   }
-  if (q === 'terror') {
-    return MOCK_BOOKS.filter(b => b.genre === 'Terror' || b.id === 'qjZPAAAAMAAJ')
+  if (normalizedGenre === 'terror') {
+    return MOCK_BOOKS.filter(b => b.genre.toLowerCase().includes('terror') || ['qjZPAAAAMAAJ', 'iluminado', 'dracula', 'frankenstein'].includes(b.id))
   }
-  if (q === 'clássicos' || q === 'classicos' || q === 'classics') {
-    return MOCK_BOOKS.filter(b => b.genre === 'Clássicos' || b.id === '1N8zEAAAQBAJ' || b.id === '0s1u9iT788AC')
+  if (normalizedGenre === 'classicos' || normalizedGenre === 'clássicos' || normalizedGenre === 'classics') {
+    return MOCK_BOOKS.filter(b => b.genre.toLowerCase().includes('clássicos') || ['1N8zEAAAQBAJ', '0s1u9iT788AC', 'pequeno_principe', 'dom_casmurro', 'dracula', 'frankenstein'].includes(b.id))
   }
 
   // Fallback: search within title, author or description

@@ -19,6 +19,8 @@ import SettingsView from '../views/SettingsView.vue'
 import BookDetailsView from '../views/BookDetailsView.vue'
 import WriteReviewView from '../views/WriteReviewView.vue'
 
+import ReaderView from '../views/ReaderView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -61,6 +63,11 @@ const router = createRouter({
       path: '/reset-password',
       name: 'reset-password',
       component: ResetPasswordView,
+    },
+    {
+      path: '/ler/:id',
+      name: 'reader',
+      component: ReaderView,
     },
     
     {

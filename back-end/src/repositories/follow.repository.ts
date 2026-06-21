@@ -35,5 +35,45 @@ export class FollowRepository {
       },
     });
   }
+
+  async getFollowers(userId: string) {
+    try {
+      return await prisma.follow.findMany({
+        where: { followingId: userId },
+        include: {
+          follower: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              createdAt: true,
+            }
+          }
+        }
+      });
+    } catch (err) {
+      return [];
+    }
+  }
+
+  async getFollowing(userId: string) {
+    try {
+      return await prisma.follow.findMany({
+        where: { followerId: userId },
+        include: {
+          following: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              createdAt: true,
+            }
+          }
+        }
+      });
+    } catch (err) {
+      return [];
+    }
+  }
 }
 

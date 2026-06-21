@@ -27,6 +27,15 @@ export class UserRepository {
     }
   }
 
+  async findById(id: string) {
+    try {
+      const user = await prisma.user.findUnique({ where: { id } });
+      return user;
+    } catch (err) {
+      return UserRepository._users.find((u) => u.id === id) ?? null;
+    }
+  }
+
   async findAll() {
     try {
       const users = await prisma.user.findMany();

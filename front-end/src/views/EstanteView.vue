@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { api } from '../services/api'
 import { googleBooksApi } from '../services/googleBooks'
 import { getMockBookDetails } from '../services/mockBooks'
+
+const router = useRouter()
 
 import atelierCover from '../assets/images/atelier_cover.png'
 import nomeVentoCover from '../assets/images/o_nome_do_vento_cover.png'
@@ -205,10 +208,10 @@ onMounted(() => {
           Nenhum livro sendo lido no momento.
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <router-link 
+          <div 
             v-for="book in lendoBooks" 
             :key="book.id"
-            :to="'/livro/' + book.id"
+            @click="router.push('/livro/' + book.id)"
             class="bg-[#FFFBEA] border border-[#B06E02]/10 p-5 rounded-2xl shadow-[0_4px_16px_rgba(176,110,2,0.02)] flex gap-5 hover:scale-[1.01] transition duration-150 cursor-pointer"
           >
             
@@ -239,8 +242,19 @@ onMounted(() => {
                   <div class="bg-[#FCAE1E] h-1.5 lg:h-2 rounded-full" :style="{ width: book.progress + '%' }"></div>
                 </div>
               </div>
+
+              <!-- Ler agora button -->
+              <button 
+                @click.stop="router.push('/ler/' + book.id)"
+                class="mt-3 bg-[#13213C] hover:bg-[#13213C]/95 text-white hover:text-[#FCAE1E] font-bold text-[10px] px-4 py-2 rounded-xl flex items-center justify-center gap-1.5 transition self-start cursor-pointer shadow-xs"
+              >
+                <svg class="w-3.5 h-3.5 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+                </svg>
+                Ler agora
+              </button>
             </div>
-          </router-link>
+          </div>
         </div>
       </div>
 
@@ -261,10 +275,10 @@ onMounted(() => {
                 : 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6'
             ]"
           >
-            <router-link 
+            <div 
               v-for="book in queroBooks" 
               :key="book.id"
-              :to="'/livro/' + book.id"
+              @click="router.push('/livro/' + book.id)"
               class="flex flex-col items-center text-center gap-2 select-none cursor-pointer hover:scale-[1.02] transition duration-150"
             >
               <img 
@@ -276,21 +290,30 @@ onMounted(() => {
               <div v-else class="w-[110px] h-[160px] bg-[#E5ECF6] rounded-xl flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
                 <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
               </div>
-              <div class="w-full min-w-0 px-1 mt-1">
-                <h4 class="text-xs font-bold text-[#806602] truncate leading-tight">{{ book.title }}</h4>
-                <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ book.author }}</p>
+              <div class="w-full min-w-0 px-1 mt-1 flex flex-col items-center">
+                <h4 class="text-xs font-bold text-[#806602] truncate leading-tight w-full">{{ book.title }}</h4>
+                <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5 w-full">{{ book.author }}</p>
+                <button 
+                  @click.stop="router.push('/ler/' + book.id)"
+                  class="mt-2 bg-[#13213C] hover:bg-[#13213C]/95 text-white hover:text-[#FCAE1E] font-bold text-[9px] px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition cursor-pointer shadow-xs w-full max-w-[80px]"
+                >
+                  <svg class="w-2.5 h-2.5 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+                  </svg>
+                  Ler
+                </button>
               </div>
-            </router-link>
+            </div>
           </div>
 
           <div 
             v-if="activeTab === 'todos'"
             class="lg:hidden flex overflow-x-auto gap-4 pb-2 scrollbar-none select-none"
           >
-            <router-link 
+            <div 
               v-for="book in queroBooks" 
               :key="book.id + '-mobile'"
-              :to="'/livro/' + book.id"
+              @click="router.push('/livro/' + book.id)"
               class="flex flex-col items-center flex-shrink-0 text-center gap-2 cursor-pointer w-[110px] hover:scale-[1.02] transition duration-150"
             >
               <img 
@@ -302,11 +325,20 @@ onMounted(() => {
               <div v-else class="w-[110px] h-[160px] bg-[#E5ECF6] rounded-xl flex-shrink-0 flex items-center justify-center text-center p-1 border border-gray-200">
                 <span class="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Sem capa</span>
               </div>
-              <div class="w-full min-w-0 px-1 mt-1">
-                <h4 class="text-xs font-bold text-[#806602] truncate leading-tight">{{ book.title }}</h4>
-                <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5">{{ book.author }}</p>
+              <div class="w-full min-w-0 px-1 mt-1 flex flex-col items-center">
+                <h4 class="text-xs font-bold text-[#806602] truncate leading-tight w-full">{{ book.title }}</h4>
+                <p class="text-[10px] text-gray-400 font-semibold truncate mt-0.5 w-full">{{ book.author }}</p>
+                <button 
+                  @click.stop="router.push('/ler/' + book.id)"
+                  class="mt-2 bg-[#13213C] hover:bg-[#13213C]/95 text-white hover:text-[#FCAE1E] font-bold text-[9px] px-3 py-1.5 rounded-lg flex items-center justify-center gap-1 transition cursor-pointer shadow-xs w-full max-w-[80px]"
+                >
+                  <svg class="w-2.5 h-2.5 text-[#FCAE1E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+                  </svg>
+                  Ler
+                </button>
               </div>
-            </router-link>
+            </div>
           </div>
         </template>
       </div>
